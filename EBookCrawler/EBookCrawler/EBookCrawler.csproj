@@ -46,7 +46,9 @@
   <ItemGroup>
     <Compile Include="Author.cs" />
     <Compile Include="Book.cs" />
+    <Compile Include="BookReference.cs" />
     <Compile Include="Chapter.cs" />
+    <Compile Include="Entry.cs" />
     <Compile Include="Library.cs" />
     <Compile Include="Organizer.cs" />
     <Compile Include="Part.cs" />

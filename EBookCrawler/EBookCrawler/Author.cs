@@ -8,7 +8,7 @@ namespace EBookCrawler
 {
    public class Author
     {
-        public SortedDictionary<string, Book> Books { get; set; } = new SortedDictionary<string, Book>();
+        public SortedDictionary<string, BookReference> Books { get; set; } = new SortedDictionary<string, BookReference>();
 
         public string FirstName { get; set; }
         public string LastName { get; set; }

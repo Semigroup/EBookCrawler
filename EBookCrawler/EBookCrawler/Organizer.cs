@@ -27,9 +27,11 @@ namespace EBookCrawler
             XmlReaderSettings settings = new XmlReaderSettings();
             settings.ConformanceLevel = ConformanceLevel.Fragment;
             XmlReader reader = XmlReader.Create(File.OpenText(fileName), settings);
-            while (reader.Read())
+            while (!reader.EOF)
             {
-                Console.WriteLine("NodeType: {0}, NodeName: {1}, Value: {2}, Depth: {3}", reader.NodeType, reader.Name, reader.Value, reader.Depth);
+                Entry e = new Entry(reader);
+                Console.WriteLine(e);
+                Console.Read();
                 Console.Read();
             }
         }
