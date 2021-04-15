@@ -20,22 +20,58 @@ namespace EBookCrawler
 
         public void LoadLibrary()
         {
+            Library lib = new Library();
+
             string htmlCode;
             using (WebClient client = new WebClient())
                 htmlCode = client.DownloadString(IndexSiteURL);
             string fileName = saveDLContent(htmlCode);
+            FillLibrary(lib, fileName);
+           
+        }
+        private void FillLibrary(Library library, string filenameOfContent)
+        {
+            Author currentAuthor = null;
+            foreach (var entry in getEntries(filenameOfContent))
+            {
+                switch (entry.GetKind())
+                {
+                    case Entry.Kind.Letter:
+                        break;
+                    case Entry.Kind.Author:
+                        (string firstName, string lastName) = entry.GetAuthorName();
+                        string identifier = Author.GetIdentifier(firstName, lastName);
+                        if (!library.Authors.TryGetValue(identifier, out currentAuthor))
+                        {
+                            currentAuthor = new Author()
+                            {
+                                FirstName = firstName,
+                                LastName = lastName
+                            };
+                            library.Add(currentAuthor);
+                        }
+                        break;
+                    case Entry.Kind.Book:
+                        BookReference bookRef = entry.GetBookReference();
+                        currentAuthor.Books.Add(bookRef.GetIdentifier(), bookRef);
+                        break;
+                    default:
+                        throw new NotImplementedException("Organizer.LoadLibrary(): New Kind " + entry.GetKind() + " !");
+                }
+            }
+        }
+        private IEnumerable<Entry> getEntries(string filenameOfContent)
+        {
             XmlReaderSettings settings = new XmlReaderSettings();
             settings.ConformanceLevel = ConformanceLevel.Fragment;
-            XmlReader reader = XmlReader.Create(File.OpenText(fileName), settings);
+            XmlReader reader = XmlReader.Create(File.OpenText(filenameOfContent), settings);
             while (!reader.EOF)
             {
                 Entry e = new Entry(reader);
-                Console.WriteLine(e);
-                Console.Read();
-                Console.Read();
+                yield return e;
             }
+            yield break;
         }
-
         private string saveDLContent(string htmlCode)
         {
             string startBracket = "<DL>";

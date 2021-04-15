@@ -12,5 +12,12 @@ namespace EBookCrawler
 
         public string FirstName { get; set; }
         public string LastName { get; set; }
+
+        public string GetIdentifier()
+            => GetIdentifier(this.FirstName, this.LastName);
+        public static string GetIdentifier(string FirstName, string LastName)
+        {
+            return LastName + " | " + FirstName;
+        }
     }
 }
