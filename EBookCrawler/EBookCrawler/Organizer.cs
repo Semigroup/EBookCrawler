@@ -20,14 +20,17 @@ namespace EBookCrawler
 
         public void LoadLibrary()
         {
-            Library lib = new Library();
+            Library lib = new Library()
+            {
+                TimeStamp = DateTime.Now
+            };
 
             string htmlCode;
             using (WebClient client = new WebClient())
                 htmlCode = client.DownloadString(IndexSiteURL);
             string fileName = saveDLContent(htmlCode);
             FillLibrary(lib, fileName);
-           
+            lib.WriteOverviewMarkdown("library_overview.md");
         }
         private void FillLibrary(Library library, string filenameOfContent)
         {
@@ -39,21 +42,54 @@ namespace EBookCrawler
                     case Entry.Kind.Letter:
                         break;
                     case Entry.Kind.Author:
-                        (string firstName, string lastName) = entry.GetAuthorName();
-                        string identifier = Author.GetIdentifier(firstName, lastName);
-                        if (!library.Authors.TryGetValue(identifier, out currentAuthor))
                         {
-                            currentAuthor = new Author()
+                            (string firstName, string lastName) = entry.GetAuthorName();
+                            string identifier = Author.GetIdentifier(firstName, lastName);
+                            if (!library.Authors.TryGetValue(identifier, out currentAuthor))
                             {
-                                FirstName = firstName,
-                                LastName = lastName
-                            };
-                            library.Add(currentAuthor);
+                                currentAuthor = new Author()
+                                {
+                                    FirstName = firstName,
+                                    LastName = lastName
+                                };
+                                library.Add(currentAuthor);
+                            }
+                            else
+                                Console.WriteLine("Found the same author twice: " + entry);
+                        }
+                        break;
+                    case Entry.Kind.IrregularAuthor:
+                        Console.WriteLine("Irregular Author: " + entry);
+                        {
+                            (string firstName, string lastName) = entry.GetAuthorName();
+                            string identifier = Author.GetIdentifier(firstName, lastName);
+                            if (!library.Authors.TryGetValue(identifier, out currentAuthor))
+                            {
+                                currentAuthor = new Author()
+                                {
+                                    FirstName = firstName,
+                                    LastName = lastName
+                                };
+                                library.Add(currentAuthor);
+                            }
                         }
                         break;
                     case Entry.Kind.Book:
                         BookReference bookRef = entry.GetBookReference();
-                        currentAuthor.Books.Add(bookRef.GetIdentifier(), bookRef);
+                        string bookIdentifier = bookRef.GetIdentifier();
+                        if (currentAuthor.Books.TryGetValue(bookIdentifier, out BookReference foundBookRef))
+                        {
+                            foundBookRef.Merge(bookRef);
+                            Console.WriteLine("Found the same book twice: " + entry);
+                        }
+                        else
+                            currentAuthor.Books.Add(bookIdentifier, bookRef);
+                        break;
+                    case Entry.Kind.Empty:
+                        Console.WriteLine("Empty Entry: " + entry);
+                        break;
+                    case Entry.Kind.BookWithBrokenLink:
+                        Console.WriteLine("Book broken Link: " + entry);
                         break;
                     default:
                         throw new NotImplementedException("Organizer.LoadLibrary(): New Kind " + entry.GetKind() + " !");

@@ -19,5 +19,9 @@ namespace EBookCrawler
         {
             return LastName + " | " + FirstName;
         }
+        public void MergeBooks()
+        {
+
+        }
     }
 }
