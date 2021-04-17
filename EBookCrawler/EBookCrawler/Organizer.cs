@@ -33,7 +33,7 @@ namespace EBookCrawler
             lib.WriteOverviewMarkdown("library_overview.md");
 
             foreach (var item in lib.Authors.Values)
-                item.MergeBooks();
+                item.MergeParts();
         }
         private void FillLibrary(Library library, string filenameOfContent)
         {
@@ -78,15 +78,15 @@ namespace EBookCrawler
                         }
                         break;
                     case Entry.Kind.Book:
-                        BookReference bookRef = entry.GetBookReference();
+                        PartReference bookRef = entry.GetBookReference();
                         string bookIdentifier = bookRef.GetIdentifier();
-                        if (currentAuthor.Books.TryGetValue(bookIdentifier, out BookReference foundBookRef))
+                        if (currentAuthor.Parts.TryGetValue(bookIdentifier, out PartReference foundBookRef))
                         {
                             foundBookRef.Merge(bookRef);
                             Console.WriteLine("Found the same book twice: " + entry);
                         }
                         else
-                            currentAuthor.Books.Add(bookIdentifier, bookRef);
+                            currentAuthor.Parts.Add(bookIdentifier, bookRef);
                         break;
                     case Entry.Kind.Empty:
                         Console.WriteLine("Empty Entry: " + entry);

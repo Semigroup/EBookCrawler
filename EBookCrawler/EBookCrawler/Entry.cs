@@ -118,9 +118,9 @@ namespace EBookCrawler
                 }
             }
         }
-        public BookReference GetBookReference()
+        public PartReference GetBookReference()
         {
-            BookReference br = new BookReference
+            PartReference br = new PartReference
             {
                 Name = Data[2].Value,
                 Link = Data[1].HRef,

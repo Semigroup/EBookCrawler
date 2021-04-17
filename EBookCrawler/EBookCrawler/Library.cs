@@ -25,8 +25,8 @@ namespace EBookCrawler
                 foreach (var author in Authors.Values)
                 {
                     file.WriteLine();
-                    file.WriteLine("## " + author.FirstName + " " + author.LastName + " (" + author.Books.Count + ")");
-                    foreach (var bookref in author.Books.Values)
+                    file.WriteLine("## " + author.FirstName + " " + author.LastName + " (" + author.Parts.Count + ")");
+                    foreach (var bookref in author.Parts.Values)
                     {
                         string line = " - " + bookref.Name;
                         if (bookref.SubTitle== null || bookref.SubTitle.Length > 0)

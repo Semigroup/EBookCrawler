@@ -47,6 +47,11 @@
     <Compile Include="Author.cs" />
     <Compile Include="Book.cs" />
     <Compile Include="BookReference.cs" />
+    <Compile Include="Merging\Group.cs" />
+    <Compile Include="Merging\TokenConverter.cs" />
+    <Compile Include="Merging\TokenizedTitle.cs" />
+    <Compile Include="Merging\PartMerger.cs" />
+    <Compile Include="PartReference.cs" />
     <Compile Include="Chapter.cs" />
     <Compile Include="Entry.cs" />
     <Compile Include="Library.cs" />
