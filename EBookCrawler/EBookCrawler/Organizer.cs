@@ -31,6 +31,9 @@ namespace EBookCrawler
             string fileName = saveDLContent(htmlCode);
             FillLibrary(lib, fileName);
             lib.WriteOverviewMarkdown("library_overview.md");
+
+            foreach (var item in lib.Authors.Values)
+                item.MergeBooks();
         }
         private void FillLibrary(Library library, string filenameOfContent)
         {
