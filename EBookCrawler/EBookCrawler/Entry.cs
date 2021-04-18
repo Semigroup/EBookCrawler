@@ -118,27 +118,29 @@ namespace EBookCrawler
                 }
             }
         }
-        public PartReference GetBookReference()
+
+        public PartReference GetPartReference()
         {
-            PartReference br = new PartReference
+            PartReference partref = new PartReference
             {
                 Name = Data[2].Value,
                 Link = Data[1].HRef,
+                SubTitle = ""
             };
-            br.RepairLink();
+            partref.RepairLink();
             if (Data.Count == 5)
-                br.SubTitle = Data[4].Value.Replace(',', ' ').Trim();
+                partref.SetSubTitle(Data[4].Value);
             if (Data.Count == 7)
             {
-                br.SubTitle = Data[4].Value.Replace(',', ' ').Trim();
-                br.Genres.AddRange(Data[5].Value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Map(x => x.Trim()));
+                partref.SetSubTitle(Data[4].Value);
+                partref.SetGenres(Data[5].Value);
             }
             if (Data.Count == 9 || Data.Count == 10)
             {
-                br.SubTitle = Data[4].Value.Replace(',', ' ').Trim();
-                br.Genres.AddRange(Data[7].Value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Map(x => x.Trim()));
+                partref.SetSubTitle(Data[4].Value);
+                partref.SetGenres(Data[7].Value);
             }
-            return br;
+            return partref;
         }
         public Kind GetKind()
         {

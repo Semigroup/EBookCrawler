@@ -8,7 +8,7 @@ namespace EBookCrawler.Merging
 {
     public static class PartMerger
     {
-        public static List<BookReference> MergeParts(IEnumerable<PartReference> parts)
+        public static IEnumerable<BookReference> MergeParts(IEnumerable<PartReference> parts)
         {
             TokenizedTitle[] titles = new TokenizedTitle[parts.Count()];
             for (int i = 0; i < titles.Length; i++)
@@ -23,6 +23,8 @@ namespace EBookCrawler.Merging
                 newGroup.ExtractGroup(remainingTitles);
                 foreach (var title in newGroup.Titles)
                     remainingTitles.Remove(title);
+                groups.Add(newGroup);
+                yield return newGroup.GetBookReference();
             }
         }
     }

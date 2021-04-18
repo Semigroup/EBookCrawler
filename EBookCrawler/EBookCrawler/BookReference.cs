@@ -10,10 +10,18 @@ namespace EBookCrawler
     {
         public string Name { get; set; }
         public string SubTitle { get; set; }
+        public bool PartsHaveDifferentSubTitles { get; set; }
         public List<string> Genres { get; set; } = new List<string>();
+        public string Identifier { get; set; }
 
         public PartReference[] Parts { get; set; }
 
-
+        public void SetIdentifer()
+        {
+            int hash = 0;
+            foreach (var part in Parts)
+                hash ^= part.Link.GetHashCode();
+            this.Identifier = Name + " | " + SubTitle + " | " + Parts.Length + " @" + hash;
+        }
     }
 }

@@ -26,16 +26,34 @@ namespace EBookCrawler
                 {
                     file.WriteLine();
                     file.WriteLine("## " + author.FirstName + " " + author.LastName + " (" + author.Parts.Count + ")");
-                    foreach (var bookref in author.Parts.Values)
+                    foreach (var bookref in author.Books.Values)
                     {
                         string line = " - " + bookref.Name;
-                        if (bookref.SubTitle== null || bookref.SubTitle.Length > 0)
+                        if (bookref.SubTitle != null && bookref.SubTitle.Length > 0)
                             line += ", " + bookref.SubTitle;
                         if (bookref.Genres.Count > 0)
                             line += " (" + bookref.Genres.SumText(", ") + ")";
-                        line += " :: [" + bookref.Link + "]";
                         file.WriteLine(line);
+                        for (int i = 0; i < bookref.Parts.Length; i++)
+                        {
+                            var partref = bookref.Parts[i];
+                            line = "   " + (i + 1) + ". " + partref.Name;
+                            if (bookref.PartsHaveDifferentSubTitles && partref.SubTitle != null && partref.SubTitle.Length > 0)
+                                line += ", " + partref.SubTitle;
+                            line += " :: [" + partref.Link + "]";
+                            file.WriteLine(line);
+                        }
                     }
+                    //foreach (var partref in author.Parts.Values)
+                    //{
+                    //    string line = " - " + partref.Name;
+                    //    if (partref.SubTitle != null && partref.SubTitle.Length > 0)
+                    //        line += ", " + partref.SubTitle;
+                    //    if (partref.Genres.Count > 0)
+                    //        line += " (" + partref.Genres.SumText(", ") + ")";
+                    //    line += " :: [" + partref.Link + "]";
+                    //    file.WriteLine(line);
+                    //}
                 }
             }
         }

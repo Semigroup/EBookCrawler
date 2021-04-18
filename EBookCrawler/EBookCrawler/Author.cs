@@ -11,7 +11,7 @@ namespace EBookCrawler
     public class Author
     {
         public SortedDictionary<string, PartReference> Parts { get; set; } = new SortedDictionary<string, PartReference>();
-        public SortedDictionary<string, PartReference> Books { get; set; } = new SortedDictionary<string, PartReference>();
+        public SortedDictionary<string, BookReference> Books { get; set; } = new SortedDictionary<string, BookReference>();
 
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -24,7 +24,9 @@ namespace EBookCrawler
         }
         public void MergeParts()
         {
-           List<BookReference> Books = PartMerger.MergeParts(Parts.Values);
+            List<BookReference> Books = new List<BookReference>(PartMerger.MergeParts(Parts.Values));
+            foreach (var book in Books)
+                this.Books.Add(book.Identifier, book);
         }
     }
 }

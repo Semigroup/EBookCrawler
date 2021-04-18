@@ -30,10 +30,11 @@ namespace EBookCrawler
                 htmlCode = client.DownloadString(IndexSiteURL);
             string fileName = saveDLContent(htmlCode);
             FillLibrary(lib, fileName);
-            lib.WriteOverviewMarkdown("library_overview.md");
 
             foreach (var item in lib.Authors.Values)
                 item.MergeParts();
+
+            lib.WriteOverviewMarkdown("library_overview.md");
         }
         private void FillLibrary(Library library, string filenameOfContent)
         {
@@ -78,7 +79,7 @@ namespace EBookCrawler
                         }
                         break;
                     case Entry.Kind.Book:
-                        PartReference bookRef = entry.GetBookReference();
+                        PartReference bookRef = entry.GetPartReference();
                         string bookIdentifier = bookRef.GetIdentifier();
                         if (currentAuthor.Parts.TryGetValue(bookIdentifier, out PartReference foundBookRef))
                         {
@@ -124,37 +125,10 @@ namespace EBookCrawler
             content = content.Replace("&", "und");
             content = content.Replace("</a>", "</A>");
 
-            //content = content.Replace("&auml;", "ä");
-            //content = content.Replace("&Auml;", "Ä");
-            //content = content.Replace("&euml;", "ë");
-            //content = content.Replace("&iuml;", "ï");
-            //content = content.Replace("&ouml;", "ö");
-            //content = content.Replace("&Ouml;", "Ö");
-            //content = content.Replace("&uuml;", "ü");
-            //content = content.Replace("&Uuml;", "Ü");
-
-            //content = content.Replace("&szlig;", "ß");
-
-            //content = content.Replace("&eacute;", "é");
-            //content = content.Replace("&Eacute;", "É");
-
-            //content = content.Replace("&agrave;", "à");
-            //content = content.Replace("&egrave;", "è");
-
-            //content = content.Replace("&oslash;", "ø");
-
-            //content = content.Replace("&raquo;", "»");
-            //content = content.Replace("&laquo;", "«");
-
-            //content = content.Replace("&ntilde;", "ñ");
-            //content = content.Replace("&ocirc;", "ô");
-
             string fileName = "contentFile";
             string extension = "xml";
             content.Save(fileName, extension);
             return fileName + "." + extension;
-            //return content.Split(new char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
-
         }
     }
 }
