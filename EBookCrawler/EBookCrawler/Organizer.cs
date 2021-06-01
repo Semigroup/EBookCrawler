@@ -25,9 +25,7 @@ namespace EBookCrawler
                 TimeStamp = DateTime.Now
             };
 
-            string htmlCode;
-            using (WebClient client = new WebClient())
-                htmlCode = client.DownloadString(IndexSiteURL);
+            string htmlCode = HTMLHelper.GetSourceCode(IndexSiteURL);
             string fileName = saveDLContent(htmlCode);
             FillLibrary(lib, fileName);
 
@@ -35,6 +33,12 @@ namespace EBookCrawler
                 item.MergeParts();
 
             lib.WriteOverviewMarkdown("library_overview.md");
+            foreach (var author in lib.Authors.Values)
+                foreach (var book in author.Books.Values)
+                    foreach (var part in book.Parts)
+                    {
+                        part.GetPart();
+                    }
         }
         private void FillLibrary(Library library, string filenameOfContent)
         {
@@ -116,14 +120,10 @@ namespace EBookCrawler
         {
             string startBracket = "<DL>";
             string endBracket = "</DL>";
-            int a = htmlCode.IndexOf(startBracket) + 4;
-            int b = htmlCode.IndexOf(endBracket);
-
-            string content = htmlCode.Substring(a, b - a);
-            content = HttpUtility.HtmlDecode(content);
-            content = content.Replace("<BR>", "");
-            content = content.Replace("&", "und");
+            string content = HTMLHelper.ExtractPart(htmlCode, "<DL>", "</DL>");
+            content = HTMLHelper.CleanHTML(content);
             content = content.Replace("</a>", "</A>");
+            content = content.Replace("<BR>", "");
 
             string fileName = "contentFile";
             string extension = "xml";

@@ -55,5 +55,11 @@ namespace EBookCrawler
                 if (!this.Genres.Contains(genre))
                     this.Genres.Add(genre);
         }
+
+        public Part GetPart()
+        {
+            Part part = new Part(this);
+            return part;
+        }
     }
 }

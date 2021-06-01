@@ -8,6 +8,9 @@ namespace EBookCrawler
 {
    public class Chapter
     {
+        public Part Part { get; set; }
+        public string Name { get; set; }
+
         /// <summary>
         /// zero-based
         /// </summary>
