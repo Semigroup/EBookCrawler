@@ -27,6 +27,13 @@ namespace EBookCrawler
 
             return source.Substring(a, b - a);
         }
+        //public static string ExtractBiggestPart(string source, string startToken, string endToken)
+        //{
+        //    int a = source.IndexOf(startToken) + startToken.Length;
+        //    int b = source.LastIndexOf(endToken);
+
+        //    return source.Substring(a, b - a);
+        //}
         public static string CleanHTML(string source)
         {
             string content = HttpUtility.HtmlDecode(source);

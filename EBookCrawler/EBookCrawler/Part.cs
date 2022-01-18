@@ -13,14 +13,26 @@ namespace EBookCrawler
     {
         public readonly Regex EnumerateIndex = new Regex("<li><a href=\"(?<link>[^\"]*)\">" +
             "(?<name>[^<]*)</a></li>");
-        public readonly Regex EnumerateIndexWithPage = new Regex("<li><a href=\"(?<link>[^\"]*)\">" +
-            "<a class=\"pageref\"([^<]*)</a>" + 
+        public readonly Regex EnumerateIndexWithClassPageRef = new Regex("<li><a href=\"(?<link>[^\"]*)\">" +
+            "<a class=\"pageref\"([^<]*)</a>" +
             "(?<name>[^<]*)</a></li>");
         public readonly Regex EnumerateIndexWithSpan = new Regex("<li><a href=\"(?<link>[^\"]*)\">" +
-            "<span class=\"upper\">(?<name>[^<]*)</span></a></li>");
+            "<span class=\"([^\"]*)\">(?<name>[^<]*)</span></a></li>");
+        public readonly Regex EnumerateIndexWithNamePageRef = new Regex("<li><a href=\"(?<link>[^\"]*)\">" +
+            "<a name=\"([^\"]*)\"></a><a class=\"pageref\">([^<]*)</a>" +
+            "(?<name>[^<]*)</a></li>");
+        public readonly Regex EnumerateIndexWithName = new Regex("<li><a href=\"(?<link>[^\"]*)\">" +
+            "<a name=\"([^\"]*)\"></a>" +
+            "(?<name>[^<]*)</a></li>");
+        public readonly Regex EnumerateIndexWithIdName = new Regex("<li><a href=\"(?<link>[^\"]*)\">" +
+           "<a id=\"[^\"]*\" name=\"[^\"]*\"></a>" +
+           "(?<name>[^<]*)</a></li>");
+        public readonly Regex EnumerateIndexWithClassPageRefNameSpan = new Regex("<li><a href=\"(?<link>[^\"]*)\">" +
+           "<a class=\"pageref\" name=\"[^\"]*\">[^<]*</a><span class=\"([^\"]*)\">" +
+           "(?<name>[^<]*)</span></a></li>");
 
         public PartReference Reference { get; set; }
-        public TitlePage TitlePage { get; set; }
+        //public TitlePage TitlePage { get; set; }
         public Chapter[] Chapters { get; set; }
         public bool NotFound { get; set; }
 
@@ -43,7 +55,7 @@ namespace EBookCrawler
             {
                 this.NotFound = true;
                 Console.WriteLine("Indexdatei nicht gefunden: " + indexURL);
-                Console.ReadKey();
+                //Console.ReadKey();
                 return;
             }
             source.Save("test", "xml");
@@ -52,10 +64,26 @@ namespace EBookCrawler
 
 
             IEnumerable<(string link, string name)> toc = getToc(source);
-            foreach (var entry in toc)
-                Console.WriteLine(entry.name + " | " + entry.link);
+            int numbering = 0;
+            Chapters = toc.Select(entry => new Chapter()
+            {
+                Name = entry.name,
+                Number = numbering++,
+                Part = this,
+                URL = HTMLHelper.ExchangeLastDirectory(indexURL, entry.link)
+            }).ToArray();
 
-            //Console.ReadKey();
+
+            foreach (var item in Chapters)
+            {
+                Console.WriteLine();
+                Console.WriteLine(item.Number);
+                Console.WriteLine(item.Name);
+                Console.WriteLine(item.URL);
+                item.LoadText();
+            }
+
+            Console.ReadKey();
         }
 
         private IEnumerable<(string link, string name)> getToc(string source)
@@ -66,9 +94,17 @@ namespace EBookCrawler
 
             MatchCollection matches = EnumerateIndex.Matches(source);
             if (matches.Count == 0)
-                matches = EnumerateIndexWithPage.Matches(source);
+                matches = EnumerateIndexWithClassPageRef.Matches(source);
             if (matches.Count == 0)
                 matches = EnumerateIndexWithSpan.Matches(source);
+            if (matches.Count == 0)
+                matches = EnumerateIndexWithNamePageRef.Matches(source);
+            if (matches.Count == 0)
+                matches = EnumerateIndexWithName.Matches(source);
+            if (matches.Count == 0)
+                matches = EnumerateIndexWithIdName.Matches(source);
+            if (matches.Count == 0)
+                matches = EnumerateIndexWithClassPageRefNameSpan.Matches(source);
             if (matches.Count == 0)
                 throw new NotImplementedException();
 
