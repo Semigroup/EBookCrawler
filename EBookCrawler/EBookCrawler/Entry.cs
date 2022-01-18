@@ -114,7 +114,14 @@ namespace EBookCrawler
                     case 2:
                         return (split[1].Trim(), split[0].Trim());
                     default:
-                        throw new NotImplementedException("Entry.GetAuthorName: " + authorName + " hat zu viele Kommata!");
+                        if (authorName.Contains("d.i."))
+                        {
+                            string realName = authorName.Replace('(', ' ').Replace(')', ' ')
+                                .Split(new string[] { "d.i." }, StringSplitOptions.RemoveEmptyEntries)[1];
+                            return sepNames(realName);
+                        }
+                        else
+                            throw new NotImplementedException("Entry.GetAuthorName: " + authorName + " hat zu viele Kommata!");
                 }
             }
         }
@@ -145,6 +152,8 @@ namespace EBookCrawler
         public Kind GetKind()
         {
             if (Data.Count == 0)
+                return Kind.Empty;
+            if (Data.Count == 1 && this.Data[0].HRef == null)
                 return Kind.Empty;
             if (Data[1].HRef != null)
                 return Kind.Book;

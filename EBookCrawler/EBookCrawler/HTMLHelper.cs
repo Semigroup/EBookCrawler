@@ -34,5 +34,10 @@ namespace EBookCrawler
             return content;
         }
         public static string RemoveNewLine(string source) => source.Replace("\n", "").Replace("\r", "");
+
+        public static string ExchangeLastDirectory (string uri, string newDirectory)
+        {
+            return uri.Substring(0, uri.LastIndexOf('/')+1) + newDirectory;
+        }
     }
 }

@@ -118,12 +118,11 @@ namespace EBookCrawler
         }
         private string saveDLContent(string htmlCode)
         {
-            string startBracket = "<DL>";
-            string endBracket = "</DL>";
             string content = HTMLHelper.ExtractPart(htmlCode, "<DL>", "</DL>");
             content = HTMLHelper.CleanHTML(content);
             content = content.Replace("</a>", "</A>");
             content = content.Replace("<BR>", "");
+            content = content.Replace("<<", "<");
 
             string fileName = "contentFile";
             string extension = "xml";
