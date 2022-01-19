@@ -11,23 +11,23 @@ namespace EBookCrawler
 {
     public class Part
     {
-        public readonly Regex EnumerateIndex = new Regex("<li><a href=\"(?<link>[^\"]*)\">" +
+        public static readonly Regex EnumerateIndex = new Regex("<li><a href=\"(?<link>[^\"]*)\">" +
             "(?<name>[^<]*)</a></li>");
-        public readonly Regex EnumerateIndexWithClassPageRef = new Regex("<li><a href=\"(?<link>[^\"]*)\">" +
+        public static readonly Regex EnumerateIndexWithClassPageRef = new Regex("<li><a href=\"(?<link>[^\"]*)\">" +
             "<a class=\"pageref\"([^<]*)</a>" +
             "(?<name>[^<]*)</a></li>");
-        public readonly Regex EnumerateIndexWithSpan = new Regex("<li><a href=\"(?<link>[^\"]*)\">" +
+        public static readonly Regex EnumerateIndexWithSpan = new Regex("<li><a href=\"(?<link>[^\"]*)\">" +
             "<span class=\"([^\"]*)\">(?<name>[^<]*)</span></a></li>");
-        public readonly Regex EnumerateIndexWithNamePageRef = new Regex("<li><a href=\"(?<link>[^\"]*)\">" +
+        public static readonly Regex EnumerateIndexWithNamePageRef = new Regex("<li><a href=\"(?<link>[^\"]*)\">" +
             "<a name=\"([^\"]*)\"></a><a class=\"pageref\">([^<]*)</a>" +
             "(?<name>[^<]*)</a></li>");
-        public readonly Regex EnumerateIndexWithName = new Regex("<li><a href=\"(?<link>[^\"]*)\">" +
+        public static readonly Regex EnumerateIndexWithName = new Regex("<li><a href=\"(?<link>[^\"]*)\">" +
             "<a name=\"([^\"]*)\"></a>" +
             "(?<name>[^<]*)</a></li>");
-        public readonly Regex EnumerateIndexWithIdName = new Regex("<li><a href=\"(?<link>[^\"]*)\">" +
+        public static readonly Regex EnumerateIndexWithIdName = new Regex("<li><a href=\"(?<link>[^\"]*)\">" +
            "<a id=\"[^\"]*\" name=\"[^\"]*\"></a>" +
            "(?<name>[^<]*)</a></li>");
-        public readonly Regex EnumerateIndexWithClassPageRefNameSpan = new Regex("<li><a href=\"(?<link>[^\"]*)\">" +
+        public static readonly Regex EnumerateIndexWithClassPageRefNameSpan = new Regex("<li><a href=\"(?<link>[^\"]*)\">" +
            "<a class=\"pageref\" name=\"[^\"]*\">[^<]*</a><span class=\"([^\"]*)\">" +
            "(?<name>[^<]*)</span></a></li>");
 
@@ -83,7 +83,7 @@ namespace EBookCrawler
                 item.LoadText();
             }
 
-            Console.ReadKey();
+            //Console.ReadKey();
         }
 
         private IEnumerable<(string link, string name)> getToc(string source)
