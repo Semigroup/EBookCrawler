@@ -32,17 +32,32 @@ namespace EBookCrawler
         {
             var source = HTMLHelper.GetSourceCode(URL);
             File.WriteAllText("source.xml", source);
+            source = HTMLHelper.RemoveHTMLComments(source);
             var text = ExtractParagraphs(source);
             File.WriteAllText("text.xml", text);
             //Console.ReadKey();
 
-            var parser = new Parsing.Parser();
-            parser.Parse(text);
-            if (parser.FoundError)
+            //var parser = new Parsing.Parser();
+            //parser.Parse(text);
+            //if (parser.FoundError)
+            //{
+            //    Console.WriteLine(parser.GetState());
+            //    Console.ReadKey();
+            //}
+            var tokenizer = new Parsing.Tokenizer();
+            tokenizer.Tokenize(text);
+            if (tokenizer.FoundError)
             {
-                Console.WriteLine(parser.GetState());
+                Console.WriteLine(tokenizer.GetState());
                 Console.ReadKey();
             }
+            //else
+            //{
+            //    using (var fs = File.CreateText("tokens.md"))
+            //        foreach (var item in tokenizer.Tokens)
+            //            fs.WriteLine(item.ToString());
+            //    Console.ReadKey();
+            //}
         }
         public string ExtractParagraphs(string source)
         {
@@ -53,8 +68,6 @@ namespace EBookCrawler
             {
                 preLast = last;
                 last = match;
-
-                
             }
             if (last == null)
             {

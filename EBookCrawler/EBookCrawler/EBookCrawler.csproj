@@ -49,11 +49,15 @@
     <Compile Include="BookReference.cs" />
     <Compile Include="HTMLHelper.cs" />
     <Compile Include="Merging\Group.cs" />
+    <Compile Include="Parsing\HTMLToken.cs" />
+    <Compile Include="Parsing\RawToken.cs" />
+    <Compile Include="Parsing\Token.cs" />
     <Compile Include="Merging\TokenConverter.cs" />
     <Compile Include="Merging\TokenizedTitle.cs" />
     <Compile Include="Merging\PartMerger.cs" />
     <Compile Include="Parsing\HTMLElement.cs" />
     <Compile Include="Parsing\Parser.cs" />
+    <Compile Include="Parsing\Tokenizer.cs" />
     <Compile Include="PartReference.cs" />
     <Compile Include="Chapter.cs" />
     <Compile Include="Entry.cs" />

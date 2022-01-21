@@ -36,15 +36,60 @@ namespace EBookCrawler
         //}
         public static string CleanHTML(string source)
         {
+            source = source.Replace("&gt;", "›").Replace("&lt;", "‹");
             string content = HttpUtility.HtmlDecode(source);
             content = content.Replace("&", "und");
             return content;
         }
         public static string RemoveNewLine(string source) => source.Replace("\n", "").Replace("\r", "");
-
-        public static string ExchangeLastDirectory (string uri, string newDirectory)
+        public static string RemoveHTMLComments(string source)
         {
-            return uri.Substring(0, uri.LastIndexOf('/')+1) + newDirectory;
+            int pos = 0;
+
+            StringBuilder sb = new StringBuilder();
+
+            bool searchStart()
+            {
+                while (pos < source.Length)
+                {
+                    if (source[pos] == '<' && pos + 3 < source.Length && source.Substring(pos, 4) == "<!--")
+                        return true;
+                    pos++;
+                }
+                return false;
+            }
+            bool searchEnd()
+            {
+                while (pos < source.Length)
+                {
+                    if (source[pos] == '-' && pos + 2 < source.Length && source.Substring(pos, 3) == "-->")
+                        return true;
+                    pos++;
+                }
+                return false;
+            }
+
+            int start = 0;
+            while (searchStart())
+            {
+                sb.Append(source.Substring(start, pos - start));
+                pos += 4;
+                if (searchEnd())
+                {
+                    pos += 3;
+                    start = pos;
+                }
+                else
+                    return sb.ToString();
+            }
+            sb.Append(source.Substring(start));
+
+            return sb.ToString();
+        }
+
+        public static string ExchangeLastDirectory(string uri, string newDirectory)
+        {
+            return uri.Substring(0, uri.LastIndexOf('/') + 1) + newDirectory;
         }
     }
 }
