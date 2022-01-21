@@ -95,8 +95,6 @@ namespace EBookCrawler.Parsing
         {
             if (CurrentSymbol == '<')
                 ParseHTMLToken();
-            else if (CurrentSymbol == '>')
-                WriteError("Unexpected >");
             else
             {
                 var raw = new RawToken(this);
@@ -104,10 +102,14 @@ namespace EBookCrawler.Parsing
                 while (CanContinue())
                     if (CurrentSymbol == '<')
                         break;
-                    else if (CurrentSymbol == '>')
+                    else if (CurrentSymbol == '>') 
                     {
-                        WriteError("Unexpected >");
-                        return;
+                        //We tolerate those errors because they happen too often
+                        //    WriteError("Unexpected >");
+                        //    return;
+                        Console.WriteLine("Error: Unexpected > at Line " + LineNumber + ", pos " + PositionInLine);
+                        Next();
+                        raw.Length++;
                     }
                     else
                     {
