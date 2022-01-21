@@ -35,6 +35,14 @@ namespace EBookCrawler
             var text = ExtractParagraphs(source);
             File.WriteAllText("text.xml", text);
             //Console.ReadKey();
+
+            var parser = new Parsing.Parser();
+            parser.Parse(text);
+            if (parser.FoundError)
+            {
+                Console.WriteLine(parser.GetState());
+                Console.ReadKey();
+            }
         }
         public string ExtractParagraphs(string source)
         {
