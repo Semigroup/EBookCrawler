@@ -8,6 +8,8 @@ using System.Xml;
 using Assistment.Extensions;
 using System.IO;
 using System.Web;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace EBookCrawler
 {
@@ -17,33 +19,58 @@ namespace EBookCrawler
     public class Organizer
     {
         public string IndexSiteURL { get; set; } = "https://www.projekt-gutenberg.org/info/texte/allworka.html";
+        public Library Library { get; set; }
 
-        public void LoadLibrary()
+        public void DownloadLibrary()
         {
-            Library lib = new Library()
+            Library = new Library()
             {
                 TimeStamp = DateTime.Now
             };
 
             string htmlCode = HTMLHelper.GetSourceCode(IndexSiteURL);
-            string fileName = saveDLContent(htmlCode);
-            FillLibrary(lib, fileName);
+            string fileName = "contentFile.xml";
+            SaveDLContent(htmlCode, fileName);
+            FillLibrary(Library, fileName);
 
-            foreach (var item in lib.Authors.Values)
+            foreach (var item in Library.Authors.Values)
                 item.MergeParts();
 
-            lib.WriteOverviewMarkdown("library_overview.md");
-            foreach (var author in lib.Authors.Values)
+            foreach (var author in Library.Authors.Values)
                 foreach (var book in author.Books.Values)
                     foreach (var part in book.Parts)
-                    {
-                        part.GetPart();
-                    }
+                        part.LoadPart();
+        }
+
+        public void SaveLibrary(string root)
+        {
+            var formatter = new BinaryFormatter();
+            using (var fs = new FileStream(Path.Combine(root, "library.file"), FileMode.Create))
+                formatter.Serialize(fs, Library);
+            Library.WriteOverviewMarkdown(Path.Combine(root, "overview.md"));
+            Library.DownloadChapters(root);
+        }
+        public void LoadLibrary(string root)
+        {
+            var formatter = new BinaryFormatter();
+            using (var fs = new FileStream(Path.Combine(root, "library.file"), FileMode.Open))
+                Library = formatter.Deserialize(fs) as Library;
+        }
+
+        private static void SaveDLContent(string htmlCode, string path)
+        {
+            string content = HTMLHelper.ExtractPart(htmlCode, "<DL>", "</DL>");
+            content = HTMLHelper.CleanHTML(content);
+            content = content.Replace("</a>", "</A>");
+            content = content.Replace("<BR>", "");
+            content = content.Replace("<<", "<");
+
+            File.WriteAllText(path, content);
         }
         private void FillLibrary(Library library, string filenameOfContent)
         {
             Author currentAuthor = null;
-            foreach (var entry in getEntries(filenameOfContent))
+            foreach (var entry in HTMLHelper.GetEntries(filenameOfContent))
             {
                 switch (entry.GetKind())
                 {
@@ -63,11 +90,11 @@ namespace EBookCrawler
                                 library.Add(currentAuthor);
                             }
                             else
-                                Console.WriteLine("Found the same author twice: " + entry);
+                                Logger.LogLine("Found the same author twice: " + entry);
                         }
                         break;
                     case Entry.Kind.IrregularAuthor:
-                        Console.WriteLine("Irregular Author: " + entry);
+                        Logger.LogLine("Irregular Author: " + entry);
                         {
                             (string firstName, string lastName) = entry.GetAuthorName();
                             string identifier = Author.GetIdentifier(firstName, lastName);
@@ -88,46 +115,21 @@ namespace EBookCrawler
                         if (currentAuthor.Parts.TryGetValue(bookIdentifier, out PartReference foundBookRef))
                         {
                             foundBookRef.Merge(bookRef);
-                            Console.WriteLine("Found the same book twice: " + entry);
+                            Logger.LogLine("Found the same book twice: " + entry);
                         }
                         else
                             currentAuthor.Parts.Add(bookIdentifier, bookRef);
                         break;
                     case Entry.Kind.Empty:
-                        Console.WriteLine("Empty Entry: " + entry);
+                        Logger.LogLine("Empty Entry: " + entry);
                         break;
                     case Entry.Kind.BookWithBrokenLink:
-                        Console.WriteLine("Book broken Link: " + entry);
+                        Logger.LogLine("Book broken Link: " + entry);
                         break;
                     default:
                         throw new NotImplementedException("Organizer.LoadLibrary(): New Kind " + entry.GetKind() + " !");
                 }
             }
-        }
-        private IEnumerable<Entry> getEntries(string filenameOfContent)
-        {
-            XmlReaderSettings settings = new XmlReaderSettings();
-            settings.ConformanceLevel = ConformanceLevel.Fragment;
-            XmlReader reader = XmlReader.Create(File.OpenText(filenameOfContent), settings);
-            while (!reader.EOF)
-            {
-                Entry e = new Entry(reader);
-                yield return e;
-            }
-            yield break;
-        }
-        private string saveDLContent(string htmlCode)
-        {
-            string content = HTMLHelper.ExtractPart(htmlCode, "<DL>", "</DL>");
-            content = HTMLHelper.CleanHTML(content);
-            content = content.Replace("</a>", "</A>");
-            content = content.Replace("<BR>", "");
-            content = content.Replace("<<", "<");
-
-            string fileName = "contentFile";
-            string extension = "xml";
-            content.Save(fileName, extension);
-            return fileName + "." + extension;
         }
     }
 }

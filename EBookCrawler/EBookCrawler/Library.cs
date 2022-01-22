@@ -9,6 +9,7 @@ using Assistment.Extensions;
 
 namespace EBookCrawler
 {
+    [Serializable]
     public class Library
     {
         public DateTime TimeStamp { get; set; }
@@ -21,10 +22,18 @@ namespace EBookCrawler
             using (StreamWriter file = File.CreateText(filename))
             {
                 file.WriteLine("# Library");
-                file.WriteLine("# Date: " + TimeStamp);
+                file.WriteLine("Date: " + TimeStamp);
+                char currentLetter = (char)0;
                 foreach (var author in Authors.Values)
                 {
                     file.WriteLine();
+                    char lastName = author.LastName.ToLower()[0];
+                    if (lastName != currentLetter)
+                    {
+                        currentLetter = lastName;
+                        file.WriteLine("# " + currentLetter.ToString().ToUpper());
+                    }
+
                     file.WriteLine("## " + author.FirstName + " " + author.LastName + " (" + author.Parts.Count + ")");
                     foreach (var bookref in author.Books.Values)
                     {
@@ -40,6 +49,11 @@ namespace EBookCrawler
                             line = "   " + (i + 1) + ". " + partref.Name;
                             if (bookref.PartsHaveDifferentSubTitles && partref.SubTitle != null && partref.SubTitle.Length > 0)
                                 line += ", " + partref.SubTitle;
+                            var part = bookref.Parts[i].Part;
+                            if (part.NotFound)
+                                line += " **Index Datei nicht gefunden!**";
+                            else
+                                line += ", " + part.Chapters.Length + " Kapitel";
                             line += " :: [" + partref.Link + "]";
                             file.WriteLine(line);
                         }
@@ -62,6 +76,13 @@ namespace EBookCrawler
             XmlSerializer serializer = new XmlSerializer(this.GetType());
             using (FileStream file = File.Create(filename))
                 serializer.Serialize(file, this);
+        }
+        public void DownloadChapters(string root)
+        {
+            foreach (var author in Authors.Values)
+                foreach (var bookref in author.Books.Values)
+                    foreach (var partref in bookref.Parts)
+                        partref.Part.SaveChapters(root);
         }
     }
 }

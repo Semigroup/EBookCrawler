@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace EBookCrawler
 {
+    [Serializable]
     public class BookReference
     {
         public string Name { get; set; }

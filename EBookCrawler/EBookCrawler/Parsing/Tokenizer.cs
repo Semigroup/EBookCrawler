@@ -254,25 +254,26 @@ namespace EBookCrawler.Parsing
         private string RetrieveValue()
         {
             SkipWhiteSpaces();
-            if (CurrentSymbol != '"')
+            if (CurrentSymbol != '"' && CurrentSymbol != '\'')
             {
-                WriteError("Expected \"");
+                WriteError("Expected \" or '");
                 return null;
             }
+            var endSymbol = CurrentSymbol;
             Next();
             int start = CurrentPosition;
             int length = 0;
 
             while (CanContinue())
             {
-                if (CurrentSymbol == '\"')
+                if (CurrentSymbol == endSymbol)
                     break;
                 length++;
                 Next();
             }
-            if (CurrentSymbol != '"')
+            if (CurrentSymbol != endSymbol)
             {
-                WriteError("Current Quotation not closed");
+                WriteError("Current Quotation not closed. Could not find " + endSymbol);
                 return null;
             }
             Next();

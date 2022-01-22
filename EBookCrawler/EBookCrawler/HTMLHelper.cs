@@ -5,6 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Net;
+using System.Xml;
+using System.IO;
+
 
 namespace EBookCrawler
 {
@@ -27,13 +30,6 @@ namespace EBookCrawler
 
             return source.Substring(a, b - a);
         }
-        //public static string ExtractBiggestPart(string source, string startToken, string endToken)
-        //{
-        //    int a = source.IndexOf(startToken) + startToken.Length;
-        //    int b = source.LastIndexOf(endToken);
-
-        //    return source.Substring(a, b - a);
-        //}
         public static string CleanHTML(string source)
         {
             source = source.Replace("&gt;", "›").Replace("&lt;", "‹");
@@ -86,10 +82,22 @@ namespace EBookCrawler
 
             return sb.ToString();
         }
-
         public static string ExchangeLastDirectory(string uri, string newDirectory)
         {
             return uri.Substring(0, uri.LastIndexOf('/') + 1) + newDirectory;
         }
+        public static IEnumerable<Entry> GetEntries(string filenameOfContent)
+        {
+            XmlReaderSettings settings = new XmlReaderSettings();
+            settings.ConformanceLevel = ConformanceLevel.Fragment;
+            XmlReader reader = XmlReader.Create(File.OpenText(filenameOfContent), settings);
+            while (!reader.EOF)
+            {
+                Entry e = new Entry(reader);
+                yield return e;
+            }
+            yield break;
+        }
+       
     }
 }

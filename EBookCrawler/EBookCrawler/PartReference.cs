@@ -7,12 +7,14 @@ using Assistment.Extensions;
 
 namespace EBookCrawler
 {
+    [Serializable]
     public class PartReference
     {
         public string Name { get; set; }
         public string SubTitle { get; set; }
         public string Link { get; set; }
         public List<string> Genres { get; set; } = new List<string>();
+        public Part Part { get; set; }
 
         public string GetIdentifier() => GetIdentifier(this.Name, this.SubTitle, this.Link);
         public static string GetIdentifier(string Name, string SubTitle, string Link)
@@ -55,11 +57,9 @@ namespace EBookCrawler
                 if (!this.Genres.Contains(genre))
                     this.Genres.Add(genre);
         }
-
-        public Part GetPart()
+        public void LoadPart()
         {
-            Part part = new Part(this);
-            return part;
+            this.Part = new Part(this);
         }
     }
 }

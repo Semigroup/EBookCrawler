@@ -8,6 +8,7 @@ using EBookCrawler.Merging;
 
 namespace EBookCrawler
 {
+    [Serializable]
     public class Author
     {
         public SortedDictionary<string, PartReference> Parts { get; set; } = new SortedDictionary<string, PartReference>();

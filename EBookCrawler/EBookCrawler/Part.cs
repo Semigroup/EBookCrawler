@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Assistment.Extensions;
 using System.Text.RegularExpressions;
-
+using System.IO;
 
 namespace EBookCrawler
 {
+    [Serializable]
     public class Part
     {
         public static readonly Regex EnumerateIndex = new Regex("<li><a href=\"(?<link>[^\"]*)\">" +
@@ -32,7 +33,6 @@ namespace EBookCrawler
            "(?<name>[^<]*)</span></a></li>");
 
         public PartReference Reference { get; set; }
-        //public TitlePage TitlePage { get; set; }
         public Chapter[] Chapters { get; set; }
         public bool NotFound { get; set; }
 
@@ -44,7 +44,7 @@ namespace EBookCrawler
             Console.WriteLine(Reference.Link);
 
             string indexURL = HTMLHelper.ExchangeLastDirectory(Reference.Link, "index.html");
-            Console.WriteLine(indexURL);
+            //Console.WriteLine(indexURL);
 
             string source;
             try
@@ -54,16 +54,14 @@ namespace EBookCrawler
             catch (Exception)
             {
                 this.NotFound = true;
-                Console.WriteLine("Indexdatei nicht gefunden: " + indexURL);
-                //Console.ReadKey();
+                Logger.LogLine("Indexdatei nicht gefunden: " + indexURL);
                 return;
             }
-            source.Save("test", "xml");
-            //source = HTMLHelper.ExtractPart(source, "<div class=\"dropdown-content\"><h4>Inhalt</h4>", "</div></div><a style=\"float: right;\"");
+            source.Save("indexdatei", "xml");
             source = HTMLHelper.ExtractPart(source, "<h3>Inhaltsverzeichnis</h3><br/>", "</p></body>");
 
 
-            IEnumerable<(string link, string name)> toc = getToc(source);
+            IEnumerable<(string link, string name)> toc = GetToc(source);
             int numbering = 0;
             Chapters = toc.Select(entry => new Chapter()
             {
@@ -74,19 +72,36 @@ namespace EBookCrawler
             }).ToArray();
 
 
-            foreach (var item in Chapters)
-            {
-                Console.WriteLine();
-                Console.WriteLine(item.Number);
-                Console.WriteLine(item.Name);
-                Console.WriteLine(item.URL);
-                item.LoadText();
-            }
+            //foreach (var item in Chapters)
+            //{
+            //    Console.WriteLine();
+            //    Console.WriteLine(item.Number);
+            //    Console.WriteLine(item.Name);
+            //    Console.WriteLine(item.URL);
+            //    item.LoadText();
+            //}
 
             //Console.ReadKey();
         }
+        public void SaveChapters(string root)
+        {
+            if (Chapters == null)
+                return;
+            foreach (var ch in Chapters)
+            {
+                string url = ch.URL;
+                string source = HTMLHelper.GetSourceCode(url);
+                string head = "https://www.projekt-gutenberg.org";
+                string path = Path.Combine(root, url.Substring(head.Length));
+                string directory = Path.GetDirectoryName(path);
+                if (!Directory.Exists(directory))
+                    Directory.CreateDirectory(directory);
+                File.WriteAllText(path, source);
+                Console.WriteLine("Written " + path);
+            }
+        }
 
-        private IEnumerable<(string link, string name)> getToc(string source)
+        private IEnumerable<(string link, string name)> GetToc(string source)
         {
             source = HTMLHelper.ExtractPart(source, "<ul>", "</ul>");
             source = HTMLHelper.CleanHTML(source);
