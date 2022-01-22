@@ -45,13 +45,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Author.cs" />
-    <Compile Include="Book.cs" />
     <Compile Include="BookReference.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="HTMLHelper.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Merging\Group.cs" />
     <Compile Include="Parsing\HTMLToken.cs" />
+    <Compile Include="Parsing\Parser.cs" />
     <Compile Include="Parsing\RawToken.cs" />
     <Compile Include="Parsing\Token.cs" />
     <Compile Include="Merging\TokenConverter.cs" />
@@ -66,8 +66,13 @@
     <Compile Include="Part.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Texting\Document.cs" />
+    <Compile Include="Texting\Footnote.cs" />
     <Compile Include="Texting\Header.cs" />
+    <Compile Include="Texting\HorizontalRule.cs" />
+    <Compile Include="Texting\Link.cs" />
     <Compile Include="Texting\Paragraph.cs" />
+    <Compile Include="Texting\Table.cs" />
     <Compile Include="Texting\TextElement.cs" />
     <Compile Include="Texting\WhiteSpace.cs" />
     <Compile Include="Texting\Word.cs" />

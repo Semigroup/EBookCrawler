@@ -24,5 +24,15 @@ namespace EBookCrawler
                 hash ^= part.Link.GetHashCode();
             this.Identifier = Name + " | " + SubTitle + " | " + Parts.Length + " @" + hash;
         }
+
+        public void WriteBook(string root)
+        {
+            foreach (var partRef in Parts)
+                foreach (var ch in partRef.Part.Chapters)
+                {
+                    ch.LoadText(root);
+                    ch.ParseText();
+                }
+        }
     }
 }

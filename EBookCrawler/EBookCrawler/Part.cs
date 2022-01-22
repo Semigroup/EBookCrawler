@@ -57,7 +57,7 @@ namespace EBookCrawler
                 Logger.LogLine("Indexdatei nicht gefunden: " + indexURL);
                 return;
             }
-            File.WriteAllText(source, "indexdatei.xml");
+            File.WriteAllText("indexdatei.xml", source);
             source = HTMLHelper.ExtractPart(source, "<h3>Inhaltsverzeichnis</h3><br/>", "</p></body>");
 
             IEnumerable<(string link, string name)> toc = GetToc(source);

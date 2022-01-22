@@ -78,6 +78,8 @@ namespace EBookCrawler
                 Console.WriteLine(tokenizer.GetState());
                 Console.ReadKey();
             }
+            Console.WriteLine("Tokenized " + this.RelativePath);
+            Console.ReadKey();
         }
         public string ExtractParagraphs(string source)
         {

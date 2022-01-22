@@ -12,7 +12,8 @@ namespace EBookCrawler
 
         static void Main(string[] args)
         {
-            TranscriptBooks();
+            //LoadWebLibrary();
+            TranscriptBooks("grüne gesicht");
         }
 
         static void LoadWebLibrary()
@@ -21,10 +22,14 @@ namespace EBookCrawler
             orga.DownloadLibrary();
             orga.SaveLibrary(libRoot);
         }
-        static void TranscriptBooks()
+        static void TranscriptBooks(params string[] books)
         {
             Organizer orga = new Organizer();
             orga.LoadLibrary(libRoot);
+
+            foreach (var name in books)
+                foreach (var book in orga.Library.FindBook(name))
+                    book.WriteBook(libRoot);
         }
     }
 }

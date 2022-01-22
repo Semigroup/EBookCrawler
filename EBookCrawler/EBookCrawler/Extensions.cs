@@ -22,5 +22,11 @@ namespace EBookCrawler
             }
             return sb.ToString();
         }
+
+        public static IEnumerable<B> Map<A,B>(this IEnumerable<A> elements, Func<A,B> mapping)
+        {
+            foreach (var a in elements)
+                yield return mapping(a);
+        }
     }
 }

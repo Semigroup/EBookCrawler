@@ -83,5 +83,14 @@ namespace EBookCrawler
                     foreach (var partref in bookref.Parts)
                         partref.Part.SaveChapters(root, forceDownload);
         }
+
+        public IEnumerable<BookReference> FindBook(string name)
+        {
+            name = name.ToLower();
+            foreach (var author in Authors.Values)
+                foreach (var bookref in author.Books.Values)
+                    if (bookref.Name.ToLower().Contains(name))
+                        yield return bookref;
+        }
     }
 }
