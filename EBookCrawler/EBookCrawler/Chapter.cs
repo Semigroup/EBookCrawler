@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Net;
 
 namespace EBookCrawler
 {
@@ -14,40 +15,64 @@ namespace EBookCrawler
         public Part Part { get; set; }
         public string Name { get; set; }
         public string URL { get; set; }
+        public string RelativePath { get; set; }
+        public const string URL_HEAD = "https://www.projekt-gutenberg.org/";
+        /// <summary>
+        /// zero-based
+        /// </summary>
+        public int Number { get; set; }
+
+        public string Text { get; set; }
 
         public static readonly Regex HRLine = new Regex(
             "<hr size=\"1\" color=\"#808080\">"
             + ".*"
             + "</hr>");
 
-        /// <summary>
-        /// zero-based
-        /// </summary>
-        public int Number { get; set; }
-        /// <summary>
-        /// Text divided in Text Blocks.
-        /// </summary>
-        public string[] Paragraphs { get; set; }
-
-        public void LoadText()
+        public Chapter(Part Part, string Name, string URL, int Number)
         {
-            string source = null;
-            try
-            {
-                 source = HTMLHelper.GetSourceCode(URL);
-            }
-            catch (Exception)
-            {
-                Console.WriteLine("Error: Cannot load " + URL);
-                return;
-            }
-            File.WriteAllText("source.xml", source);
+            this.Part = Part;
+            this.Name = Name;
+            this.URL = URL;
+            this.RelativePath = URL.Substring(URL_HEAD.Length).Replace('/', '\\');
+            this.Number = Number;
+        }
+
+        public void DownloadText(string root, bool forceDownload)
+        {
+            string path = Path.Combine(root, RelativePath);
+            string directory = Path.GetDirectoryName(path);
+            if (!Directory.Exists(directory))
+                Directory.CreateDirectory(directory);
+            if (forceDownload || !File.Exists(path))
+                try
+                {
+                    string source = HTMLHelper.GetSourceCode(URL);
+                    File.WriteAllText(path, source);
+                    Console.WriteLine("Written " + path);
+                }
+                catch (WebException)
+                {
+                    Logger.LogLine("Couldnt download " + URL);
+                }
+                catch (IOException)
+                {
+                    Logger.LogLine("Couldnt write to " + path);
+                }
+            else
+                Console.WriteLine("File already exists: " + path);
+        }
+        public void LoadText(string root)
+        {
+            string source = File.ReadAllText(Path.Combine(root, RelativePath));
             source = HTMLHelper.RemoveHTMLComments(source);
-            var text = ExtractParagraphs(source);
-            File.WriteAllText("text.xml", text);
-      
+            this.Text = ExtractParagraphs(source);
+        }
+        public void ParseText()
+        {
+            File.WriteAllText("text.xml", Text);
             var tokenizer = new Parsing.Tokenizer();
-            tokenizer.Tokenize(text);
+            tokenizer.Tokenize(Text);
             if (tokenizer.FoundError)
             {
                 Console.WriteLine(tokenizer.GetState());
@@ -57,7 +82,7 @@ namespace EBookCrawler
         public string ExtractParagraphs(string source)
         {
             var matches = HRLine.Matches(source);
-            int start = -1, end = -1; 
+            int start = -1, end = -1;
             Match preLast = null, last = null;
             foreach (Match match in matches)
             {
@@ -67,13 +92,13 @@ namespace EBookCrawler
             if (last == null)
             {
                 string startTag = "</TABLE> <BR CLEAR=\"all\"> </DIV>";
-                 start = source.LastIndexOf(startTag) + startTag.Length;
-                 end = source.LastIndexOf("</body>");
+                start = source.LastIndexOf(startTag) + startTag.Length;
+                end = source.LastIndexOf("</body>");
             }
             else
             {
-                 start = preLast.Index + preLast.Length;
-                 end = last.Index;
+                start = preLast.Index + preLast.Length;
+                end = last.Index;
             }
 
             var text = HTMLHelper.CleanHTML(source.Substring(start, end - start));

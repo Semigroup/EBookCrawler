@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using System.IO;
-using Assistment.Extensions;
 
 namespace EBookCrawler
 {
@@ -77,12 +76,12 @@ namespace EBookCrawler
             using (FileStream file = File.Create(filename))
                 serializer.Serialize(file, this);
         }
-        public void DownloadChapters(string root)
+        public void DownloadChapters(string root, bool forceDownload)
         {
             foreach (var author in Authors.Values)
                 foreach (var bookref in author.Books.Values)
                     foreach (var partref in bookref.Parts)
-                        partref.Part.SaveChapters(root);
+                        partref.Part.SaveChapters(root, forceDownload);
         }
     }
 }

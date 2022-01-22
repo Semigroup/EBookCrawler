@@ -47,6 +47,7 @@
     <Compile Include="Author.cs" />
     <Compile Include="Book.cs" />
     <Compile Include="BookReference.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="HTMLHelper.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Merging\Group.cs" />
@@ -65,15 +66,15 @@
     <Compile Include="Part.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Texting\Header.cs" />
+    <Compile Include="Texting\Paragraph.cs" />
+    <Compile Include="Texting\TextElement.cs" />
+    <Compile Include="Texting\WhiteSpace.cs" />
+    <Compile Include="Texting\Word.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Assistment\Assistment\Assistment.csproj">
-      <Project>{0c5ce078-5b2a-4160-b9df-dbd11094422b}</Project>
-      <Name>Assistment</Name>
-    </ProjectReference>
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using System.Xml;
-using Assistment.Extensions;
 using System.IO;
 using System.Web;
 using System.Runtime.Serialization;
@@ -48,7 +47,7 @@ namespace EBookCrawler
             using (var fs = new FileStream(Path.Combine(root, "library.file"), FileMode.Create))
                 formatter.Serialize(fs, Library);
             Library.WriteOverviewMarkdown(Path.Combine(root, "overview.md"));
-            Library.DownloadChapters(root);
+            Library.DownloadChapters(root, false);
         }
         public void LoadLibrary(string root)
         {

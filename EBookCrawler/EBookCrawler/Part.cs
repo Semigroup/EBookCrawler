@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Assistment.Extensions;
 using System.Text.RegularExpressions;
 using System.IO;
 using System.Net;
@@ -58,67 +57,21 @@ namespace EBookCrawler
                 Logger.LogLine("Indexdatei nicht gefunden: " + indexURL);
                 return;
             }
-            source.Save("indexdatei", "xml");
+            File.WriteAllText(source, "indexdatei.xml");
             source = HTMLHelper.ExtractPart(source, "<h3>Inhaltsverzeichnis</h3><br/>", "</p></body>");
-
 
             IEnumerable<(string link, string name)> toc = GetToc(source);
             int numbering = 0;
-            Chapters = toc.Select(entry => new Chapter()
-            {
-                Name = entry.name,
-                Number = numbering++,
-                Part = this,
-                URL = HTMLHelper.ExchangeLastDirectory(indexURL, entry.link)
-            }).ToArray();
-
-
-            //foreach (var item in Chapters)
-            //{
-            //    Console.WriteLine();
-            //    Console.WriteLine(item.Number);
-            //    Console.WriteLine(item.Name);
-            //    Console.WriteLine(item.URL);
-            //    item.LoadText();
-            //}
-
-            //Console.ReadKey();
+            Chapters = toc.Select(entry =>
+            new Chapter(this, entry.name, HTMLHelper.ExchangeLastDirectory(indexURL, entry.link), numbering++)
+            ).ToArray();
         }
-        public void SaveChapters(string root)
+        public void SaveChapters(string root, bool forceDownload)
         {
             if (Chapters == null)
                 return;
             foreach (var ch in Chapters)
-            {
-                string url = ch.URL;
-                string head = "https://www.projekt-gutenberg.org/";
-                string relPath = url.Substring(head.Length).Replace('/', '\\');
-                string path = Path.Combine(root, relPath);
-                string directory = Path.GetDirectoryName(path);
-                if (!Directory.Exists(directory))
-                    Directory.CreateDirectory(directory);
-                if (!File.Exists(path))
-                {
-                    try
-                    {
-                        string source = HTMLHelper.GetSourceCode(url);
-                        File.WriteAllText(path, source);
-                    }
-                    catch (WebException)
-                    {
-                        Logger.LogLine("Couldnt download " + url);
-                        continue;
-                    }
-                    catch (IOException)
-                    {
-                        Logger.LogLine("Couldnt write to " + path);
-                        continue;
-                    }
-                    Console.WriteLine("Written " + path);
-                }
-                else
-                    Console.WriteLine("File already exists: " + path);
-            }
+                ch.DownloadText(root, forceDownload);
         }
 
         private IEnumerable<(string link, string name)> GetToc(string source)
