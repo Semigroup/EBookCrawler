@@ -8,11 +8,11 @@ namespace EBookCrawler
 {
     class Program
     {
-        static readonly string libRoot = "E:\\GutenbergLibrary";
+        static readonly string libRoot = "E:\\GutenbergLibrary\\";
 
         static void Main(string[] args)
         {
-            LoadWebLibrary();
+            TranscriptBooks();
         }
 
         static void LoadWebLibrary()
@@ -20,6 +20,11 @@ namespace EBookCrawler
             Organizer orga = new Organizer();
             orga.DownloadLibrary();
             orga.SaveLibrary(libRoot);
+        }
+        static void TranscriptBooks()
+        {
+            Organizer orga = new Organizer();
+            orga.LoadLibrary(libRoot);
         }
     }
 }

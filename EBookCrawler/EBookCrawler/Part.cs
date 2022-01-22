@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Assistment.Extensions;
 using System.Text.RegularExpressions;
 using System.IO;
+using System.Net;
 
 namespace EBookCrawler
 {
@@ -90,14 +91,33 @@ namespace EBookCrawler
             foreach (var ch in Chapters)
             {
                 string url = ch.URL;
-                string source = HTMLHelper.GetSourceCode(url);
-                string head = "https://www.projekt-gutenberg.org";
-                string path = Path.Combine(root, url.Substring(head.Length));
+                string head = "https://www.projekt-gutenberg.org/";
+                string relPath = url.Substring(head.Length).Replace('/', '\\');
+                string path = Path.Combine(root, relPath);
                 string directory = Path.GetDirectoryName(path);
                 if (!Directory.Exists(directory))
                     Directory.CreateDirectory(directory);
-                File.WriteAllText(path, source);
-                Console.WriteLine("Written " + path);
+                if (!File.Exists(path))
+                {
+                    try
+                    {
+                        string source = HTMLHelper.GetSourceCode(url);
+                        File.WriteAllText(path, source);
+                    }
+                    catch (WebException)
+                    {
+                        Logger.LogLine("Couldnt download " + url);
+                        continue;
+                    }
+                    catch (IOException)
+                    {
+                        Logger.LogLine("Couldnt write to " + path);
+                        continue;
+                    }
+                    Console.WriteLine("Written " + path);
+                }
+                else
+                    Console.WriteLine("File already exists: " + path);
             }
         }
 
