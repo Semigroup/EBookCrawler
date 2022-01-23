@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace EBookCrawler.Texting
 {
-    public class Link : TextElement
+    public class Link : ContainerElement
     {
         public string Name { get; set; }
         public string URL { get; set; }
+        public string ID { get; set; }
+        public string Title { get; set; }
     }
 }

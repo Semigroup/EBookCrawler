@@ -6,10 +6,7 @@ using System.Threading.Tasks;
 
 namespace EBookCrawler.Texting
 {
-    public class Document : TextElement
+    public class Document : ContainerElement
     {
-        public List<TextElement> TextElements { get; set; } = new List<TextElement>();
-
-        public void Add(TextElement textElement) => TextElements.Add(textElement);
     }
 }

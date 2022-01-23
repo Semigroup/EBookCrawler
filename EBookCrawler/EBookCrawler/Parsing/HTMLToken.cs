@@ -23,6 +23,8 @@ namespace EBookCrawler.Parsing
             {
                 return Name + ": " + Value;
             }
+
+            public double ValueAsDouble() => double.Parse(Value);
         }
 
         public override bool IsRaw => false;

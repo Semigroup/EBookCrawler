@@ -79,7 +79,12 @@ namespace EBookCrawler
                 Console.ReadKey();
             }
             Console.WriteLine("Tokenized " + this.RelativePath);
-            Console.ReadKey();
+
+            var parser = new Parsing.Parser();
+            var doc = parser.ParseDocument(tokenizer.Tokens, Text);
+            Console.WriteLine("Parsed " + this.RelativePath);
+
+            //Console.ReadKey();
         }
         public string ExtractParagraphs(string source)
         {

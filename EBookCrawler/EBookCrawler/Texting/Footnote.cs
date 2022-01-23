@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EBookCrawler.Parsing;
 
 namespace EBookCrawler.Texting
 {
-  public  class Footnote : TextElement
+    public class Footnote : ContainerElement
     {
-        public string Value { get; set; }
+        public Footnote(string tooltip)
+        {
+            this.Add(Parser.SplitRaw(tooltip, new FontManager.Mode()));
+        }
     }
 }

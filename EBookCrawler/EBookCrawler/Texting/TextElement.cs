@@ -8,5 +8,6 @@ namespace EBookCrawler.Texting
 {
     public abstract class TextElement
     {
+        public string Class { get; set; }
     }
 }

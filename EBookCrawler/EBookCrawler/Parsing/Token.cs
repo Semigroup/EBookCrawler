@@ -20,6 +20,21 @@ namespace EBookCrawler.Parsing
             Span,
             Link,
             LineBreak,
+            Bold,
+            Italic,
+            Emphasis,
+            TeleType,
+            Div,
+            Image,
+            Font,
+            Big,
+            Small,
+            Super,
+            Sub,
+            Verbatim,
+            BlockQuote,
+            List,
+            ListItem
         }
 
         public abstract bool IsRaw { get; }
@@ -61,11 +76,42 @@ namespace EBookCrawler.Parsing
                 case "h5":
                     return Kind.Header;
                 case "hr":
-                    return Kind.HorizonatlRuling;
+                    return Kind.HorizontalRuling;
                 case "span":
                     return Kind.Span;
                 case "a":
                     return Kind.Link;
+                case "i":
+                    return Kind.Italic;
+                case "b":
+                    return Kind.Bold;
+                case "div":
+                    return Kind.Div;
+                case "img":
+                    return Kind.Image;
+                case "font":
+                    return Kind.Font;
+                case "tt":
+                    return Kind.TeleType;
+                case "em":
+                    return Kind.Emphasis;
+                case "sup":
+                    return Kind.Super;
+                case "sub":
+                    return Kind.Sub;
+                case "pre":
+                    return Kind.Verbatim;
+                case "blockquote":
+                    return Kind.BlockQuote;
+                case "ol":
+                case "ul":
+                    return Kind.List;
+                case "li":
+                    return Kind.ListItem;
+                case "big":
+                    return Kind.Big;
+                case "small":
+                    return Kind.Small;
 
                 default:
                     throw new NotImplementedException();

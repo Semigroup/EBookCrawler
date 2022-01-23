@@ -34,5 +34,10 @@ namespace EBookCrawler
                     ch.ParseText();
                 }
         }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

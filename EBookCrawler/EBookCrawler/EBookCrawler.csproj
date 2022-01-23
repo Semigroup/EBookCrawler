@@ -66,14 +66,23 @@
     <Compile Include="Part.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Texting\BlockQuote.cs" />
+    <Compile Include="Texting\ContainerElement.cs" />
+    <Compile Include="Texting\Div.cs" />
     <Compile Include="Texting\Document.cs" />
+    <Compile Include="Texting\FontManager.cs" />
     <Compile Include="Texting\Footnote.cs" />
     <Compile Include="Texting\Header.cs" />
     <Compile Include="Texting\HorizontalRule.cs" />
+    <Compile Include="Texting\Image.cs" />
     <Compile Include="Texting\Link.cs" />
     <Compile Include="Texting\Paragraph.cs" />
+    <Compile Include="Texting\SubIndex.cs" />
+    <Compile Include="Texting\SuperIndex.cs" />
     <Compile Include="Texting\Table.cs" />
     <Compile Include="Texting\TextElement.cs" />
+    <Compile Include="Texting\TextList.cs" />
+    <Compile Include="Texting\Verbatim.cs" />
     <Compile Include="Texting\WhiteSpace.cs" />
     <Compile Include="Texting\Word.cs" />
   </ItemGroup>
