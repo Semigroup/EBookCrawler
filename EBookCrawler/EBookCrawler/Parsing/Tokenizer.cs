@@ -97,12 +97,17 @@ namespace EBookCrawler.Parsing
                 ParseHTMLToken();
             else
             {
-                var raw = new RawToken(this);
+                var raw = new Token(this)
+                {
+                    Tag = "raw",
+                    IsBeginning = true,
+                    IsEnd = true
+                };
                 this.Tokens.Add(raw);
                 while (CanContinue())
                     if (CurrentSymbol == '<')
                         break;
-                    else if (CurrentSymbol == '>') 
+                    else if (CurrentSymbol == '>')
                     {
                         //We tolerate those errors because they happen too often
                         //    WriteError("Unexpected >");
@@ -126,7 +131,7 @@ namespace EBookCrawler.Parsing
                 WriteError("Expected <");
                 return;
             }
-            HTMLToken html = new HTMLToken(this);
+            Token html = new Token(this);
             this.Tokens.Add(html);
             Next();
             if (CurrentSymbol == '/')
@@ -208,21 +213,21 @@ namespace EBookCrawler.Parsing
             }
             return Text.Substring(start, length);
         }
-        private HTMLToken.Attribute RetrieveAttribute()
+        private Token.Attribute RetrieveAttribute()
         {
             string name = RetrieveAttributeName();
             if (FoundError)
-                return new HTMLToken.Attribute();
+                return new Token.Attribute();
             SkipWhiteSpaces();
 
             if (CurrentSymbol != '=')
             {
                 WriteError("Expected =");
-                return new HTMLToken.Attribute(name, null);
+                return new Token.Attribute(name, null);
             }
             Next();
             string value = RetrieveValue();
-            return new HTMLToken.Attribute(name, value);
+            return new Token.Attribute(name, value);
         }
         private string RetrieveAttributeName()
         {

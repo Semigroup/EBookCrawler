@@ -10,12 +10,11 @@ namespace EBookCrawler.Parsing
     {
         public Token[] Input { get; set; }
         public List<Token> Output { get; set; }
-        private Stack<HTMLToken> OpenTokens { get; set; }
-        private Stack<HTMLToken> Overlapping { get; set; }
-        private Stack<HTMLToken> Temp { get; set; }
-        private Stack<HTMLToken> NewOpenings { get; set; }
+        private Stack<Token> OpenTokens { get; set; }
+        private Stack<Token> Overlapping { get; set; }
+        private Stack<Token> Temp { get; set; }
+        private Stack<Token> NewOpenings { get; set; }
         private int Position;
-        private HTMLToken HTMLToken;
         private Token CurrentToken;
         private bool IsOpening;
         private bool IsClosing;
@@ -27,46 +26,52 @@ namespace EBookCrawler.Parsing
             if (Position < Input.Length)
             {
                 CurrentToken = Input[Position];
-                HTMLToken = CurrentToken as HTMLToken;
-                if (HTMLToken == null)
-                    IsOpening = IsClosing = false;
-                else
-                {
-                    IsOpening = !HTMLToken.IsEnd;
-                    IsClosing = !HTMLToken.IsBeginning;
-                }
+                IsOpening = !CurrentToken.IsEnd;
+                IsClosing = !CurrentToken.IsBeginning;
+            }
+        }
+
+        private void Reset(IEnumerable<Token> input)
+        {
+            this.FoundError = false;
+            this.Input = input.ToArray();
+            this.Output = new List<Token>();
+            this.OpenTokens = new Stack<Token>();
+            this.Overlapping = new Stack<Token>();
+            this.Temp = new Stack<Token>();
+            this.NewOpenings = new Stack<Token>();
+            this.Position = 0;
+
+            CurrentToken = Input[Position];
+            if (Input.Length > 0)
+            {
+                IsOpening = !CurrentToken.IsEnd;
+                IsClosing = !CurrentToken.IsBeginning;
             }
         }
 
         public void Repair(IEnumerable<Token> input)
         {
-            this.FoundError = false;
-            this.Input = input.ToArray();
-            this.Output = new List<Token>();
-            this.OpenTokens = new Stack<HTMLToken>();
-            this.Overlapping = new Stack<HTMLToken>();
-            this.Temp = new Stack<HTMLToken>();
-            this.NewOpenings = new Stack<HTMLToken>();
-            this.Position = 0;
+            this.Reset(input);
 
             while (this.Position < Input.Length)
             {
                 if (IsOpening)
                 {
-                    OpenTokens.Push(HTMLToken);
-                    Output.Add(HTMLToken);
+                    OpenTokens.Push(CurrentToken);
+                    Output.Add(CurrentToken);
                 }
                 else if (IsClosing)
                 {
-                    if (FindOpening(HTMLToken, out HTMLToken opening))
+                    if (FindOpening(CurrentToken))
                     {
                         Close();
-                        Output.Add(HTMLToken);
+                        Output.Add(CurrentToken);
                         OutputNewOpenings();
                     }
                     else
                     {
-                        WriteError("Repairer: Unexpected closing tag " + HTMLToken);
+                        WriteError("Repairer: Unexpected closing tag " + CurrentToken);
                         ShuffleBack();
                     }
                 }
@@ -90,27 +95,26 @@ namespace EBookCrawler.Parsing
             while (Overlapping.Count > 0)
             {
                 var open = Overlapping.Pop();
-                var newOpen = open.GetArtificialOpening(HTMLToken);
+                var newOpen = open.GetArtificialOpening(CurrentToken);
                 OpenTokens.Push(newOpen);
                 NewOpenings.Push(newOpen);
 
-                Temp.Push(open.GetArtificialClosing(HTMLToken));
-                WriteError("Repairer: Overlapping " + HTMLToken + " and " + open);
+                Temp.Push(open.GetArtificialClosing(CurrentToken));
+                WriteError("Repairer: Overlapping " + CurrentToken + " and " + open);
             }
             while (Temp.Count > 0)
                 Output.Add(Temp.Pop());
         }
-        private bool FindOpening(HTMLToken closing, out HTMLToken opening)
+        private bool FindOpening(Token closing)
         {
             while (OpenTokens.Count > 0)
             {
-                opening = OpenTokens.Pop();
+                var opening = OpenTokens.Pop();
                 if (opening.Tag == closing.Tag)
                     return true;
 
                 Overlapping.Push(opening);
             }
-            opening = null;
             return false;
         }
         private void ShuffleBack()

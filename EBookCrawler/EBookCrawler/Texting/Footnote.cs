@@ -9,9 +9,9 @@ namespace EBookCrawler.Texting
 {
     public class Footnote : ContainerElement
     {
-        public Footnote(string tooltip)
-        {
-            this.Add(Parser.SplitRaw(tooltip, new FontManager.Mode()));
-        }
+        //public Footnote(string tooltip)
+        //{
+        //    this.Add(Parser.SplitRaw(tooltip, new FontManager.Mode()));
+        //}
     }
 }

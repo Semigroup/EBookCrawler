@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EBookCrawler.Parsing
 {
-    public abstract class Token
+    public class Token
     {
         public enum Kind
         {
@@ -36,13 +36,38 @@ namespace EBookCrawler.Parsing
             List,
             ListItem
         }
+        public struct Attribute
+        {
+            public string Name;
+            public string Value;
 
-        public abstract bool IsRaw { get; }
+            public Attribute(string Name, string Value)
+            {
+                this.Name = Name;
+                this.Value = Value;
+            }
+
+            public override string ToString()
+            {
+                return Name + ": " + Value;
+            }
+
+            public double ValueAsDouble() => double.Parse(Value);
+        }
+
 
         public int Position { get; set; }
         public int Line { get; set; }
         public int PositionInLine { get; set; }
         public int Length { get; set; }
+
+        public string Tag { get; set; }
+        public bool IsBeginning { get; set; }
+        public bool IsEnd { get; set; }
+        public List<Attribute> Attributes { get; set; } = new List<Attribute>();
+        public string Text { get; set; }
+
+        public bool IsRaw => Tag == "raw";
 
         public Token(Tokenizer tokenizer)
         {
@@ -50,21 +75,26 @@ namespace EBookCrawler.Parsing
             this.Line = tokenizer.LineNumber;
             this.PositionInLine = tokenizer.PositionInLine;
         }
-        public Token(int Position, int Line, int PositionInLine, int Length)
+        public Token(int Position, int Line, int PositionInLine, int Length,
+            string Tag, bool IsBeginning, bool IsEnd, List<Attribute> Attributes)
         {
             this.Position = Position;
             this.Line = Line;
             this.PositionInLine = PositionInLine;
             this.Length = Length;
+
+            this.Tag = Tag;
+            this.IsBeginning = IsBeginning;
+            this.IsEnd = IsEnd;
+            this.Attributes = Attributes;
         }
 
         public Kind GetKind()
         {
-            if (IsRaw)
-                return Kind.Raw;
-            string tag = (this as HTMLToken).Tag.ToLower();
-            switch (tag)
+            switch (Tag)
             {
+                case "raw":
+                    return Kind.Raw;
                 case "p":
                     return Kind.Paragraph;
                 case "br":
@@ -126,7 +156,26 @@ namespace EBookCrawler.Parsing
         }
         public override string ToString()
         {
-            return "Pos " + Position + "; Line " + Line + ", PiL " + PositionInLine + "; Length " + Length + ": "; 
+            StringBuilder sb = new StringBuilder();
+            sb.Append("Pos " + Position
+                + "; Line " + Line
+                + ", PiL " + PositionInLine
+                + "; Length " + Length + ": ");
+            sb.Append(Tag + "; ");
+            if (IsBeginning)
+                sb.Append("B");
+            if (IsEnd)
+                sb.Append("E");
+            sb.Append(": ");
+            foreach (var item in Attributes)
+                sb.Append(item + ", ");
+            return sb.ToString();
         }
+        public Token GetArtificialClosing(Token position)
+            => new Token(position.Position, position.Line, position.PositionInLine,
+                0, this.Tag, false, true, new List<Attribute>());
+        public Token GetArtificialOpening(Token position)
+          => new Token(position.Position + position.Length, position.Line, position.PositionInLine + position.Length,
+              0, this.Tag, true, false, this.Attributes);
     }
 }

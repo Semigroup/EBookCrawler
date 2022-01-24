@@ -92,6 +92,9 @@ namespace EBookCrawler
             rep.Repair(tokenizer.Tokens);
             if (rep.FoundError)
                 Console.ReadKey();
+            var parser = new Parsing.Parser();
+            parser.Parse(rep.Output);
+
             this.Text = null;
             //var parser = new Parsing.Parser();
             //var doc = parser.ParseDocument(tokenizer.Tokens, Text);
