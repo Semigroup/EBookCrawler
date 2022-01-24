@@ -7,7 +7,7 @@ using EBookCrawler.Texting;
 
 namespace EBookCrawler.Parsing
 {
-    public class Parser
+    public class ParserOld
     {
         public string Text { get; set; }
         public Token[] Tokens { get; set; }

@@ -23,6 +23,7 @@ namespace EBookCrawler
         public int Number { get; set; }
 
         public string Text { get; set; }
+        public bool TextNotFound { get; set; }
 
         public static readonly Regex HRLine = new Regex(
             "<hr size=\"1\" color=\"#808080\">"
@@ -64,7 +65,14 @@ namespace EBookCrawler
         }
         public void LoadText(string root)
         {
-            string source = File.ReadAllText(Path.Combine(root, RelativePath));
+            var fp = Path.Combine(root, RelativePath);
+            if (!File.Exists(fp))
+            {
+                Logger.LogLine("File doesnt exist: " + fp);
+                TextNotFound = true;
+                return;
+            }
+            string source = File.ReadAllText(fp);
             source = HTMLHelper.RemoveHTMLComments(source);
             this.Text = ExtractParagraphs(source);
         }
@@ -80,9 +88,14 @@ namespace EBookCrawler
             }
             Console.WriteLine("Tokenized " + this.RelativePath);
 
-            var parser = new Parsing.Parser();
-            var doc = parser.ParseDocument(tokenizer.Tokens, Text);
-            Console.WriteLine("Parsed " + this.RelativePath);
+            var rep = new Parsing.Repairer();
+            rep.Repair(tokenizer.Tokens);
+            if (rep.FoundError)
+                Console.ReadKey();
+            this.Text = null;
+            //var parser = new Parsing.Parser();
+            //var doc = parser.ParseDocument(tokenizer.Tokens, Text);
+            //Console.WriteLine("Parsed " + this.RelativePath);
 
             //Console.ReadKey();
         }

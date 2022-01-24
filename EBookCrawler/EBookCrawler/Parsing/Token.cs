@@ -50,6 +50,13 @@ namespace EBookCrawler.Parsing
             this.Line = tokenizer.LineNumber;
             this.PositionInLine = tokenizer.PositionInLine;
         }
+        public Token(int Position, int Line, int PositionInLine, int Length)
+        {
+            this.Position = Position;
+            this.Line = Line;
+            this.PositionInLine = PositionInLine;
+            this.Length = Length;
+        }
 
         public Kind GetKind()
         {

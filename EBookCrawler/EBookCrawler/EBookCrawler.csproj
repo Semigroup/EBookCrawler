@@ -66,6 +66,7 @@
     <Compile Include="Part.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Parsing\Repairer.cs" />
     <Compile Include="Texting\BlockQuote.cs" />
     <Compile Include="Texting\ContainerElement.cs" />
     <Compile Include="Texting\Div.cs" />

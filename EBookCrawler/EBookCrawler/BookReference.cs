@@ -28,11 +28,16 @@ namespace EBookCrawler
         public void WriteBook(string root)
         {
             foreach (var partRef in Parts)
-                foreach (var ch in partRef.Part.Chapters)
-                {
-                    ch.LoadText(root);
-                    ch.ParseText();
-                }
+            {
+                var chapters = partRef.Part.Chapters;
+                if (chapters != null)
+                    foreach (var ch in chapters)
+                    {
+                        ch.LoadText(root);
+                        if (!ch.TextNotFound)
+                            ch.ParseText();
+                    }
+            }
         }
 
         public override string ToString()

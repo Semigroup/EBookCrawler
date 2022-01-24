@@ -38,6 +38,15 @@ namespace EBookCrawler.Parsing
         {
 
         }
+        public HTMLToken(int Position, int Line, int PositionInLine, int Length,
+            string Tag, bool IsBeginning, bool IsEnd, List<Attribute> Attributes)
+            : base(Position, Line, PositionInLine, Length)
+        {
+            this.Tag = Tag;
+            this.IsBeginning = IsBeginning;
+            this.IsEnd = IsEnd;
+            this.Attributes = Attributes;
+        }
 
         public override string ToString()
         {
@@ -51,7 +60,13 @@ namespace EBookCrawler.Parsing
             sb.Append(": ");
             foreach (var item in Attributes)
                 sb.Append(item + ", ");
-            return sb.ToString() ;
+            return sb.ToString();
         }
+        public HTMLToken GetArtificialClosing(HTMLToken position)
+            => new HTMLToken(position.Position, position.Line, position.PositionInLine,
+                0, this.Tag, false, true, new List<Attribute>());
+        public HTMLToken GetArtificialOpening(HTMLToken position)
+          => new HTMLToken(position.Position + position.Length, position.Line, position.PositionInLine + position.Length,
+              0, this.Tag, true, false, this.Attributes);
     }
 }
