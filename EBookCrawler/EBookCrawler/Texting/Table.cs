@@ -26,6 +26,10 @@ namespace EBookCrawler.Texting
             public double VAlign { get; set; }
             //Ignore?
             public int ColSpan { get; set; } = 1;
+            /// <summary>
+            /// Proportional
+            /// </summary>
+            public double Width { get; set; } = 1;
 
             public void SetVAlignment(string attValue)
             {
@@ -52,6 +56,11 @@ namespace EBookCrawler.Texting
         public double Border { get; set; }
         public string Caption { get; set; }
         public int Alignment { get; set; }
+        public bool IsPoem { get; set; }
+        /// <summary>
+        /// Proportional to TextWidth
+        /// </summary>
+        public double Width { get; set; } = 1;
 
         public void Add(IEnumerable<TextElement> rows)
         {

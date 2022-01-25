@@ -22,6 +22,7 @@ namespace EBookCrawler.Parsing
             LineBreak,
             Bold,
             Italic,
+            Underlined,
             Emphasis,
             TeleType,
             Div,
@@ -53,6 +54,7 @@ namespace EBookCrawler.Parsing
             }
 
             public double ValueAsDouble() => double.Parse(Value);
+            public double ValueAsPercentage() => double.Parse(Value.Substring(0, Value.Length -1));
         }
 
         public int Position { get; set; }
@@ -147,6 +149,9 @@ namespace EBookCrawler.Parsing
                     break;
                 case "b":
                     this.MyKind = Kind.Bold;
+                    break;
+                case "u":
+                    this.MyKind = Kind.Underlined;
                     break;
                 case "div":
                     this.MyKind = Kind.Div;

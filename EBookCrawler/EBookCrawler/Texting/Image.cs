@@ -16,5 +16,8 @@ namespace EBookCrawler.Texting
         public double Width { get; set; }
         public double VSpace { get; set; }
         public double HSpace { get; set; }
+
+        public bool InLine { get; set; }
+        public int Alignment { get; set; }
     }
 }

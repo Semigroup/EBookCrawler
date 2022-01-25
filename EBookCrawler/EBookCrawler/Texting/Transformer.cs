@@ -31,6 +31,7 @@ namespace EBookCrawler.Texting
                 case Token.Kind.Span:
                 case Token.Kind.Link:
                 case Token.Kind.Bold:
+                case Token.Kind.Underlined:
                 case Token.Kind.Italic:
                 case Token.Kind.Emphasis:
                 case Token.Kind.TeleType:
@@ -173,6 +174,16 @@ namespace EBookCrawler.Texting
                     case "src":
                         img.RelativePath = att.Value;
                         break;
+                    case "class":
+                        switch (att.Value.ToLower())
+                        {
+                            case "initial":
+                                img.InLine = true;
+                                break;
+                            default:
+                                throw new NotImplementedException();
+                        }
+                        break;
                     default:
                         throw new NotImplementedException();
                 }
@@ -209,9 +220,6 @@ namespace EBookCrawler.Texting
         {
             switch (token.MyKind)
             {
-                case Token.Kind.Paragraph:
-                    return GetParagraph(token);
-
                 case Token.Kind.Bold:
                 case Token.Kind.Italic:
                 case Token.Kind.Emphasis:
@@ -219,11 +227,13 @@ namespace EBookCrawler.Texting
                 case Token.Kind.Font:
                 case Token.Kind.Big:
                 case Token.Kind.Small:
+                case Token.Kind.Underlined:
                     return GetStyleContainer(token);
 
+                case Token.Kind.Paragraph:
+                    return GetParagraph(token);
                 case Token.Kind.TableDatum:
                     return GetTableDatum(token);
-
                 case Token.Kind.Span:
                     return GetSpanContainer(token);
                 case Token.Kind.Link:
@@ -239,6 +249,8 @@ namespace EBookCrawler.Texting
                     return GetList(token);
                 case Token.Kind.ListItem:
                     return GetListItem(token);
+                case Token.Kind.Header:
+                    return GetHeader(token);
                 default:
                     throw new NotImplementedException();
             }
@@ -264,6 +276,7 @@ namespace EBookCrawler.Texting
                 foreach (var attribute in token.Attributes)
                     switch (attribute.Name.ToLower())
                     {
+                        case "align":
                         case "class":
                             para.SetClass(attribute.Value);
                             break;
@@ -289,6 +302,9 @@ namespace EBookCrawler.Texting
                     break;
                 case Token.Kind.TeleType:
                     container.Style = new Style() { IsMonoSpace = true };
+                    break;
+                case Token.Kind.Underlined:
+                    container.Style = new Style() { IsUnderlined = true };
                     break;
                 case Token.Kind.Font:
                     foreach (var attribute in token.Attributes)
@@ -339,6 +355,7 @@ namespace EBookCrawler.Texting
                 case "footnote":
                     container = new Footnote();
                     break;
+                case "spaced":
                 case "wide":
                     container.Style = new Style() { IsWide = true };
                     break;
@@ -385,6 +402,16 @@ namespace EBookCrawler.Texting
                         break;
                     case "title":
                         link.Title = attribute.Value;
+                        break;
+                    case "class":
+                        switch (attribute.Value)
+                        {
+                            case "pageref":
+                                link.IsPageRef = true;
+                                break;
+                            default:
+                                throw new NotImplementedException();
+                        }
                         break;
 
                     default:
@@ -485,6 +512,9 @@ namespace EBookCrawler.Texting
             foreach (var attribute in token.Attributes)
                 switch (attribute.Name.ToLower())
                 {
+                    case "class":
+                        header.SetInfo(attribute.Value);
+                        break;
                     default:
                         throw new NotImplementedException();
                 }
@@ -511,11 +541,27 @@ namespace EBookCrawler.Texting
                     case "cellspacing":
                         table.Spacing = attribute.ValueAsDouble();
                         break;
-                    //case "class":
-                    //    table.Class = attribute.Value;
-                    //    break;
+                    case "class":
+                        switch (attribute.Value)
+                        {
+                            case "poem":
+                                table.IsPoem = true;
+                                break;
+                            case "center":
+                                table.Alignment = 1;
+                                break;
+                            case "right":
+                                table.Alignment = 2;
+                                break;
+                            default:
+                                throw new NotImplementedException();
+                        }
+                        break;
                     case "summary":
                         table.Caption = attribute.Value;
+                        break;
+                    case "width":
+                        table.Width = attribute.ValueAsPercentage();
                         break;
                     default:
                         throw new NotImplementedException();
@@ -551,6 +597,9 @@ namespace EBookCrawler.Texting
                     case "colspan":
                         datum.ColSpan = (int)attribute.ValueAsDouble();
                         break;
+                    case "width":
+                        datum.Width = attribute.ValueAsPercentage();
+                        break;
                     default:
                         throw new NotImplementedException();
                 }
@@ -565,6 +614,11 @@ namespace EBookCrawler.Texting
                 yield return new Word() { Value = word };
                 yield return new WhiteSpace() { HSpace = 1 };
             }
+        }
+
+        private int GetAlignment(string value)
+        {
+
         }
     }
 }

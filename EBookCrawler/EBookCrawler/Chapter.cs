@@ -89,11 +89,14 @@ namespace EBookCrawler
             Console.WriteLine("Tokenized " + this.RelativePath);
 
             var rep = new Parsing.Repairer();
-            rep.Repair(tokenizer.Tokens);
+            rep.Repair(Text, tokenizer.Tokens);
             if (rep.FoundError)
                 Console.ReadKey();
             var parser = new Parsing.Parser();
             parser.Parse(rep.Output);
+
+            var trafo = new Texting.Transformer();
+            trafo.Transform(Text, parser.Root);
 
             this.Text = null;
             //var parser = new Parsing.Parser();

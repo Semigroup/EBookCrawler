@@ -20,6 +20,7 @@ namespace EBookCrawler.Texting
         public bool IsIndented { get; set; }
         public Color Color { get; set; }
         public Style Style { get; set; }
+        public bool StartsWithCapital { get; set; }
 
         public virtual void Add(TextElement textElement) => TextElements.Add(textElement);
         public virtual void Add(IEnumerable<TextElement> textElements) => TextElements.AddRange(textElements);
@@ -30,6 +31,9 @@ namespace EBookCrawler.Texting
                 return;
             switch (classValue)
             {
+                case "initial":
+                    this.StartsWithCapital = true;
+                    break;
                 case "letter":
                     this.IsIndented = true;
                     this.Alignment = 0;
@@ -39,13 +43,15 @@ namespace EBookCrawler.Texting
                     this.Size = -1;
                     this.Alignment = 0;
                     break;
-                //case "vers":
-                //    this.Alignment = 1;
-                //    this.IsPoem = true;
-                //    break;
+                case "date":
+                    this.Alignment = 2;
+                    this.Style = new Style() { IsItalic = true };
+                    break;
                 case "dblmarg":
                 case "center":
                 case "stars":
+                case "chapter":
+                case "motto":
                     this.Alignment = 1;
                     break;
                 case "drama":

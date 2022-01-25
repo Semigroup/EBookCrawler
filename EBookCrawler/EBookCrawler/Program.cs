@@ -27,7 +27,7 @@ namespace EBookCrawler
             var tokenizer = new Parsing.Tokenizer();
             tokenizer.Tokenize(text);
             var repairer = new Parsing.Repairer();
-            repairer.Repair(tokenizer.Tokens);
+            repairer.Repair(text, tokenizer.Tokens);
             Console.ReadKey();
         }
 
