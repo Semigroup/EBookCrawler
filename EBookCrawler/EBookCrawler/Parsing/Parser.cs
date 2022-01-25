@@ -11,7 +11,7 @@ namespace EBookCrawler.Parsing
         public class Node
         {
             public Token Token { get; set; }
-            public IEnumerable<Node> Children { get; set; }
+            public Node[] Children { get; set; }
             public bool IsLeaf => Children == null || Children.Count() == 0;
             public bool IsRoot => Token == null;
         }
@@ -28,7 +28,7 @@ namespace EBookCrawler.Parsing
             var children = new List<Node>();
             while (CurrentPosition < Tokens.Length)
                 children.Add(ParseNode());
-            this.Root = new Node() { Children = children };
+            this.Root = new Node() { Children = children.ToArray() };
         }
         private Node ParseNode()
         {
@@ -42,7 +42,9 @@ namespace EBookCrawler.Parsing
             {
                 var node = new Node() { Token = CurrentToken };
                 CurrentPosition++;
-                node.Children = ParseChildren(node.Token.Tag);
+                node.Children = ParseChildren(node.Token.Tag).ToArray();
+                if (CurrentToken.IsBeginning || CurrentToken.Tag != node.Token.Tag)
+                    throw new NotImplementedException();
                 CurrentPosition++;
                 return node;
             }

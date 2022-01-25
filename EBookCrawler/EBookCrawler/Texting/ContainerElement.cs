@@ -17,8 +17,8 @@ namespace EBookCrawler.Texting
         /// </summary>
         public int Alignment { get; set; }
         public double Size { get; set; } = 1;
-        public bool IsPoem { get; set; }
-        public bool IsBox { get; set; }
+        //public bool IsPoem { get; set; }
+        //public bool IsBox { get; set; }
         public bool IsIndented { get; set; }
 
         public void Add(TextElement textElement) => TextElements.Add(textElement);

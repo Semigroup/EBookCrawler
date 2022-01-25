@@ -79,6 +79,13 @@ namespace EBookCrawler.Parsing
                     Output.Add(CurrentToken);
                 Next();
             }
+            Token lastToken = Output.Last();
+            while (this.OpenTokens.Count > 0)
+            {
+                var open = OpenTokens.Pop();
+                Output.Add(open.GetArtificialClosing(lastToken));
+                WriteError("EoF reached, not closed tag: " + open);
+            }
         }
         private void WriteError(string msg)
         {
