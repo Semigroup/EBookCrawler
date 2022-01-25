@@ -8,6 +8,7 @@ namespace EBookCrawler.Parsing
 {
     public class Repairer
     {
+        public string Text { get; set; }
         public Token[] Input { get; set; }
         public List<Token> Output { get; set; }
         private Stack<Token> OpenTokens { get; set; }
@@ -50,8 +51,9 @@ namespace EBookCrawler.Parsing
             }
         }
 
-        public void Repair(IEnumerable<Token> input)
+        public void Repair(string Text, IEnumerable<Token> input)
         {
+            this.Text = Text;
             this.Reset(input);
 
             while (this.Position < Input.Length)
@@ -83,8 +85,9 @@ namespace EBookCrawler.Parsing
             while (this.OpenTokens.Count > 0)
             {
                 var open = OpenTokens.Pop();
-                Output.Add(open.GetArtificialClosing(lastToken));
                 WriteError("EoF reached, not closed tag: " + open);
+                open.EndPosition = Text.Length;
+                Output.Add(open.GetArtificialClosing(lastToken));
             }
         }
         private void WriteError(string msg)
@@ -118,7 +121,10 @@ namespace EBookCrawler.Parsing
             {
                 var opening = OpenTokens.Pop();
                 if (opening.Tag == closing.Tag)
+                {
+                    opening.EndPosition = closing.Position;
                     return true;
+                }
 
                 Overlapping.Push(opening);
             }

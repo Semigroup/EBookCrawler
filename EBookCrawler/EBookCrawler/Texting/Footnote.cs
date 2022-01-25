@@ -13,5 +13,6 @@ namespace EBookCrawler.Texting
         //{
         //    this.Add(Parser.SplitRaw(tooltip, new FontManager.Mode()));
         //}
+        public bool IsToolTip { get; set; }
     }
 }

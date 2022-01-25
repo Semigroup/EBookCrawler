@@ -21,11 +21,13 @@ namespace EBookCrawler.Texting
         public Color Color { get; set; }
         public Style Style { get; set; }
 
-        public void Add(TextElement textElement) => TextElements.Add(textElement);
-        public void Add(IEnumerable<TextElement> textElements) => TextElements.AddRange(textElements);
+        public virtual void Add(TextElement textElement) => TextElements.Add(textElement);
+        public virtual void Add(IEnumerable<TextElement> textElements) => TextElements.AddRange(textElements);
 
         public virtual void SetClass(string classValue)
         {
+            if (classValue == null)
+                return;
             switch (classValue)
             {
                 case "letter":

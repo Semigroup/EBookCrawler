@@ -70,6 +70,7 @@
     <Compile Include="Texting\Box.cs" />
     <Compile Include="Texting\Color.cs" />
     <Compile Include="Texting\ContainerElement.cs" />
+    <Compile Include="Texting\EmptyContainer.cs" />
     <Compile Include="Texting\Footnote.cs" />
     <Compile Include="Texting\Header.cs" />
     <Compile Include="Texting\HorizontalRule.cs" />

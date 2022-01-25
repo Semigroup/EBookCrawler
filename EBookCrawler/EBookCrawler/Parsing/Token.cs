@@ -55,17 +55,31 @@ namespace EBookCrawler.Parsing
             public double ValueAsDouble() => double.Parse(Value);
         }
 
-
         public int Position { get; set; }
         public int Line { get; set; }
         public int PositionInLine { get; set; }
         public int Length { get; set; }
+        /// <summary>
+        /// StartPosition of closing tag, if this is opening
+        /// </summary>
+        public int EndPosition { get; set; } = -1;
 
-        public string Tag { get; set; }
+        public string Tag {
+            get {
+                return _Tag;
+            }
+            set
+            {
+                this._Tag = value;
+                this.SetKind();
+            }
+        }
+        private string _Tag;
         public bool IsBeginning { get; set; }
         public bool IsEnd { get; set; }
         public List<Attribute> Attributes { get; set; } = new List<Attribute>();
         public string Text { get; set; }
+        public Kind MyKind { get; set; }
 
         public bool IsRaw => Tag == "raw";
 
@@ -89,66 +103,91 @@ namespace EBookCrawler.Parsing
             this.Attributes = Attributes;
         }
 
-        public Kind GetKind()
+        private void SetKind()
         {
-            switch (Tag)
+            switch (_Tag)
             {
                 case "raw":
-                    return Kind.Raw;
+                    this.MyKind = Kind.Raw;
+                    break;
                 case "p":
-                    return Kind.Paragraph;
+                    this.MyKind = Kind.Paragraph;
+                    break;
                 case "br":
-                    return Kind.LineBreak;
+                    this.MyKind = Kind.LineBreak;
+                    break;
                 case "table":
-                    return Kind.Table;
+                    this.MyKind = Kind.Table;
+                    break;
                 case "tr":
-                    return Kind.TableRow;
+                    this.MyKind = Kind.TableRow;
+                    break;
                 case "td":
-                    return Kind.TableDatum;
+                    this.MyKind = Kind.TableDatum;
+                    break;
                 case "h0":
                 case "h1":
                 case "h2":
                 case "h3":
                 case "h4":
                 case "h5":
-                    return Kind.Header;
+                    this.MyKind = Kind.Header;
+                    break;
                 case "hr":
-                    return Kind.HorizontalRuling;
+                    this.MyKind = Kind.HorizontalRuling;
+                    break;
                 case "span":
-                    return Kind.Span;
+                    this.MyKind = Kind.Span;
+                    break;
                 case "a":
-                    return Kind.Link;
+                    this.MyKind = Kind.Link;
+                    break;
                 case "i":
-                    return Kind.Italic;
+                    this.MyKind = Kind.Italic;
+                    break;
                 case "b":
-                    return Kind.Bold;
+                    this.MyKind = Kind.Bold;
+                    break;
                 case "div":
-                    return Kind.Div;
+                    this.MyKind = Kind.Div;
+                    break;
                 case "img":
-                    return Kind.Image;
+                    this.MyKind = Kind.Image;
+                    break;
                 case "font":
-                    return Kind.Font;
+                    this.MyKind = Kind.Font;
+                    break;
                 case "tt":
-                    return Kind.TeleType;
+                    this.MyKind = Kind.TeleType;
+                    break;
                 case "em":
-                    return Kind.Emphasis;
+                    this.MyKind = Kind.Emphasis;
+                    break;
                 case "sup":
-                    return Kind.Super;
+                    this.MyKind = Kind.Super;
+                    break;
                 case "sub":
-                    return Kind.Sub;
+                    this.MyKind = Kind.Sub;
+                    break;
                 case "pre":
-                    return Kind.Verbatim;
+                    this.MyKind = Kind.Verbatim;
+                    break;
                 case "blockquote":
-                    return Kind.BlockQuote;
+                    this.MyKind = Kind.BlockQuote;
+                    break;
                 case "ol":
                 case "ul":
-                    return Kind.List;
+                    this.MyKind = Kind.List;
+                    break;
                 case "li":
-                    return Kind.ListItem;
+                    this.MyKind = Kind.ListItem;
+                    break;
                 case "big":
-                    return Kind.Big;
+                    this.MyKind = Kind.Big;
+                    break;
                 case "small":
-                    return Kind.Small;
+                    this.MyKind = Kind.Small;
+                    break;
 
                 default:
                     throw new NotImplementedException();
@@ -177,5 +216,12 @@ namespace EBookCrawler.Parsing
         public Token GetArtificialOpening(Token position)
           => new Token(position.Position + position.Length, position.Line, position.PositionInLine + position.Length,
               0, this.Tag, true, false, this.Attributes);
+        public string GetAttribute(string attributName)
+        {
+            foreach (var item in Attributes)
+                if (item.Name == attributName)
+                    return item.Value;
+            return null;
+        }
     }
 }

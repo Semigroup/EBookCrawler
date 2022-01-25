@@ -38,5 +38,7 @@ namespace EBookCrawler.Texting
             this.Green = getByte(hex[2], hex[3]);
             this.Blue = getByte(hex[4], hex[5]);
         }
+
+        public bool IsBlack() => Red == 0 && Green == 0 && Blue == 0;
     }
 }
