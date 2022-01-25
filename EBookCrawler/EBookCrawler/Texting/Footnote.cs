@@ -14,5 +14,9 @@ namespace EBookCrawler.Texting
         //    this.Add(Parser.SplitRaw(tooltip, new FontManager.Mode()));
         //}
         public bool IsToolTip { get; set; }
+        /// <summary>
+        /// Index: 1,*,...
+        /// </summary>
+        public string Title { get; set; }
     }
 }

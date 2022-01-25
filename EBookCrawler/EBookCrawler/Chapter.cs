@@ -79,6 +79,7 @@ namespace EBookCrawler
         public void ParseText()
         {
             File.WriteAllText("text.xml", Text);
+            Console.WriteLine(this.URL);
             var tokenizer = new Parsing.Tokenizer();
             tokenizer.Tokenize(Text);
             if (tokenizer.FoundError)
@@ -86,12 +87,11 @@ namespace EBookCrawler
                 Console.WriteLine(tokenizer.GetState());
                 Console.ReadKey();
             }
-            Console.WriteLine("Tokenized " + this.RelativePath);
 
             var rep = new Parsing.Repairer();
             rep.Repair(Text, tokenizer.Tokens);
-            if (rep.FoundError)
-                Console.ReadKey();
+            //if (rep.FoundError)
+            //    Console.ReadKey();
             var parser = new Parsing.Parser();
             parser.Parse(rep.Output);
 

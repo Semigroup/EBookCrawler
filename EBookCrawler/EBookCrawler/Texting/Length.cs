@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace EBookCrawler.Texting
 {
-    public class Paragraph : ContainerElement
+   public struct Length
     {
-        public bool StartsWithIndentation { get; set; } = true;
+        public double Value;
+        public bool IsProportional;
     }
 }

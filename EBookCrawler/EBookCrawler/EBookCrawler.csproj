@@ -75,6 +75,7 @@
     <Compile Include="Texting\Header.cs" />
     <Compile Include="Texting\HorizontalRule.cs" />
     <Compile Include="Texting\Image.cs" />
+    <Compile Include="Texting\Length.cs" />
     <Compile Include="Texting\Link.cs" />
     <Compile Include="Texting\Paragraph.cs" />
     <Compile Include="Texting\Poem.cs" />

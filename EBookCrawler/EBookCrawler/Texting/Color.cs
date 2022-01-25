@@ -34,6 +34,8 @@ namespace EBookCrawler.Texting
             hex = hex.ToLower();
             if (hex.Substring(0, 2) == "0x")
                 hex = hex.Substring(2);
+            else if (hex.Substring(0, 1) == "#")
+                hex = hex.Substring(1);
             this.Red = getByte(hex[0], hex[1]);
             this.Green = getByte(hex[2], hex[3]);
             this.Blue = getByte(hex[4], hex[5]);

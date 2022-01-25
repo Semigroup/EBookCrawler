@@ -44,6 +44,10 @@ namespace EBookCrawler.Texting
                 case Token.Kind.BlockQuote:
                 case Token.Kind.TableDatum:
                 case Token.Kind.Header:
+                case Token.Kind.ListItem:
+                case Token.Kind.ListTerm:
+                case Token.Kind.Insertion:
+                case Token.Kind.Address:
                     var container = GetContainer(node.Token);
                     container.Add(TransformChildren(node.Children, false));
                     return container;
@@ -80,6 +84,9 @@ namespace EBookCrawler.Texting
         }
         private IEnumerable<TextElement> TransformChildren(IEnumerable<Parser.Node> children, bool ignoreRaw)
         {
+            if (children == null)
+                yield break;
+
             if (ignoreRaw)
             {
                 foreach (var child in children)
@@ -136,6 +143,9 @@ namespace EBookCrawler.Texting
                     case Token.Kind.ListItem:
                         yield return Transform(child);
                         break;
+                    case Token.Kind.ListTerm:
+                        yield return Transform(child);
+                        break;
 
                     default:
                         throw new NotImplementedException();
@@ -157,13 +167,16 @@ namespace EBookCrawler.Texting
                 switch (att.Name.ToLower())
                 {
                     case "alt":
-                        img.Name = att.Value;
+                        img.AlternativeTitle = att.Value;
+                        break;
+                    case "title":
+                        img.Title = att.Value;
                         break;
                     case "height":
-                        img.Height = att.ValueAsDouble();
+                        img.Height = att.ValueAsLength();
                         break;
                     case "width":
-                        img.Width = att.ValueAsDouble();
+                        img.Width = att.ValueAsLength();
                         break;
                     case "vspace":
                         img.VSpace = att.ValueAsDouble();
@@ -183,6 +196,12 @@ namespace EBookCrawler.Texting
                             default:
                                 throw new NotImplementedException();
                         }
+                        break;
+                    case "align":
+                        img.Alignment = GetAlignment(att.Value);
+                        break;
+                    case "border":
+                        img.Border = att.ValueAsDouble();
                         break;
                     default:
                         throw new NotImplementedException();
@@ -204,11 +223,25 @@ namespace EBookCrawler.Texting
                         switch (attribute.Value)
                         {
                             case "short":
-                                hr.Length = 0.3;
+                                hr.Length = new Length() { Value = 0.3, IsProportional = true };
+                                break;
+                            case "star":
+                                //ToDo
+                                break;
+                            case "empty":
+                                hr.Length = new Length();
                                 break;
                             default:
                                 throw new NotImplementedException();
                         }
+                        break;
+                    case "width":
+                        hr.Length = attribute.ValueAsLength();
+                        break;
+                    case "size":
+                        break;
+                    case "align":
+                        hr.Alignment = GetAlignment(attribute.Value.ToLower());
                         break;
                     default:
                         throw new NotImplementedException();
@@ -218,6 +251,9 @@ namespace EBookCrawler.Texting
 
         private ContainerElement GetContainer(Token token)
         {
+            var clazz = token.GetAttribute("class");
+            if (clazz != null && clazz.ToLower() == "toc")
+                return new EmptyContainer();
             switch (token.MyKind)
             {
                 case Token.Kind.Bold:
@@ -228,8 +264,11 @@ namespace EBookCrawler.Texting
                 case Token.Kind.Big:
                 case Token.Kind.Small:
                 case Token.Kind.Underlined:
+                case Token.Kind.Insertion:
+                case Token.Kind.Address:
                     return GetStyleContainer(token);
 
+                case Token.Kind.Div:
                 case Token.Kind.Paragraph:
                     return GetParagraph(token);
                 case Token.Kind.TableDatum:
@@ -238,8 +277,6 @@ namespace EBookCrawler.Texting
                     return GetSpanContainer(token);
                 case Token.Kind.Link:
                     return GetLink(token);
-                case Token.Kind.Div:
-                    return GetDiv(token);
                 case Token.Kind.Super:
                 case Token.Kind.Sub:
                     return GetSuperSub(token);
@@ -248,6 +285,7 @@ namespace EBookCrawler.Texting
                 case Token.Kind.List:
                     return GetList(token);
                 case Token.Kind.ListItem:
+                case Token.Kind.ListTerm:
                     return GetListItem(token);
                 case Token.Kind.Header:
                     return GetHeader(token);
@@ -257,9 +295,26 @@ namespace EBookCrawler.Texting
         }
         private ContainerElement GetParagraph(Token token)
         {
-            if (token.GetAttribute("class") == "vers")
+            var clazz = token.GetAttribute("class");
+            if (clazz != null)
+                clazz = clazz.ToLower();
+            if (clazz == "vers" || clazz == "poem")
             {
                 var poem = new Poem();
+                foreach (var attribute in token.Attributes)
+                    switch (attribute.Name.ToLower())
+                    {
+                        case "lang":
+                        case "class":
+                            break;
+                        default:
+                            throw new NotImplementedException();
+                    }
+                return poem;
+            }
+            else if (clazz == "box")
+            {
+                var box = new Box();
                 foreach (var attribute in token.Attributes)
                     switch (attribute.Name.ToLower())
                     {
@@ -268,7 +323,7 @@ namespace EBookCrawler.Texting
                         default:
                             throw new NotImplementedException();
                     }
-                return poem;
+                return box;
             }
             else
             {
@@ -278,7 +333,12 @@ namespace EBookCrawler.Texting
                     {
                         case "align":
                         case "class":
-                            para.SetClass(attribute.Value);
+                            para.SetClass(attribute.Value.ToLower());
+                            if (attribute.Value.ToLower() == "line")
+                                para.StartsWithIndentation = false;
+                            break;
+                        case "id":
+                        case "lang"://Language
                             break;
                         default:
                             throw new NotImplementedException();
@@ -295,6 +355,7 @@ namespace EBookCrawler.Texting
                     container.Style = new Style() { IsBold = true };
                     break;
                 case Token.Kind.Italic:
+                case Token.Kind.Address:
                     container.Style = new Style() { IsItalic = true };
                     break;
                 case Token.Kind.Emphasis:
@@ -306,12 +367,19 @@ namespace EBookCrawler.Texting
                 case Token.Kind.Underlined:
                     container.Style = new Style() { IsUnderlined = true };
                     break;
+                case Token.Kind.Insertion:
+                    container.Style = new Style() { IsUnderlined = true };
+                    container.Color = new Color("0000ff");
+                    break;
                 case Token.Kind.Font:
                     foreach (var attribute in token.Attributes)
                         switch (attribute.Name.ToLower())
                         {
                             case "size":
-                                container.Size = (int)attribute.ValueAsDouble();
+                                container.Size += (int)attribute.ValueAsDouble();
+                                break;
+                            case "color":
+                                container.Color = new Color(attribute.Value);
                                 break;
                             default:
                                 throw new NotImplementedException();
@@ -331,7 +399,10 @@ namespace EBookCrawler.Texting
         private ContainerElement GetSpanContainer(Token token)
         {
             var container = new ContainerElement();
-            switch (token.GetAttribute("class"))
+            var clazz = token.GetAttribute("class");
+            if (clazz == null)
+                return container;
+            switch (clazz.ToLower())
             {
                 case "speaker":
                     container.Style = new Style() { IsBold = true };
@@ -348,9 +419,13 @@ namespace EBookCrawler.Texting
                 case "smallcaps":
                     container.Style = new Style() { IsSmallCaps = true };
                     break;
-                case "lektorat":
-                    container.Color = new Color("a9a9a9");
+                case "underline":
+                    container.Style = new Style() { IsUnderlined = true };
                     break;
+                case "lektorat":
+                    //container.Color = new Color("a9a9a9");
+                    //break; ToDo?
+                    return new EmptyContainer();
                 case "fotnote":
                 case "footnote":
                     container = new Footnote();
@@ -362,6 +437,19 @@ namespace EBookCrawler.Texting
                 case "tooltip":
                     container = new Footnote() { IsToolTip = true };
                     break;
+                case "big":
+                case "big1":
+                case "big2":
+                case "big3":
+                    container.Size +=1;
+                    break;
+                case "note":
+                    container.Size -= 1;
+                    break;
+                case "font110":
+                case "fntext":
+                    break;
+
                 default:
                     throw new NotImplementedException();
             }
@@ -370,15 +458,24 @@ namespace EBookCrawler.Texting
                 switch (attribute.Name.ToLower())
                 {
                     case "class":
+                    case "id":
                         break;
                     case "style":
                         container.Color = new Color(attribute.Value);
                         break;
                     case "title":
-                        if ((container as Footnote).IsToolTip)
-                            container.Add(SplitRaw(attribute.Value));
+                        if (container is Footnote fn)
+                        {
+                            if (fn.IsToolTip)
+                                fn.Add(SplitRaw(attribute.Value));
+                            else
+                                fn.Title = attribute.Value;
+                        }
                         else
                             throw new NotImplementedException();
+                        break;
+                    case "lang":
+                        //Language
                         break;
                     default:
                         throw new NotImplementedException();
@@ -413,29 +510,32 @@ namespace EBookCrawler.Texting
                                 throw new NotImplementedException();
                         }
                         break;
+                    case "style":
+                        //???
+                        break;
 
                     default:
                         throw new NotImplementedException();
                 }
             return link;
         }
-        private ContainerElement GetDiv(Token token)
-        {
-            var cont = new ContainerElement();
-            foreach (var attribute in token.Attributes)
-                switch (attribute.Name.ToLower())
-                {
-                    case "class":
-                        if (attribute.Value.ToLower() == "toc")
-                            return new EmptyContainer();
-                        else
-                            cont.SetClass(attribute.Value);
-                        break;
-                    default:
-                        throw new NotImplementedException();
-                }
-            return cont;
-        }
+        //private ContainerElement GetDiv(Token token)
+        //{
+        //    var cont = new ContainerElement();
+        //    foreach (var attribute in token.Attributes)
+        //        switch (attribute.Name.ToLower())
+        //        {
+        //            //case "class":
+        //            //    if (attribute.Value.ToLower() == "toc")
+        //            //        return new EmptyContainer();
+        //            //    else
+        //            //        cont.SetClass(attribute.Value);
+        //            //    break;
+        //            default:
+        //                throw new NotImplementedException();
+        //        }
+        //    return cont;
+        //}
         private ContainerElement GetSuperSub(Token token)
         {
             ContainerElement cont;
@@ -453,6 +553,15 @@ namespace EBookCrawler.Texting
             foreach (var attribute in token.Attributes)
                 switch (attribute.Name.ToLower())
                 {
+                    case "class":
+                        switch (attribute.Value.ToLower())
+                        {
+                            case "fract":
+                                break;
+                            default:
+                                throw new NotImplementedException();
+                        }
+                        break;
                     default:
                         throw new NotImplementedException();
                 }
@@ -488,7 +597,9 @@ namespace EBookCrawler.Texting
                     list.IsOrdered = true;
                     break;
                 case "ul":
-                    list.IsOrdered = false;
+                    break;
+                case "dl":
+                    list.IsDescriptional = true;
                     break;
                 default:
                     throw new NotImplementedException();
@@ -497,6 +608,10 @@ namespace EBookCrawler.Texting
             foreach (var attribute in token.Attributes)
                 switch (attribute.Name.ToLower())
                 {
+                    case "style":
+                    case "type":
+                        list.SetNumbering(attribute.Value.ToLower());
+                        break;
                     default:
                         throw new NotImplementedException();
                 }
@@ -528,7 +643,7 @@ namespace EBookCrawler.Texting
                 switch (attribute.Name.ToLower())
                 {
                     case "align":
-                        table.SetAlignment(attribute.Value);
+                        table.Alignment = GetAlignment(attribute.Value);
                         break;
                     case "border":
                         table.Border = attribute.ValueAsDouble();
@@ -547,21 +662,20 @@ namespace EBookCrawler.Texting
                             case "poem":
                                 table.IsPoem = true;
                                 break;
-                            case "center":
+                            case "box":
+                                table.IsBox = true;
                                 table.Alignment = 1;
                                 break;
-                            case "right":
-                                table.Alignment = 2;
-                                break;
                             default:
-                                throw new NotImplementedException();
+                                table.Alignment = GetAlignment(attribute.Value);
+                                break;
                         }
                         break;
                     case "summary":
                         table.Caption = attribute.Value;
                         break;
                     case "width":
-                        table.Width = attribute.ValueAsPercentage();
+                        table.Width = attribute.ValueAsLength();
                         break;
                     default:
                         throw new NotImplementedException();
@@ -574,6 +688,12 @@ namespace EBookCrawler.Texting
             foreach (var attribute in token.Attributes)
                 switch (attribute.Name.ToLower())
                 {
+                    case "align":
+                        table.Alignment = GetAlignment(attribute.Value.ToLower());
+                        break;
+                    case "valign":
+                        table.VAlignment = GetVAlignment(attribute.Value.ToLower());
+                        break;
                     default:
                         throw new NotImplementedException();
                 }
@@ -592,13 +712,16 @@ namespace EBookCrawler.Texting
                         datum.SetClass(attribute.Value);
                         break;
                     case "valign":
-                        datum.SetVAlignment(attribute.Value);
+                        datum.VAlign = GetVAlignment(attribute.Value.ToLower());
                         break;
                     case "colspan":
                         datum.ColSpan = (int)attribute.ValueAsDouble();
                         break;
+                    case "rowspan":
+                        datum.RowSpan = (int)attribute.ValueAsDouble();
+                        break;
                     case "width":
-                        datum.Width = attribute.ValueAsPercentage();
+                        datum.Width = attribute.ValueAsLength();
                         break;
                     default:
                         throw new NotImplementedException();
@@ -616,9 +739,76 @@ namespace EBookCrawler.Texting
             }
         }
 
-        private int GetAlignment(string value)
+        public static int GetAlignment(string value)
         {
+            switch (value.ToLower())
+            {
+                case "font110":
+                case "prosa":
+                case "left":
+                case "leftmarg":
+                case "leftjust":
+                case "abstract":
+                case "letter":
+                case "drama":
+                case "drammarg":
+                case "drama1":
+                case "drama2":
+                case "cdrama":
+                case "cdrama1":
+                case "cdrama2":
+                case "initial":
+                case "stage":
+                case "scene":
+                case "toc":
+                case "chor":
+                case "chormarg":
+                case "titlepage":
+                case "line":
+                    return 0;
 
+                case "dblmarg":
+                case "center":
+                case "stars":
+                case "chapter":
+                case "motto":
+                case "note":
+                case "centersml":
+                case "centerbig":
+                case "figure":
+                case "figcation":
+                case "figcaptio":
+                case "figcaption":
+                case "true":
+                case "box":
+                    return 1;
+
+                case "right":
+                case "signature":
+                case "date":
+                case "dedication":
+                    return 2;
+
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+        public static int GetVAlignment(string value)
+        {
+            switch (value.ToLower())
+            {
+                case "top":
+                    return 0;
+
+                case "center":
+                    return 1;
+
+                case "bottom":
+                    return 2;
+
+                default:
+                    throw new NotImplementedException();
+            }
         }
     }
 }

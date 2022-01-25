@@ -11,6 +11,8 @@ namespace EBookCrawler.Texting
         public class Row : TextElement
         {
             public List<Datum> Data { get; set; } = new List<Datum>();
+            public int Alignment { get; set; }
+            public int VAlignment { get; set; }
 
             public void Add(IEnumerable<TextElement> data)
             {
@@ -26,28 +28,8 @@ namespace EBookCrawler.Texting
             public double VAlign { get; set; }
             //Ignore?
             public int ColSpan { get; set; } = 1;
-            /// <summary>
-            /// Proportional
-            /// </summary>
-            public double Width { get; set; } = 1;
-
-            public void SetVAlignment(string attValue)
-            {
-                switch (attValue)
-                {
-                    case "center":
-                        this.Alignment = 1;
-                        break;
-                    case "bottom":
-                        this.Alignment = 2;
-                        break;
-                    case "top":
-                        this.Alignment = 0;
-                        break;
-                    default:
-                        throw new NotImplementedException();
-                }
-            }
+            public int RowSpan { get; set; } = 1;
+            public Length Width { get; set; } = new Length() { Value = 1, IsProportional = true };
         }
 
         public List<Row> Rows { get; set; } = new List<Row>();
@@ -57,10 +39,8 @@ namespace EBookCrawler.Texting
         public string Caption { get; set; }
         public int Alignment { get; set; }
         public bool IsPoem { get; set; }
-        /// <summary>
-        /// Proportional to TextWidth
-        /// </summary>
-        public double Width { get; set; } = 1;
+        public bool IsBox { get; set; }
+        public Length Width { get; set; } = new Length() { Value = 1, IsProportional = true };
 
         public void Add(IEnumerable<TextElement> rows)
         {
@@ -69,24 +49,6 @@ namespace EBookCrawler.Texting
                     this.Rows.Add(row);
                 else
                     throw new NotImplementedException();
-        }
-
-        public void SetAlignment(string attValue)
-        {
-            switch (attValue)
-            {
-                case "left":
-                    this.Alignment = 0;
-                    break;
-                case "center":
-                    this.Alignment = 1;
-                    break;
-                case "right":
-                    this.Alignment = 2;
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
         }
     }
 }

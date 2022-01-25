@@ -8,9 +8,7 @@ namespace EBookCrawler.Texting
 {
     public class HorizontalRule : TextElement
     {
-        /// <summary>
-        /// Proportional. 1 means full Textwidth
-        /// </summary>
-        public double Length { get; set; } = 1;
+        public Length Length = new Length() { Value = 1, IsProportional = true };
+        public int Alignment { get; set; }
     }
 }

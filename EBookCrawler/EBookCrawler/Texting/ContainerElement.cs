@@ -17,7 +17,7 @@ namespace EBookCrawler.Texting
         /// </summary>
         public int Alignment { get; set; }
         public int Size { get; set; }
-        public bool IsIndented { get; set; }
+        public double Indentation { get; set; }
         public Color Color { get; set; }
         public Style Style { get; set; }
         public bool StartsWithCapital { get; set; }
@@ -29,56 +29,65 @@ namespace EBookCrawler.Texting
         {
             if (classValue == null)
                 return;
+            this.Alignment = Transformer.GetAlignment(classValue);
             switch (classValue)
             {
                 case "initial":
                     this.StartsWithCapital = true;
                     break;
-                case "letter":
-                    this.IsIndented = true;
-                    this.Alignment = 0;
-                    break;
                 case "abstract":
-                    this.IsIndented = true;
+                    this.Indentation = 1;
                     this.Size = -1;
-                    this.Alignment = 0;
                     break;
+                case "figcaption":
+                case "figcaptio":
+                case "figcation":
                 case "date":
-                    this.Alignment = 2;
                     this.Style = new Style() { IsItalic = true };
+                    break;
+                case "drama":
+                case "drammarg":
+                case "cdrama":
+                case "drama1":
+                case "cdrama1":
+                case "letter":
+                case "chor":
+                case "chormarg":
+                case "box":
+                    this.Indentation = 1;
+                    break;
+                case "drama2":
+                case "cdrama2":
+                    this.Indentation = 2;
+                    break;
+                case "stage":
+                    this.Style = new Style() { IsItalic = true };
+                    this.Indentation = 1;
                     break;
                 case "dblmarg":
                 case "center":
                 case "stars":
                 case "chapter":
                 case "motto":
-                    this.Alignment = 1;
-                    break;
-                case "drama":
-                    this.IsIndented = true;
-                    this.Alignment = 0;
-                    break;
                 case "prosa":
                 case "left":
                 case "leftmarg":
                 case "leftjust":
-                    this.Alignment = 0;
+                case "figure":
+                case "right":
+                case "signature":
+                case "font110":
+                case "dedication":
+                case "scene":
+                case "titlepage":
+                case "line":
                     break;
                 case "note":
                 case "centersml":
-                    this.Alignment = 1;
                     this.Size = -1;
                     break;
                 case "centerbig":
-                    this.Alignment = 1;
                     this.Size = 1;
-                    break;
-                case "figure":
-                    this.Alignment = 1;
-                    break;
-                case "right":
-                case "signature":
-                    this.Alignment = 2;
                     break;
                 //case "box":
                 //    this.Alignment = 1;

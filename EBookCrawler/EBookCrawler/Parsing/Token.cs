@@ -35,7 +35,10 @@ namespace EBookCrawler.Parsing
             Verbatim,
             BlockQuote,
             List,
-            ListItem
+            ListItem,
+            ListTerm,
+            Insertion,
+            Address
         }
         public struct Attribute
         {
@@ -54,7 +57,25 @@ namespace EBookCrawler.Parsing
             }
 
             public double ValueAsDouble() => double.Parse(Value);
-            public double ValueAsPercentage() => double.Parse(Value.Substring(0, Value.Length -1));
+            //public double ValueAsPercentage() => double.Parse(Value.Substring(0, Value.Length - 1));
+            public Texting.Length ValueAsLength()
+            {
+                if (Value[Value.Length - 1] == '%')
+                    return new Texting.Length()
+                    {
+                        Value = double.Parse(Value.Substring(0,Value.Length - 1)),
+                        IsProportional = true
+                    };
+                else
+                {
+                    double l = double.Parse(Value);
+                    return new Texting.Length()
+                    {
+                        Value = double.Parse(Value.Substring(Value.Length - 1)),
+                        IsProportional = 0 <= l && l <= 1
+                    };
+                }
+            }
         }
 
         public int Position { get; set; }
@@ -66,8 +87,10 @@ namespace EBookCrawler.Parsing
         /// </summary>
         public int EndPosition { get; set; } = -1;
 
-        public string Tag {
-            get {
+        public string Tag
+        {
+            get
+            {
                 return _Tag;
             }
             set
@@ -109,6 +132,9 @@ namespace EBookCrawler.Parsing
         {
             switch (_Tag)
             {
+                case "address":
+                    this.MyKind = Kind.Address;
+                    break;
                 case "raw":
                     this.MyKind = Kind.Raw;
                     break;
@@ -182,9 +208,14 @@ namespace EBookCrawler.Parsing
                     break;
                 case "ol":
                 case "ul":
+                case "dl":
                     this.MyKind = Kind.List;
                     break;
+                case "dt":
+                    this.MyKind = Kind.ListItem;
+                    break;
                 case "li":
+                case "dd":
                     this.MyKind = Kind.ListItem;
                     break;
                 case "big":
@@ -192,6 +223,9 @@ namespace EBookCrawler.Parsing
                     break;
                 case "small":
                     this.MyKind = Kind.Small;
+                    break;
+                case "ins":
+                    this.MyKind = Kind.Insertion;
                     break;
 
                 default:
