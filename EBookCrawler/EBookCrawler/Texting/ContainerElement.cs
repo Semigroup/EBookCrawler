@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EBookCrawler.Texting
 {
-   public abstract class ContainerElement : TextElement
+   public class ContainerElement : TextElement
     {
         public List<TextElement> TextElements { get; set; } = new List<TextElement>();
 
@@ -16,17 +16,17 @@ namespace EBookCrawler.Texting
         /// 2 : Right
         /// </summary>
         public int Alignment { get; set; }
-        public double Size { get; set; } = 1;
-        //public bool IsPoem { get; set; }
-        //public bool IsBox { get; set; }
+        public int Size { get; set; }
         public bool IsIndented { get; set; }
+        public Color Color { get; set; }
+        public Style Style { get; set; }
 
         public void Add(TextElement textElement) => TextElements.Add(textElement);
         public void Add(IEnumerable<TextElement> textElements) => TextElements.AddRange(textElements);
 
-        public void SetAlignment(string attValue)
+        public virtual void SetClass(string classValue)
         {
-            switch (attValue)
+            switch (classValue)
             {
                 case "letter":
                     this.IsIndented = true;
@@ -34,13 +34,13 @@ namespace EBookCrawler.Texting
                     break;
                 case "abstract":
                     this.IsIndented = true;
-                    this.Size = 0.75;
+                    this.Size = -1;
                     this.Alignment = 0;
                     break;
-                case "vers":
-                    this.Alignment = 1;
-                    this.IsPoem = true;
-                    break;
+                //case "vers":
+                //    this.Alignment = 1;
+                //    this.IsPoem = true;
+                //    break;
                 case "dblmarg":
                 case "center":
                 case "stars":
@@ -59,11 +59,11 @@ namespace EBookCrawler.Texting
                 case "note":
                 case "centersml":
                     this.Alignment = 1;
-                    this.Size = 0.75;
+                    this.Size = -1;
                     break;
                 case "centerbig":
                     this.Alignment = 1;
-                    this.Size = 2;
+                    this.Size = 1;
                     break;
                 case "figure":
                     this.Alignment = 1;
@@ -72,10 +72,10 @@ namespace EBookCrawler.Texting
                 case "signature":
                     this.Alignment = 2;
                     break;
-                case "box":
-                    this.Alignment = 1;
-                    this.IsBox = true;
-                    break;
+                //case "box":
+                //    this.Alignment = 1;
+                //    this.IsBox = true;
+                //    break;
                 default:
                     throw new NotImplementedException();
             }

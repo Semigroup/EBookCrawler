@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace EBookCrawler.Texting
 {
-    public abstract class TextElement
+    public class Box : ContainerElement
     {
-        //public string Class { get; set; }
     }
 }

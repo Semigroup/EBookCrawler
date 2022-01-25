@@ -8,7 +8,6 @@ namespace EBookCrawler.Texting
 {
    public class Word : TextElement
     {
-        public FontManager.Mode Mode { get; set; }
         public string Value { get; set; }
     }
 }

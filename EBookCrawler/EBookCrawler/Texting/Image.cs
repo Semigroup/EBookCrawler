@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace EBookCrawler.Texting
 {
-   public class Image : TextElement
+    public class Image : TextElement
     {
         public string Name { get; set; }
         public string RelativePath { get; set; }
+        public string Caption { get; set; }
 
         public double Height { get; set; }
         public double Width { get; set; }

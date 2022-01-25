@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EBookCrawler.Texting
 {
-   public class Header : ContainerElement
+    public class Header : ContainerElement
     {
         public int Hierarchy { get; set; }
     }

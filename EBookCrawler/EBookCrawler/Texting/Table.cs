@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EBookCrawler.Texting
 {
-   public class Table : TextElement
+    public class Table : TextElement
     {
         public class Row : TextElement
         {
@@ -50,7 +50,7 @@ namespace EBookCrawler.Texting
         public double Padding { get; set; }
         public double Spacing { get; set; }
         public double Border { get; set; }
-        public string Summary { get; set; }
+        public string Caption { get; set; }
         public int Alignment { get; set; }
 
         public void Add(IEnumerable<TextElement> rows)
@@ -66,8 +66,14 @@ namespace EBookCrawler.Texting
         {
             switch (attValue)
             {
+                case "left":
+                    this.Alignment = 0;
+                    break;
                 case "center":
                     this.Alignment = 1;
+                    break;
+                case "right":
+                    this.Alignment = 2;
                     break;
                 default:
                     throw new NotImplementedException();

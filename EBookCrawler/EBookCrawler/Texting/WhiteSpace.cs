@@ -11,6 +11,5 @@ namespace EBookCrawler.Texting
         public double HSpace { get; set; }
         public double VSpace { get; set; }
         public bool NonBreakingSpace { get; set; }
-        public FontManager.Mode Mode { get; set; }
     }
 }

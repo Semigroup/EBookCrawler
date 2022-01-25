@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EBookCrawler.Texting
 {
-   public class HorizontalRule : TextElement
+    public class HorizontalRule : TextElement
     {
         /// <summary>
         /// Proportional. 1 means full Textwidth

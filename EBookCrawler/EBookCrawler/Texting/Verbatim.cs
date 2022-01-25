@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EBookCrawler.Texting
 {
-   public class Verbatim : TextElement
+    public class Verbatim : TextElement
     {
         public string Text { get; set; }
     }
