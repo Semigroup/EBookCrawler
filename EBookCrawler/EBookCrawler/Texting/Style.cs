@@ -18,5 +18,6 @@ namespace EBookCrawler.Texting
         public bool IsSmallCaps;
         public bool IsMonoSpace;
         public bool IsWide;
+        public bool IsFraktur;
     }
 }

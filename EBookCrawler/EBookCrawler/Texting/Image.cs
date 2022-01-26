@@ -20,6 +20,7 @@ namespace EBookCrawler.Texting
         public double Border { get; set; }
 
         public bool InLine { get; set; }
+        public bool WrapFigure { get; set; }
         public int Alignment { get; set; }
     }
 }

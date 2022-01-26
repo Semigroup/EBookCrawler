@@ -17,7 +17,9 @@ namespace EBookCrawler.Texting
             Chapter,
             Pseudonym,
             Date,
-            Publisher
+            Publisher,
+            Translator,
+            Caption
         }
         public Info MyInfo { get; set; } = Info.None;
         public int Hierarchy { get; set; }
@@ -25,13 +27,17 @@ namespace EBookCrawler.Texting
         public void SetInfo(string value) {
             switch (value.ToLower())
             {
+                case "autor":
+                case "autho":
                 case "author":
+                case "authpr":
                     this.MyInfo = Info.Author;
                     break;
                 case "pseudo":
                     this.MyInfo = Info.Pseudonym;
                     break;
                 case "title":
+                case "titla":
                     this.MyInfo = Info.Title;
                     break;
                 case "subtitle":
@@ -48,8 +54,16 @@ namespace EBookCrawler.Texting
                     this.MyInfo = Info.Publisher;
                     break;
                 case "center":
+                case "centerbig":
                 case "western":
                 case "ce":
+                case "vers":
+                    break;
+                case "translator":
+                    this.MyInfo = Info.Translator;
+                    break;
+                case "figcaption":
+                    this.MyInfo = Info.Caption;
                     break;
                 default:
                     throw new NotImplementedException();

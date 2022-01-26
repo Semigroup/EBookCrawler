@@ -25,11 +25,20 @@ namespace EBookCrawler.Texting
         }
         public class Datum : ContainerElement
         {
-            public double VAlign { get; set; }
+            public int VAlignment { get; set; }
             //Ignore?
             public int ColSpan { get; set; } = 1;
             public int RowSpan { get; set; } = 1;
             public Length Width { get; set; } = new Length() { Value = 1, IsProportional = true };
+            public Length Height { get; set; } = new Length() { Value = 0, IsProportional = true };
+        }
+
+        public enum BorderStyle
+        {
+            Columns,
+            Rows,
+            None,
+            All
         }
 
         public List<Row> Rows { get; set; } = new List<Row>();
@@ -41,6 +50,7 @@ namespace EBookCrawler.Texting
         public bool IsPoem { get; set; }
         public bool IsBox { get; set; }
         public Length Width { get; set; } = new Length() { Value = 1, IsProportional = true };
+        public BorderStyle Style { get; set; } = Table.BorderStyle.All;
 
         public void Add(IEnumerable<TextElement> rows)
         {
@@ -49,6 +59,20 @@ namespace EBookCrawler.Texting
                     this.Rows.Add(row);
                 else
                     throw new NotImplementedException();
+        }
+        public void SetBorderStyle(string value)
+        {
+            switch (value.ToLower())
+            {
+                case "cols":
+                    Style = BorderStyle.Columns;
+                    break;
+                case "rows":
+                    Style = BorderStyle.Rows;
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
         }
     }
 }

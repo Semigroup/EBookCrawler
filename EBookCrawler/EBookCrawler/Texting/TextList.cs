@@ -19,7 +19,9 @@ namespace EBookCrawler.Texting
             Plusses,
             Dashes,
             LongDashes,
-            Bullets
+            Bullets,
+            Circles,
+            Squares
         }
 
         public bool IsOrdered { get; set; }
@@ -50,6 +52,15 @@ namespace EBookCrawler.Texting
                     break;
                 case "-":
                     this.Numbering = NumberingType.Dashes;
+                    break;
+                case "circles":
+                case "circle":
+                case "disc":
+                    this.Numbering = NumberingType.Circles;
+                    break;
+                case "square":
+                case "squares":
+                    this.Numbering = NumberingType.Squares;
                     break;
                 default:
                     throw new NotImplementedException();

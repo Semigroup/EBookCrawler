@@ -159,6 +159,9 @@ namespace EBookCrawler.Parsing
                 case "h3":
                 case "h4":
                 case "h5":
+                case "h6":
+                case "h7":
+                case "h8":
                     this.MyKind = Kind.Header;
                     break;
                 case "hr":

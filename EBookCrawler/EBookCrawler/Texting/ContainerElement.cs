@@ -33,6 +33,7 @@ namespace EBookCrawler.Texting
             switch (classValue)
             {
                 case "initial":
+                case "intitial":
                     this.StartsWithCapital = true;
                     break;
                 case "abstract":
@@ -43,6 +44,7 @@ namespace EBookCrawler.Texting
                 case "figcaptio":
                 case "figcation":
                 case "date":
+                case "epigraph":
                     this.Style = new Style() { IsItalic = true };
                     break;
                 case "drama":
@@ -65,7 +67,13 @@ namespace EBookCrawler.Texting
                     this.Indentation = 1;
                     break;
                 case "dblmarg":
+                case "dblamrg":
+                case "dlmarg":
+                case "dblmargr":
+                case "dlmargr":
                 case "center":
+                case "cebter":
+                case "enter":
                 case "stars":
                 case "chapter":
                 case "motto":
@@ -75,12 +83,16 @@ namespace EBookCrawler.Texting
                 case "leftjust":
                 case "figure":
                 case "right":
+                case "riht":
                 case "signature":
                 case "font110":
                 case "dedication":
                 case "scene":
                 case "titlepage":
                 case "line":
+                case "characters":
+                case "justify":
+                case "reg":
                     break;
                 case "note":
                 case "centersml":
@@ -89,10 +101,10 @@ namespace EBookCrawler.Texting
                 case "centerbig":
                     this.Size = 1;
                     break;
-                //case "box":
-                //    this.Alignment = 1;
-                //    this.IsBox = true;
-                //    break;
+                case "def":
+                    this.Style = new Style() { IsBold = true };
+                    this.Color = new Color("ff0000");
+                    break;
                 default:
                     throw new NotImplementedException();
             }
