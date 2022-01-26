@@ -66,7 +66,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Parsing\Repairer.cs" />
-    <Compile Include="Texting\BlockQuote.cs" />
     <Compile Include="Texting\Box.cs" />
     <Compile Include="Texting\Color.cs" />
     <Compile Include="Texting\ContainerElement.cs" />
@@ -80,6 +79,7 @@
     <Compile Include="Texting\ListItem.cs" />
     <Compile Include="Texting\Paragraph.cs" />
     <Compile Include="Texting\Poem.cs" />
+    <Compile Include="Texting\Quote.cs" />
     <Compile Include="Texting\Style.cs" />
     <Compile Include="Texting\SubIndex.cs" />
     <Compile Include="Texting\SuperIndex.cs" />

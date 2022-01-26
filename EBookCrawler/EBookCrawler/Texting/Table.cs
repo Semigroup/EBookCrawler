@@ -32,6 +32,37 @@ namespace EBookCrawler.Texting
             public Length Width { get; set; } = new Length() { Value = 1, IsProportional = true };
             public Length Height { get; set; } = new Length() { Value = 0, IsProportional = true };
         }
+        public class RowContainer : TextElement
+        {
+            public enum Kind
+            {
+                Unspecified,
+                Head,
+                Body,
+                Foot
+            }
+
+            public Kind MyKind { get; set; }
+            public List<Row> Rows { get; set; } = new List<Row>();
+
+            public RowContainer(Row row)
+            {
+                Rows.Add(row);
+            }
+            public RowContainer()
+            {
+
+            }
+
+            public void Add(IEnumerable<TextElement> rows)
+            {
+                foreach (var item in rows)
+                    if (item is Row row)
+                        this.Rows.Add(row);
+                    else
+                        throw new NotImplementedException();
+            }
+        }
 
         public enum BorderStyle
         {
@@ -41,7 +72,7 @@ namespace EBookCrawler.Texting
             All
         }
 
-        public List<Row> Rows { get; set; } = new List<Row>();
+        public List<RowContainer> Segments { get; set; } = new List<RowContainer>();
         public double Padding { get; set; }
         public double Spacing { get; set; }
         public double Border { get; set; }
@@ -56,7 +87,9 @@ namespace EBookCrawler.Texting
         {
             foreach (var item in rows)
                 if (item is Row row)
-                    this.Rows.Add(row);
+                    this.Segments.Add(new RowContainer(row));
+                else if (item is RowContainer container)
+                    this.Segments.Add(container);
                 else
                     throw new NotImplementedException();
         }
@@ -64,7 +97,11 @@ namespace EBookCrawler.Texting
         {
             switch (value.ToLower())
             {
+                case "none":
+                    Style = BorderStyle.None;
+                    break;
                 case "cols":
+                case "groups":
                     Style = BorderStyle.Columns;
                     break;
                 case "rows":

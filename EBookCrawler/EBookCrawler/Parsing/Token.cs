@@ -15,6 +15,9 @@ namespace EBookCrawler.Parsing
             Table,
             TableRow,
             TableDatum,
+            TableHead,
+            TableBody,
+            TableFoot,
             Header,
             HorizontalRuling,
             Span,
@@ -38,7 +41,11 @@ namespace EBookCrawler.Parsing
             ListItem,
             ListTerm,
             Insertion,
-            Address
+            Deletion,
+            Address,
+            ColumnGroup,
+            Quote,
+            Column
         }
         public struct Attribute
         {
@@ -61,11 +68,14 @@ namespace EBookCrawler.Parsing
             public Texting.Length ValueAsLength()
             {
                 if (Value[Value.Length - 1] == '%')
+                {
+                    var number = Value.TrimEnd('%');
                     return new Texting.Length()
                     {
-                        Value = double.Parse(Value.Substring(0,Value.Length - 1)),
+                        Value = double.Parse(number) / 100.0,
                         IsProportional = true
                     };
+                }
                 else
                 {
                     double l = double.Parse(Value);
@@ -132,6 +142,16 @@ namespace EBookCrawler.Parsing
         {
             switch (_Tag)
             {
+                case "q":
+                    this.MyKind = Kind.Quote;
+                    break;
+                case "col":
+                    this.MyKind = Kind.Column;
+                    break;
+                case "colgroup":
+                    this.MyKind = Kind.ColumnGroup;
+                    break;
+              
                 case "address":
                     this.MyKind = Kind.Address;
                     break;
@@ -150,9 +170,20 @@ namespace EBookCrawler.Parsing
                 case "tr":
                     this.MyKind = Kind.TableRow;
                     break;
+                case "th":
                 case "td":
                     this.MyKind = Kind.TableDatum;
                     break;
+                case "thead":
+                    this.MyKind = Kind.TableHead;
+                    break;
+                case "tbody":
+                    this.MyKind = Kind.TableBody;
+                    break;
+                case "tfoot":
+                    this.MyKind = Kind.TableFoot;
+                    break;
+
                 case "h0":
                 case "h1":
                 case "h2":
@@ -177,6 +208,7 @@ namespace EBookCrawler.Parsing
                     this.MyKind = Kind.Italic;
                     break;
                 case "b":
+                case "strong": //ToDo
                     this.MyKind = Kind.Bold;
                     break;
                 case "u":
@@ -229,6 +261,9 @@ namespace EBookCrawler.Parsing
                     break;
                 case "ins":
                     this.MyKind = Kind.Insertion;
+                    break;
+                case "del":
+                    this.MyKind = Kind.Deletion;
                     break;
 
                 default:

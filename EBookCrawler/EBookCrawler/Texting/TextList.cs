@@ -10,7 +10,7 @@ namespace EBookCrawler.Texting
     {
         public enum NumberingType
         {
-            None,
+            Unspecified,
             ArabicNumbers,
             RomanNumbers,
             AlphabeticalSmall,
@@ -26,17 +26,21 @@ namespace EBookCrawler.Texting
 
         public bool IsOrdered { get; set; }
         public bool IsDescriptional { get; set; }
-        public NumberingType Numbering { get; set; }
+        public NumberingType Numbering { get; set; } = NumberingType.Unspecified;
+        public string StartNumber { get; set; }
 
         public void SetNumbering(string style)
         {
-            switch (style)
+            if (style =="A")
+            {
+                this.Numbering = NumberingType.AlphabeticalLarge;
+                return;
+            }
+
+            switch (style.ToLower())
             {
                 case "a":
                     this.Numbering = NumberingType.AlphabeticalSmall;
-                    break;
-                case "A":
-                    this.Numbering = NumberingType.AlphabeticalLarge;
                     break;
                 case "1":
                     this.Numbering = NumberingType.ArabicNumbers;

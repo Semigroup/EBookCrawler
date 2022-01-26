@@ -49,9 +49,14 @@ namespace EBookCrawler
             //        found[i].WriteBook(libRoot);
             //}
 
-            foreach (var author in orga.Library.Authors.Values)
-                foreach (var book in author.Books.Values)
+            var authors = orga.Library.Authors.Values.ToArray();
+            for (int i = 431; i < authors.Length; i++)
+            {
+                Console.WriteLine(i + " of " + authors.Length);
+                Console.WriteLine(authors[i].ToString());
+                foreach (var book in authors[i].Books.Values)
                     book.WriteBook(libRoot);
+            }
         }
     }
 }

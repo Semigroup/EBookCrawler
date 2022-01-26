@@ -28,5 +28,9 @@ namespace EBookCrawler
             foreach (var book in Books)
                 this.Books.Add(book.Identifier, book);
         }
+        public override string ToString()
+        {
+            return FirstName + " " + LastName;
+        }
     }
 }

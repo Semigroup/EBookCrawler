@@ -32,6 +32,7 @@ namespace EBookCrawler.Texting
             this.Alignment = Transformer.GetAlignment(classValue);
             switch (classValue)
             {
+                case "intial":
                 case "initial":
                 case "intitial":
                     this.StartsWithCapital = true;
@@ -44,6 +45,7 @@ namespace EBookCrawler.Texting
                 case "figcaptio":
                 case "figcation":
                 case "date":
+                case "address":
                 case "epigraph":
                     this.Style = new Style() { IsItalic = true };
                     break;
@@ -66,12 +68,15 @@ namespace EBookCrawler.Texting
                     this.Style = new Style() { IsItalic = true };
                     this.Indentation = 1;
                     break;
+
+                case "":
                 case "dblmarg":
                 case "dblamrg":
                 case "dlmarg":
                 case "dblmargr":
                 case "dlmargr":
                 case "center":
+                case "cent":
                 case "cebter":
                 case "enter":
                 case "stars":
@@ -79,23 +84,38 @@ namespace EBookCrawler.Texting
                 case "motto":
                 case "prosa":
                 case "left":
+                case "lewft":
                 case "leftmarg":
+                case "leftmrg":
                 case "leftjust":
                 case "figure":
                 case "right":
                 case "riht":
                 case "signature":
+                case "signatur":
                 case "font110":
                 case "dedication":
                 case "scene":
                 case "titlepage":
                 case "line":
+                case "iniline":
                 case "characters":
                 case "justify":
                 case "reg":
+                case "western":
+                case "v":
+                case "versmarg":
+                case "weihe":
+                case "titel_3":
+                case "recipient":
+                case "act":
+                case "p23":
+                case "p24":
+                case "p25":
                     break;
                 case "note":
                 case "centersml":
+                case "anmerk":
                     this.Size = -1;
                     break;
                 case "centerbig":
@@ -104,6 +124,9 @@ namespace EBookCrawler.Texting
                 case "def":
                     this.Style = new Style() { IsBold = true };
                     this.Color = new Color("ff0000");
+                    break;
+                case "speaker":
+                    this.Style = new Style() { IsBold = true };
                     break;
                 default:
                     throw new NotImplementedException();
