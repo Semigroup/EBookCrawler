@@ -34,6 +34,7 @@ namespace EBookCrawler.Texting
             {
                 case "intial":
                 case "initial":
+                case "initital":
                 case "intitial":
                     this.StartsWithCapital = true;
                     break;
@@ -70,6 +71,8 @@ namespace EBookCrawler.Texting
                     break;
 
                 case "":
+                case "chupter":
+                case "section":
                 case "dblmarg":
                 case "dblamrg":
                 case "dlmarg":

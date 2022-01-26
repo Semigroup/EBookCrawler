@@ -29,9 +29,21 @@ namespace EBookCrawler.Texting
         public NumberingType Numbering { get; set; } = NumberingType.Unspecified;
         public string StartNumber { get; set; }
 
+        public override void Add(TextElement textElement)
+        {
+            if (textElement is Word word)
+            {
+                var words = word.SplitLines();
+                foreach (var item in words)
+                    this.TextElements.Add(item);
+            }
+            else
+                base.Add(textElement);
+        }
+
         public void SetNumbering(string style)
         {
-            if (style =="A")
+            if (style == "A")
             {
                 this.Numbering = NumberingType.AlphabeticalLarge;
                 return;

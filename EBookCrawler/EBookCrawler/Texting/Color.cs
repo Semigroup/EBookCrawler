@@ -38,7 +38,10 @@ namespace EBookCrawler.Texting
                     Green = 0;
                     Blue = 255;
                     break;
-              
+                case "gray":
+                    Red = Green = Blue = 160;
+                    break;
+
                 default:
                     int getValue(char hexDigit)
                     {

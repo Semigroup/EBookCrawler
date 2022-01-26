@@ -107,6 +107,9 @@ namespace EBookCrawler.Texting
                 case "rows":
                     Style = BorderStyle.Rows;
                     break;
+                case "all":
+                    Style = BorderStyle.All;
+                    break;
                 default:
                     throw new NotImplementedException();
             }

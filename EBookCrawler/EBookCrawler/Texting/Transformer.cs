@@ -29,7 +29,7 @@ namespace EBookCrawler.Texting
             {
                 case Token.Kind.List:
                     var list = GetContainer(node.Token);
-                    list.Add(TransformListItems(node.Children));
+                    list.Add(TransformChildren(node.Children, false));
                     return list;
 
                 case Token.Kind.Table:
@@ -123,25 +123,25 @@ namespace EBookCrawler.Texting
                 }
         }
 
-        private IEnumerable<TextElement> TransformListItems(IEnumerable<Parser.Node> children)
-        {
-            foreach (var child in children)
-                switch (child.Token.MyKind)
-                {
-                    case Token.Kind.Raw:
-                        break;
+        //private IEnumerable<TextElement> TransformListItems(IEnumerable<Parser.Node> children)
+        //{
+        //    foreach (var child in children)
+        //        switch (child.Token.MyKind)
+        //        {
+        //            case Token.Kind.Raw:
+        //                break;
 
-                    case Token.Kind.ListItem:
-                        yield return Transform(child);
-                        break;
-                    case Token.Kind.ListTerm:
-                        yield return Transform(child);
-                        break;
+        //            case Token.Kind.ListItem:
+        //                yield return Transform(child);
+        //                break;
+        //            case Token.Kind.ListTerm:
+        //                yield return Transform(child);
+        //                break;
 
-                    default:
-                        throw new NotImplementedException();
-                }
-        }
+        //            default:
+        //                throw new NotImplementedException();
+        //        }
+        //}
 
         private Verbatim TransformVerbatim(Parser.Node node)
         {
@@ -278,7 +278,12 @@ namespace EBookCrawler.Texting
                 case Token.Kind.Insertion:
                 case Token.Kind.Deletion:
                 case Token.Kind.Address:
+                case Token.Kind.Strike:
                     return GetStyleContainer(token);
+
+                case Token.Kind.Aside:
+                    //ToDo
+                    return new ContainerElement();
 
                 case Token.Kind.Div:
                 case Token.Kind.Paragraph:
@@ -376,6 +381,9 @@ namespace EBookCrawler.Texting
             var container = new ContainerElement();
             switch (token.MyKind)
             {
+                case Token.Kind.Strike:
+                    container.Style = new Style() { IsCrossedOut = true };
+                    break;
                 case Token.Kind.Bold:
                     container.Style = new Style() { IsBold = true };
                     break;
@@ -426,6 +434,10 @@ namespace EBookCrawler.Texting
                                 }
                                 else
                                     throw new NotImplementedException();
+                            case "face":
+                                //ToDo?
+                                //Times New Roman
+                                break;
                             default:
                                 throw new NotImplementedException();
                         }
@@ -476,18 +488,47 @@ namespace EBookCrawler.Texting
                     //container.Color = new Color("a9a9a9");
                     //break; ToDo?
                     return new EmptyContainer();
+
+                case "titel0":
+                    container.Size = 3;
+                    container.Style = new Style() { IsUpper = true, IsWide = true };
+                    break;
+                case "titel1":
+                case "titel":
+                    container.Size = 1;
+                    container.Style = new Style() { IsUpper = true, IsWide = true };
+                    break;
+                case "titel2":
+                case "titel4":
+                case "titel5":
+                    container.Style = new Style() { IsUpper = true };
+                    break;
+                case "titel2a":
+                    container.Style = new Style() { IsUpper = true, IsWide = true };
+                    break;
+                case "titel3":
+                    container.Size = 1;
+                    container.Style = new Style() { IsUpper = true };
+                    break;
+
                 case "fotnote":
                 case "foonote":
+                case "footnnote":
                 case "footnote":
                     container = new Footnote();
-                    break;
-                case "spaced":
-                case "wide":
-                    container.Style = new Style() { IsWide = true };
                     break;
                 case "tooltip":
                     container = new Footnote() { IsToolTip = true };
                     break;
+                case "sidenote":
+                    container = new Footnote() { IsSideNote = true };
+                    break;
+
+                case "spaced":
+                case "wide":
+                    container.Style = new Style() { IsWide = true };
+                    break;
+              
                 case "initial":
                 case "big":
                 case "big1":
@@ -646,6 +687,9 @@ namespace EBookCrawler.Texting
                         {
                             case "note":
                                 bq.Size -= 1;
+                                break;
+                            case "gray":
+                                bq.Color = new Color(attribute.Value);
                                 break;
                             default:
                                 throw new NotImplementedException();
@@ -894,6 +938,9 @@ namespace EBookCrawler.Texting
             switch (value.ToLower())
             {
                 case "":
+                case "chupter":
+                case "section":
+                case "real":
                 case "anmerk":
                 case "font110":
                 case "prosa":
@@ -913,6 +960,7 @@ namespace EBookCrawler.Texting
                 case "cdrama2":
                 case "intial":
                 case "initial":
+                case "initital":
                 case "intitial":
                 case "stage":
                 case "scene":

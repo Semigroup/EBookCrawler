@@ -62,6 +62,7 @@ namespace EBookCrawler.Texting
                 case "ce":
                 case "vers":
                 case "dblmarg":
+                case "initial":
                     break;
                 case "translator":
                     this.MyInfo = Info.Translator;

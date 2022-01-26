@@ -45,7 +45,9 @@ namespace EBookCrawler.Parsing
             Address,
             ColumnGroup,
             Quote,
-            Column
+            Column,
+            Strike,
+            Aside
         }
         public struct Attribute
         {
@@ -142,6 +144,15 @@ namespace EBookCrawler.Parsing
         {
             switch (_Tag)
             {
+                case "aside":
+                    this.MyKind = Kind.Aside;
+                    break;
+
+                case "strike":
+                case "s":
+                    this.MyKind = Kind.Strike;
+                    break;
+
                 case "q":
                     this.MyKind = Kind.Quote;
                     break;
