@@ -416,15 +416,19 @@ namespace EBookCrawler.Texting
                                         para.StartsWithIndentation = GetMeasure(propValue) > 0;
                                         break;
                                     case "font-variant":
+                                    case "font-style":
                                         switch (propValue.ToLower())
                                         {
                                             case "small-caps":
                                                 para.Style = new Style() { IsSmallCaps = true };
                                                 break;
+                                            case "normal":
+                                                break;
                                             default:
                                                 throw new NotImplementedException();
                                         }
                                         break;
+                                    case "margin-top":
                                     case "margin-bottom":
                                         //ToDo
                                         break;
@@ -625,6 +629,7 @@ namespace EBookCrawler.Texting
                 case "font110":
                 case "f110":
                 case "fntext":
+                case "src":
                     break;
 
                 case "center":
@@ -650,7 +655,27 @@ namespace EBookCrawler.Texting
                     case "id":
                         break;
                     case "style":
-                        container.Color = new Color(attribute.Value);
+                        if (attribute.Value.Contains(':'))
+                        {
+                            var props = attribute.ParseProperties();
+                            foreach (var (propName, propValue) in props)
+                                switch (propName.ToLower())
+                                {
+                                    case "font-style":
+                                        switch (propValue.ToLower())
+                                        {
+                                            case "normal":
+                                                break;
+                                            default:
+                                                throw new NotImplementedException();
+                                        }
+                                        break;
+                                    default:
+                                        throw new NotImplementedException();
+                                }
+                        }
+                        else
+                            container.Color = new Color(attribute.Value);
                         break;
                     case "title":
                         if (container is Footnote fn)
@@ -1053,6 +1078,8 @@ namespace EBookCrawler.Texting
             switch (value.ToLower())
             {
                 case "":
+                case "part":
+                case "tb":
                 case "small":
                 case "regie":
                 case "smallcaps":

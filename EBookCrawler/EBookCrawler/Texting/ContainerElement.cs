@@ -78,7 +78,9 @@ namespace EBookCrawler.Texting
                     break;
 
                 case "":
+                case "tb":
                 case "box":
+                case "part":
                 case "chupter":
                 case "section":
                 case "dblmarg":
