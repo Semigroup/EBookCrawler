@@ -47,7 +47,8 @@ namespace EBookCrawler.Parsing
             Quote,
             Column,
             Strike,
-            Aside
+            Aside,
+            Cite
         }
         public struct Attribute
         {
@@ -88,17 +89,19 @@ namespace EBookCrawler.Parsing
                     };
                 }
             }
-            public IEnumerable<(string propName, string propValue)> ParseProperties()
-            {
-                string[] properties = Value.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-                for (int i = 0; i < properties.Length; i++)
-                {
-                    string[] nv = properties[i].Split(':');
-                    if (nv.Length != 2)
-                        throw new NotImplementedException();
-                    yield return (nv[0].Trim(), nv[1].Trim());
-                }
-            }
+            public Texting.Measure ValueAsMeasure()
+                => new Texting.Measure(Value);
+            //public IEnumerable<(string propName, string propValue)> ParseProperties()
+            //{
+            //    string[] properties = Value.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+            //    for (int i = 0; i < properties.Length; i++)
+            //    {
+            //        string[] nv = properties[i].Split(':');
+            //        if (nv.Length != 2)
+            //            throw new NotImplementedException();
+            //        yield return (nv[0].Trim(), nv[1].Trim());
+            //    }
+            //}
         }
 
         public int Position { get; set; }
@@ -126,6 +129,8 @@ namespace EBookCrawler.Parsing
         public bool IsBeginning { get; set; }
         public bool IsEnd { get; set; }
         public List<Attribute> Attributes { get; set; } = new List<Attribute>();
+        public List<Attribute> StyleProperties { get; set; } = new List<Attribute>();
+        public bool HasStyle { get; set; }
         public string Text { get; set; }
         public Kind MyKind { get; set; }
 
@@ -151,10 +156,38 @@ namespace EBookCrawler.Parsing
             this.Attributes = Attributes;
         }
 
+        public void ComputeStyle()
+        {
+            int index = -1;
+            for (int i = 0; i < Attributes.Count; i++)
+            {
+                var att = Attributes[i];
+                if (att.Name.ToLower() == "style" && att.Value.Contains(':'))
+                {
+                    this.HasStyle = true;
+                    index = i;
+                    string value = att.Value.ToLower();
+                    string[] properties = value.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                    for (int j = 0; j < properties.Length; j++)
+                    {
+                        string[] nv = properties[j].Split(':');
+                        if (nv.Length != 2)
+                            throw new NotImplementedException();
+                        this.StyleProperties.Add(new Attribute(nv[0].Trim(), nv[1].Trim()));
+                    }
+                    break;
+                }
+            }
+            if (HasStyle)
+                Attributes.RemoveAt(index);
+        }
         private void SetKind()
         {
             switch (_Tag)
             {
+                case "cite":
+                    this.MyKind = Kind.Cite;
+                    break;
                 case "aside":
                     this.MyKind = Kind.Aside;
                     break;

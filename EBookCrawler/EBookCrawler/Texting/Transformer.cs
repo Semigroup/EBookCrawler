@@ -14,7 +14,16 @@ namespace EBookCrawler.Texting
         public TextElement Transform(string Text, Parser.Node node)
         {
             this.Text = Text;
+            ComputeStyle(node);
             return Transform(node);
+        }
+        private void ComputeStyle(Parser.Node node)
+        {
+            if (!node.IsRoot)
+                node.Token.ComputeStyle();
+            if (!node.IsLeaf)
+                foreach (var child in node.Children)
+                    ComputeStyle(child);
         }
         private TextElement Transform(Parser.Node node)
         {
@@ -218,34 +227,31 @@ namespace EBookCrawler.Texting
                     case "border":
                         img.Border = att.ValueAsDouble();
                         break;
-                    case "style":
-                        var props = att.ParseProperties();
-                        foreach (var (propName, propValue) in props)
-                            switch (propName)
-                            {
-                                case "display":
-                                    switch (propValue)
-                                    {
-                                        case "block":
-                                            //ToDo?
-                                            break;
-                                        default:
-                                            throw new NotImplementedException();
-                                    }
-                                    break;
-                                case "margin":
-                                    switch (propValue)
-                                    {
-                                        case "auto":
-                                            //ToDo?
-                                            break;
-                                        default:
-                                            throw new NotImplementedException();
-                                    }
-                                    break;
-                                default:
-                                    throw new NotImplementedException();
-                            }
+                    default:
+                        throw new NotImplementedException();
+                }
+            foreach (var prop in token.StyleProperties)
+                switch (prop.Name)
+                {
+                    case "display":
+                        switch (prop.Value)
+                        {
+                            case "block":
+                                //ToDo?
+                                break;
+                            default:
+                                throw new NotImplementedException();
+                        }
+                        break;
+                    case "margin":
+                        switch (prop.Value)
+                        {
+                            case "auto":
+                                //ToDo?
+                                break;
+                            default:
+                                throw new NotImplementedException();
+                        }
                         break;
                     default:
                         throw new NotImplementedException();
@@ -269,6 +275,8 @@ namespace EBookCrawler.Texting
                             case "short":
                                 hr.Length = new Length() { Value = 0.3, IsProportional = true };
                                 break;
+                            case "":
+                                break;
                             case "star":
                                 //ToDo
                                 break;
@@ -290,6 +298,12 @@ namespace EBookCrawler.Texting
                     default:
                         throw new NotImplementedException();
                 }
+            foreach (var prop in token.StyleProperties)
+                switch (prop.Name)
+                {
+                    default:
+                        throw new NotImplementedException();
+                }
             return hr;
         }
 
@@ -300,24 +314,6 @@ namespace EBookCrawler.Texting
                 return new EmptyContainer();
             switch (token.MyKind)
             {
-                case Token.Kind.Bold:
-                case Token.Kind.Italic:
-                case Token.Kind.Emphasis:
-                case Token.Kind.TeleType:
-                case Token.Kind.Font:
-                case Token.Kind.Big:
-                case Token.Kind.Small:
-                case Token.Kind.Underlined:
-                case Token.Kind.Insertion:
-                case Token.Kind.Deletion:
-                case Token.Kind.Address:
-                case Token.Kind.Strike:
-                    return GetStyleContainer(token);
-
-                case Token.Kind.Aside:
-                    //ToDo
-                    return new ContainerElement();
-
                 case Token.Kind.Div:
                 case Token.Kind.Paragraph:
                     return GetParagraph(token);
@@ -341,12 +337,17 @@ namespace EBookCrawler.Texting
                 case Token.Kind.Header:
                     return GetHeader(token);
 
+                case Token.Kind.Aside:
+                    //ToDo
+                    return new ContainerElement();
+
                 case Token.Kind.Column:
                 case Token.Kind.ColumnGroup:
                     //ToDo
                     return new EmptyContainer();
+
                 default:
-                    throw new NotImplementedException();
+                    return GetStyleContainer(token);
             }
         }
         private ContainerElement GetParagraph(Token token)
@@ -402,39 +403,28 @@ namespace EBookCrawler.Texting
                         case "summary":
                         case "name":
                             break;
-                        case "style":
-                            var props = attribute.ParseProperties();
-                            foreach (var (propName, propValue) in props)
-                                switch (propName.ToLower())
-                                {
-                                    case "margin-left":
-                                        para.Indentation = GetMeasure(propValue);
-                                        break;
-                                    case "text-indent":
-                                        //ToDo?
-                                        //Add Latex command here?
-                                        para.StartsWithIndentation = GetMeasure(propValue) > 0;
-                                        break;
-                                    case "font-variant":
-                                    case "font-style":
-                                        switch (propValue.ToLower())
-                                        {
-                                            case "small-caps":
-                                                para.Style = new Style() { IsSmallCaps = true };
-                                                break;
-                                            case "normal":
-                                                break;
-                                            default:
-                                                throw new NotImplementedException();
-                                        }
-                                        break;
-                                    case "margin-top":
-                                    case "margin-bottom":
-                                        //ToDo
-                                        break;
-                                    default:
-                                        throw new NotImplementedException();
-                                }
+                        default:
+                            throw new NotImplementedException();
+                    }
+
+                foreach (var prop in token.StyleProperties)
+                    switch (prop.Name)
+                    {
+                        case "margin-left":
+                            para.Indentation = prop.ValueAsMeasure();
+                            break;
+                        case "text-indent":
+                            //ToDo?
+                            //Add Latex command here?
+                            para.StartsWithIndentation = true;
+                            break;
+                        case "font-variant":
+                        case "font-style":
+                            para.Style = GetFontStyle(prop.Value);
+                            break;
+                        case "margin-top":
+                        case "margin-bottom":
+                            //ToDo
                             break;
                         default:
                             throw new NotImplementedException();
@@ -455,6 +445,7 @@ namespace EBookCrawler.Texting
                     break;
                 case Token.Kind.Italic:
                 case Token.Kind.Address:
+                case Token.Kind.Cite:
                     container.Style = new Style() { IsItalic = true };
                     break;
                 case Token.Kind.Emphasis:
@@ -486,24 +477,23 @@ namespace EBookCrawler.Texting
                                 break;
                             case "class":
                                 break;
-                            case "style":
-                                var props = attribute.ParseProperties();
-                                foreach (var (propName, propValue) in props)
-                                    switch (propName)
-                                    {
-                                        case "font-size":
-                                            //ToDo?
-                                            break;
-                                        case "margin-left":
-                                            container.Indentation = double.Parse(propValue);
-                                            break;
-                                        default:
-                                            throw new NotImplementedException();
-                                    }
-                                break;
+
                             case "face":
                                 //ToDo?
                                 //Times New Roman
+                                break;
+                            default:
+                                throw new NotImplementedException();
+                        }
+
+                    foreach (var prop in token.StyleProperties)
+                        switch (prop.Name)
+                        {
+                            case "font-size":
+                                //ToDo?
+                                break;
+                            case "margin-left":
+                                container.Indentation = prop.ValueAsMeasure();
                                 break;
                             default:
                                 throw new NotImplementedException();
@@ -528,9 +518,6 @@ namespace EBookCrawler.Texting
                 return container;
             switch (clazz.ToLower())
             {
-                case "fraktur":
-                    container.Style = new Style() { IsFraktur = true };
-                    break;
                 case "speaker":
                     container.Style = new Style() { IsBold = true };
                     break;
@@ -538,21 +525,7 @@ namespace EBookCrawler.Texting
                 case "regie":
                     container.Style = new Style() { IsItalic = true };
                     break;
-                case "lower":
-                    container.Style = new Style() { IsLower = true };
-                    break;
-                case "upper":
-                    container.Style = new Style() { IsUpper = true };
-                    break;
-                case "smallcaps":
-                    container.Style = new Style() { IsSmallCaps = true };
-                    break;
-                case "underline":
-                    container.Style = new Style() { IsUnderlined = true };
-                    break;
-                case "overline":
-                    container.Style = new Style() { IsOverlined = true };
-                    break;
+
                 case "letorat":
                 case "lektorat":
                     //container.Color = new Color("a9a9a9");
@@ -594,12 +567,6 @@ namespace EBookCrawler.Texting
                     container = new Footnote() { IsSideNote = true };
                     break;
 
-                case "spaced":
-                case "wide":
-                case "superwide":
-                    container.Style = new Style() { IsWide = true };
-                    break;
-
                 case "initial":
                 case "big":
                 case "big1":
@@ -635,17 +602,18 @@ namespace EBookCrawler.Texting
                 case "center":
                     container.Alignment = 1;
                     break;
+                case "word":
                 case "red":
                     container.Color = new Color("ff0000");
                     break;
 
-                case "word":
                 case "kurz":
                 case "unicode":
                     break;
 
                 default:
-                    throw new NotImplementedException();
+                    container.Style = GetFontStyle(clazz.ToLower());
+                    break;
             }
 
             foreach (var attribute in token.Attributes)
@@ -655,27 +623,7 @@ namespace EBookCrawler.Texting
                     case "id":
                         break;
                     case "style":
-                        if (attribute.Value.Contains(':'))
-                        {
-                            var props = attribute.ParseProperties();
-                            foreach (var (propName, propValue) in props)
-                                switch (propName.ToLower())
-                                {
-                                    case "font-style":
-                                        switch (propValue.ToLower())
-                                        {
-                                            case "normal":
-                                                break;
-                                            default:
-                                                throw new NotImplementedException();
-                                        }
-                                        break;
-                                    default:
-                                        throw new NotImplementedException();
-                                }
-                        }
-                        else
-                            container.Color = new Color(attribute.Value);
+                        container.Color = new Color(attribute.Value);
                         break;
                     case "title":
                         if (container is Footnote fn)
@@ -690,6 +638,16 @@ namespace EBookCrawler.Texting
                         break;
                     case "lang":
                         //Language
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+
+            foreach (var prop in token.StyleProperties)
+                switch (prop.Name)
+                {
+                    case "font-style":
+                        container.Style = GetFontStyle(prop.Value);
                         break;
                     default:
                         throw new NotImplementedException();
@@ -724,22 +682,21 @@ namespace EBookCrawler.Texting
                                 throw new NotImplementedException();
                         }
                         break;
-                    case "style":
-                        var props = attribute.ParseProperties();
-                        foreach (var (propName, propValue) in props)
-                            switch (propName)
-                            {
-                                case "float":
-                                    //ToDo?
-                                    break;
-                                default:
-                                    throw new NotImplementedException();
-                            }
-                        break;
+
                     case "target":
                         //ToDo?
                         break;
 
+                    default:
+                        throw new NotImplementedException();
+                }
+
+            foreach (var prop in token.StyleProperties)
+                switch (prop.Name)
+                {
+                    case "float":
+                        //ToDo?
+                        break;
                     default:
                         throw new NotImplementedException();
                 }
@@ -803,6 +760,12 @@ namespace EBookCrawler.Texting
                     default:
                         throw new NotImplementedException();
                 }
+            foreach (var prop in token.StyleProperties)
+                switch (prop.Name)
+                {
+                    default:
+                        throw new NotImplementedException();
+                }
             return bq;
         }
         private ContainerElement GetListItem(Token token)
@@ -814,6 +777,12 @@ namespace EBookCrawler.Texting
                     case "value":
                         li.Term = attribute.Value;
                         break;
+                    default:
+                        throw new NotImplementedException();
+                }
+            foreach (var prop in token.StyleProperties)
+                switch (prop.Name)
+                {
                     default:
                         throw new NotImplementedException();
                 }
@@ -839,9 +808,11 @@ namespace EBookCrawler.Texting
             foreach (var attribute in token.Attributes)
                 switch (attribute.Name.ToLower())
                 {
-                    case "style":
                     case "type":
                     case "class":
+                        list.SetNumbering(attribute.Value);
+                        break;
+                    case "style":
                         list.SetNumbering(attribute.Value);
                         break;
                     case "start":
@@ -850,6 +821,19 @@ namespace EBookCrawler.Texting
                     default:
                         throw new NotImplementedException();
                 }
+            foreach (var prop in token.StyleProperties)
+                switch (prop.Name)
+                {
+                    case "font-style":
+                        list.Style = GetFontStyle(prop.Value);
+                        break;
+                    case "margin-left":
+                        list.Indentation = prop.ValueAsMeasure();
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+
             return list;
         }
         private ContainerElement GetHeader(Token token)
@@ -877,6 +861,12 @@ namespace EBookCrawler.Texting
                     case "align":
                     case "id":
                         break;
+                    default:
+                        throw new NotImplementedException();
+                }
+            foreach (var prop in token.StyleProperties)
+                switch (prop.Name)
+                {
                     default:
                         throw new NotImplementedException();
                 }
@@ -952,27 +942,25 @@ namespace EBookCrawler.Texting
                         break;
                     case "cols":
                         break;
-                    case "style":
-                        var props = attribute.ParseProperties();
-                        foreach (var (propName, propValue) in props)
-                            switch (propName)
-                            {
-                                case "border-top":
-                                    //ToDo?
-                                    //dotted
-                                    break;
-                                case "border-right":
-                                    //ToDo?
-                                    break;
-                                case "border-bottom":
-                                    //ToDo?
-                                    break;
-                                case "border-left":
-                                    //ToDo?
-                                    break;
-                                default:
-                                    throw new NotImplementedException();
-                            }
+                    default:
+                        throw new NotImplementedException();
+                }
+
+            foreach (var prop in token.StyleProperties)
+                switch (prop.Name)
+                {
+                    case "border-top":
+                        //ToDo?
+                        //dotted
+                        break;
+                    case "border-right":
+                        //ToDo?
+                        break;
+                    case "border-bottom":
+                        //ToDo?
+                        break;
+                    case "border-left":
+                        //ToDo?
                         break;
                     default:
                         throw new NotImplementedException();
@@ -994,6 +982,12 @@ namespace EBookCrawler.Texting
                     case "class":
                         //ToDo?
                         break;
+                    default:
+                        throw new NotImplementedException();
+                }
+            foreach (var prop in token.StyleProperties)
+                switch (prop.Name)
+                {
                     default:
                         throw new NotImplementedException();
                 }
@@ -1034,6 +1028,12 @@ namespace EBookCrawler.Texting
                     default:
                         throw new NotImplementedException();
                 }
+            foreach (var prop in token.StyleProperties)
+                switch (prop.Name)
+                {
+                    default:
+                        throw new NotImplementedException();
+                }
             return datum;
         }
         private Table.RowContainer GetTableRowContainer(Token token)
@@ -1056,6 +1056,12 @@ namespace EBookCrawler.Texting
             }
             foreach (var attribute in token.Attributes)
                 switch (attribute.Name.ToLower())
+                {
+                    default:
+                        throw new NotImplementedException();
+                }
+            foreach (var prop in token.StyleProperties)
+                switch (prop.Name)
                 {
                     default:
                         throw new NotImplementedException();
@@ -1101,6 +1107,7 @@ namespace EBookCrawler.Texting
                 case "abstract3":
                 case "letter":
                 case "drama":
+                case "drma":
                 case "drammarg":
                 case "drama1":
                 case "drama2":
@@ -1129,6 +1136,7 @@ namespace EBookCrawler.Texting
                 case "d":
                 case "weihe":
                 case "recipient":
+                case "sender":
                 case "speaker":
                 case "act":
                 case "lektorat":
@@ -1180,6 +1188,7 @@ namespace EBookCrawler.Texting
                 case "kasten":
                 case "bigtable":
 
+                case "absmiddle":
                 case "middle":
                     return 1;
 
@@ -1220,12 +1229,44 @@ namespace EBookCrawler.Texting
                     throw new NotImplementedException();
             }
         }
-        private static double GetMeasure(string measure)
+        public static Style GetFontStyle(string propValue)
         {
-            measure = measure.Trim().ToLower();
-            if (measure.Substring(measure.Length - 2) == "em")
-                return double.Parse(measure.Substring(0, measure.Length - 2));
-            throw new NotImplementedException();
+            switch (propValue)
+            {
+                case "small-caps":
+                    return new Style() { IsSmallCaps = true };
+                case "normal":
+                    return new Style();
+                case "lower":
+                    return new Style() { IsLower = true };
+                case "upper":
+                    return new Style() { IsUpper = true };
+                case "smallcaps":
+                    return new Style() { IsSmallCaps = true };
+                case "underline":
+                    return new Style() { IsUnderlined = true };
+                case "overline":
+                    return new Style() { IsOverlined = true };
+                case "spaced":
+                case "wide":
+                case "superwide":
+                    return new Style() { IsWide = true };
+                case "fraktur":
+                    return new Style() { IsFraktur = true };
+                case "tt":
+                    return new Style() { IsMonoSpace = true };
+                default:
+                    throw new NotImplementedException();
+            }
         }
+        //private static double GetMeasure(string measure)
+        //{
+        //    measure = measure.Trim().ToLower();
+        //    if (measure.Substring(measure.Length - 2) == "em")
+        //        return double.Parse(measure.Substring(0, measure.Length - 2));
+        //    if (measure.Substring(measure.Length - 2) == "cm")
+        //        return double.Parse(measure.Substring(0, measure.Length - 2));
+        //    throw new NotImplementedException();
+        //}
     }
 }

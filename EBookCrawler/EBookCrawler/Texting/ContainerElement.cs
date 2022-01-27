@@ -17,7 +17,7 @@ namespace EBookCrawler.Texting
         /// </summary>
         public int Alignment { get; set; }
         public int Size { get; set; }
-        public double Indentation { get; set; }
+        public Measure Indentation { get; set; }
         public Color Color { get; set; }
         public Style Style { get; set; }
         public bool StartsWithCapital { get; set; }
@@ -39,7 +39,7 @@ namespace EBookCrawler.Texting
                     this.StartsWithCapital = true;
                     break;
                 case "fntext":
-                    this.Indentation = 1;
+                    this.Indentation = new Measure("2em");
                     this.Size = -2;
                     break;
                 case "abstract":
@@ -56,9 +56,11 @@ namespace EBookCrawler.Texting
                 case "address":
                 case "epigraph":
                 case "regie":
+                case "sender":
                     this.Style = new Style() { IsItalic = true };
                     break;
                 case "drama":
+                case "drma":
                 case "drammarg":
                 case "cdrama":
                 case "drama1":
@@ -66,15 +68,15 @@ namespace EBookCrawler.Texting
                 case "letter":
                 case "chor":
                 case "chormarg":
-                    this.Indentation = 1;
+                    this.Indentation = new Measure("2em");
                     break;
                 case "drama2":
                 case "cdrama2":
-                    this.Indentation = 2;
+                    this.Indentation = new Measure("4em");
                     break;
                 case "stage":
                     this.Style = new Style() { IsItalic = true };
-                    this.Indentation = 1;
+                    this.Indentation = new Measure("2em");
                     break;
 
                 case "":
