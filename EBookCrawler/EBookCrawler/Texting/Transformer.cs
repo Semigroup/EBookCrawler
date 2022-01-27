@@ -276,12 +276,16 @@ namespace EBookCrawler.Texting
                                 hr.Length = new Length() { Value = 0.3, IsProportional = true };
                                 break;
                             case "":
+                            case "center":
                                 break;
                             case "star":
                                 //ToDo
                                 break;
                             case "empty":
                                 hr.Length = new Length();
+                                break;
+                            case "thin":
+                                //ToDo
                                 break;
                             default:
                                 throw new NotImplementedException();
@@ -364,6 +368,9 @@ namespace EBookCrawler.Texting
                         case "lang":
                         case "class":
                         case "id":
+                            break;
+                        case "align":
+                            poem.Alignment = GetAlignment(attribute.Value);
                             break;
                         default:
                             throw new NotImplementedException();
@@ -603,12 +610,23 @@ namespace EBookCrawler.Texting
                     container.Alignment = 1;
                     break;
                 case "word":
+                case "wort":
                 case "red":
                     container.Color = new Color("ff0000");
+                    break;
+                case "c1781":
+                    container.Color = new Color("0000ff");
                     break;
 
                 case "kurz":
                 case "unicode":
+                    break;
+
+                case "block":
+                case "block1":
+                case "block2":
+                case "block3":
+                    //ToDo
                     break;
 
                 default:
@@ -1084,6 +1102,9 @@ namespace EBookCrawler.Texting
             switch (value.ToLower())
             {
                 case "":
+                case "c1781":
+                case "‹h3":
+                case "glossar":
                 case "part":
                 case "tb":
                 case "small":
@@ -1098,6 +1119,7 @@ namespace EBookCrawler.Texting
                 case "font110":
                 case "prosa":
                 case "left":
+                case "rleft":
                 case "lewft":
                 case "leftmarg":
                 case "leftmrg":

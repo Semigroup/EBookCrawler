@@ -80,9 +80,11 @@ namespace EBookCrawler.Texting
                     break;
 
                 case "":
+                case "‹h3":
                 case "tb":
                 case "box":
                 case "part":
+                case "glossar":
                 case "chupter":
                 case "section":
                 case "dblmarg":
@@ -104,6 +106,7 @@ namespace EBookCrawler.Texting
                 case "motto50":
                 case "prosa":
                 case "left":
+                case "rleft":
                 case "lewft":
                 case "leftmarg":
                 case "leftmrg":
@@ -155,6 +158,9 @@ namespace EBookCrawler.Texting
                 case "centerbig":
                 case "centerbib":
                     this.Size = 1;
+                    break;
+                case "c1781":
+                    this.Color = new Color("0000ff");
                     break;
                 case "def":
                     this.Style = new Style() { IsBold = true };
