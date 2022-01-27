@@ -38,8 +38,15 @@ namespace EBookCrawler.Texting
                 case "intitial":
                     this.StartsWithCapital = true;
                     break;
-                case "abstract":
+                case "fntext":
                     this.Indentation = 1;
+                    this.Size = -2;
+                    break;
+                case "abstract":
+                case "abstract2":
+                case "abstract3":
+                    //this.Indentation = 1;
+                    this.Style = new Style() { IsItalic = true };
                     this.Size = -1;
                     break;
                 case "figcaption":
@@ -48,6 +55,7 @@ namespace EBookCrawler.Texting
                 case "date":
                 case "address":
                 case "epigraph":
+                case "regie":
                     this.Style = new Style() { IsItalic = true };
                     break;
                 case "drama":
@@ -58,7 +66,6 @@ namespace EBookCrawler.Texting
                 case "letter":
                 case "chor":
                 case "chormarg":
-                case "box":
                     this.Indentation = 1;
                     break;
                 case "drama2":
@@ -71,20 +78,26 @@ namespace EBookCrawler.Texting
                     break;
 
                 case "":
+                case "box":
                 case "chupter":
                 case "section":
                 case "dblmarg":
+                case "dlbmarg":
                 case "dblamrg":
                 case "dlmarg":
                 case "dblmargr":
                 case "dlmargr":
                 case "center":
+                case "center\"\"":
                 case "cent":
                 case "cebter":
+                case "cemter":
                 case "enter":
+                case "denter":
                 case "stars":
                 case "chapter":
                 case "motto":
+                case "motto50":
                 case "prosa":
                 case "left":
                 case "lewft":
@@ -93,7 +106,9 @@ namespace EBookCrawler.Texting
                 case "leftjust":
                 case "figure":
                 case "right":
+                case "riight":
                 case "riht":
+                case "rightmarg":
                 case "signature":
                 case "signatur":
                 case "font110":
@@ -107,21 +122,34 @@ namespace EBookCrawler.Texting
                 case "reg":
                 case "western":
                 case "v":
+                case "d":
                 case "versmarg":
                 case "weihe":
                 case "titel_3":
                 case "recipient":
                 case "act":
+                case "el":
+                case "mid":
+                case "de":
+                case "bigtable":
+                case "p5":
+                case "p20":
                 case "p23":
                 case "p24":
                 case "p25":
                     break;
+
+                case "not":
                 case "note":
+                case "small":
+                case "centersm":
                 case "centersml":
                 case "anmerk":
                     this.Size = -1;
                     break;
+
                 case "centerbig":
+                case "centerbib":
                     this.Size = 1;
                     break;
                 case "def":
@@ -130,6 +158,10 @@ namespace EBookCrawler.Texting
                     break;
                 case "speaker":
                     this.Style = new Style() { IsBold = true };
+                    break;
+
+                case "smallcaps":
+                    this.Style = new Style() { IsSmallCaps = true };
                     break;
                 default:
                     throw new NotImplementedException();

@@ -88,6 +88,17 @@ namespace EBookCrawler.Parsing
                     };
                 }
             }
+            public IEnumerable<(string propName, string propValue)> ParseProperties()
+            {
+                string[] properties = Value.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                for (int i = 0; i < properties.Length; i++)
+                {
+                    string[] nv = properties[i].Split(':');
+                    if (nv.Length != 2)
+                        throw new NotImplementedException();
+                    yield return (nv[0].Trim(), nv[1].Trim());
+                }
+            }
         }
 
         public int Position { get; set; }
@@ -162,7 +173,7 @@ namespace EBookCrawler.Parsing
                 case "colgroup":
                     this.MyKind = Kind.ColumnGroup;
                     break;
-              
+
                 case "address":
                     this.MyKind = Kind.Address;
                     break;

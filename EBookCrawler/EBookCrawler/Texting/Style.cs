@@ -12,6 +12,7 @@ namespace EBookCrawler.Texting
         public bool IsItalic;
         public bool IsEmphasis;
         public bool IsUnderlined;
+        public bool IsOverlined;
         public bool IsCrossedOut;
         public bool IsUpper;
         public bool IsLower;
