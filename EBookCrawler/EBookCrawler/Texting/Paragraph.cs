@@ -9,5 +9,22 @@ namespace EBookCrawler.Texting
     public class Paragraph : ContainerElement
     {
         public bool StartsWithIndentation { get; set; } = true;
+        public override void SetClass(string classValue)
+        {
+            switch (classValue)
+            {
+                case "line":
+                case "iniline":
+                case "hanging":
+                case "lzeile":
+                    this.StartsWithIndentation = false;
+                    break;
+                case "rzeile":
+                    break;
+                default:
+                    base.SetClass(classValue);
+                    break;
+            }
+        }
     }
 }

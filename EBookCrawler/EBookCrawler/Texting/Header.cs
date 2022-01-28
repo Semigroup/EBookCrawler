@@ -22,7 +22,8 @@ namespace EBookCrawler.Texting
             Caption,
             Note,
             Act,
-            Scene
+            Scene,
+            Dedication
         }
         public Info MyInfo { get; set; } = Info.None;
         public int Hierarchy { get; set; }
@@ -33,6 +34,7 @@ namespace EBookCrawler.Texting
                 case "autor":
                 case "autho":
                 case "author":
+                case "author-western":
                 case "authot":
                 case "authro":
                 case "authpr":
@@ -45,15 +47,19 @@ namespace EBookCrawler.Texting
                     this.MyInfo = Info.Pseudonym;
                     break;
                 case "title":
+                case "titlte":
+                case "tititle":
                 case "titlöe":
                 case "titla":
                 case "titel":
                 case "itle":
                 case "tlte":
+                case "tilte":
                     this.MyInfo = Info.Title;
                     break;
                 case "subtitle":
                 case "sutitle":
+                case "subtitl":
                 case "subtitletitle":
                 case "subtitle02:10 28.02.2011":
                     this.MyInfo = Info.SubTitle;
@@ -89,6 +95,9 @@ namespace EBookCrawler.Texting
                     break;
                 case "scene":
                     this.MyInfo = Info.Scene;
+                    break;
+                case "dedication":
+                    this.MyInfo = Info.Dedication;
                     break;
                 default:
                     throw new NotImplementedException();

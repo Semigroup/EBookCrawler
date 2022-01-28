@@ -359,6 +359,12 @@ namespace EBookCrawler.Texting
             var clazz = token.GetAttribute("class");
             if (clazz != null)
                 clazz = clazz.ToLower();
+            else
+            {
+                clazz = token.GetAttribute("lass");
+                if (clazz != null)
+                    clazz = clazz.ToLower();
+            }
             if (clazz == "ver" || clazz == "vers" || clazz == "poem")
             {
                 var poem = new Poem();
@@ -399,11 +405,9 @@ namespace EBookCrawler.Texting
                     switch (attribute.Name.ToLower())
                     {
                         case "align":
+                        case "lass":
                         case "class":
                             para.SetClass(attribute.Value.ToLower());
-                            var value = attribute.Value.ToLower();
-                            if (value == "line" || value == "iniline")
-                                para.StartsWithIndentation = false;
                             break;
                         case "id":
                         case "lang"://Language
@@ -431,6 +435,7 @@ namespace EBookCrawler.Texting
                             break;
                         case "margin-top":
                         case "margin-bottom":
+                        case "page-break-after":
                             //ToDo
                             break;
                         default:
@@ -590,6 +595,7 @@ namespace EBookCrawler.Texting
                 case "size150":
                     container.Size += 2;
                     break;
+                case "ls":
                 case "zweizeilig":
                     container.Size += 3;
                     break;
@@ -795,6 +801,18 @@ namespace EBookCrawler.Texting
                     case "value":
                         li.Term = attribute.Value;
                         break;
+                    case "class":
+                        switch (attribute.Value.ToLower())
+                        {
+                            case "nostyle":
+                                li.Term = "";
+                                break;
+                            case "just":
+                                break;
+                            default:
+                                throw new NotImplementedException();
+                        }
+                        break;
                     default:
                         throw new NotImplementedException();
                 }
@@ -925,8 +943,8 @@ namespace EBookCrawler.Texting
                                 table.IsPoem = true;
                                 break;
                             case "box":
+                            case "centerbox":
                                 table.IsBox = true;
-                                table.Alignment = 1;
                                 break;
                             case "truetop":
                                 //ToDo?
@@ -998,6 +1016,7 @@ namespace EBookCrawler.Texting
                         table.VAlignment = GetVAlignment(attribute.Value.ToLower());
                         break;
                     case "class":
+                    case "bgcolor":
                         //ToDo?
                         break;
                     default:
@@ -1102,11 +1121,15 @@ namespace EBookCrawler.Texting
             switch (value.ToLower())
             {
                 case "":
+                case "lat":
+                case "paul simmel":
+                case "hanging":
                 case "c1781":
                 case "‹h3":
                 case "glossar":
                 case "part":
                 case "tb":
+                case "fall":
                 case "small":
                 case "regie":
                 case "smallcaps":
@@ -1115,6 +1138,7 @@ namespace EBookCrawler.Texting
                 case "chupter":
                 case "section":
                 case "real":
+                case "anm":
                 case "anmerk":
                 case "font110":
                 case "prosa":
@@ -1122,6 +1146,7 @@ namespace EBookCrawler.Texting
                 case "rleft":
                 case "lewft":
                 case "leftmarg":
+                case "leftmarg2":
                 case "leftmrg":
                 case "leftjust":
                 case "abstract":
@@ -1137,6 +1162,7 @@ namespace EBookCrawler.Texting
                 case "cdrama1":
                 case "cdrama2":
                 case "intial":
+                case "intital":
                 case "initial":
                 case "initital":
                 case "intitial":
@@ -1148,6 +1174,8 @@ namespace EBookCrawler.Texting
                 case "titlepage":
                 case "titel_3":
                 case "line":
+                case "rzeile":
+                case "lzeile":
                 case "iniline":
                 case "characters":
                 case "justify":
@@ -1179,6 +1207,7 @@ namespace EBookCrawler.Texting
 
                 case "dblmargr":
                 case "dblmarg":
+                case "dllmarg":
                 case "dlbmarg":
                 case "dblamrg":
                 case "dlmargr":
@@ -1192,11 +1221,13 @@ namespace EBookCrawler.Texting
                 case "center":
                 case "center\"\"":
                 case "cent":
+                case "cente":
                 case "cebter":
                 case "cemter":
                 case "enter":
                 case "denter":
                 case "centersm":
+                case "centersmall":
                 case "centersml":
                 case "centerbig":
                 case "centerbib":
@@ -1206,7 +1237,8 @@ namespace EBookCrawler.Texting
                 case "figcaption":
                 case "true":
                 case "ture":
-                case "box":
+                case "box"://???
+                case "centerbox":
                 case "kasten":
                 case "bigtable":
 
@@ -1225,6 +1257,7 @@ namespace EBookCrawler.Texting
                 case "epigraph":
                 case "address":
 
+                case "absbottom":
                 case "bottom":
                 case "baseline":
                     return 2;

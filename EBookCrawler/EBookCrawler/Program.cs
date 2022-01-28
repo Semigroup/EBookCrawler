@@ -50,7 +50,7 @@ namespace EBookCrawler
             //}
 
             var authors = orga.Library.Authors.Values.ToArray();
-            for (int i = 1432; i < authors.Length; i++)
+            for (int i = 1712; i < authors.Length; i++)
             {
                 Console.WriteLine(i + " of " + authors.Length);
                 Console.WriteLine(authors[i].ToString());
