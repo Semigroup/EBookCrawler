@@ -32,6 +32,7 @@ namespace EBookCrawler.Texting
             this.Alignment = Transformer.GetAlignment(classValue);
             switch (classValue)
             {
+                case "vinit":
                 case "intial":
                 case "intital":
                 case "initial":
@@ -84,6 +85,7 @@ namespace EBookCrawler.Texting
                 case "drama2":
                 case "cdrama2":
                 case "dblmarg":
+                case "dbkmarg":
                 case "dlbmarg":
                 case "dblamrg":
                 case "dlmarg":
@@ -101,6 +103,7 @@ namespace EBookCrawler.Texting
                 case "‹h3":
                 case "tb":
                 case "box":
+                case "poem":
                 case "einr":
                 case "einr1":
                 case "calibre13":
@@ -111,6 +114,7 @@ namespace EBookCrawler.Texting
                 case "section":
                 case "preface":
                 case "center":
+                case "center0":
                 case "centr":
                 case "center\"\"":
                 case "cent":
@@ -127,6 +131,8 @@ namespace EBookCrawler.Texting
                 case "motto50":
                 case "prosa":
                 case "left":
+                case "left0":
+                case "ldeft":
                 case "rleft":
                 case "lewft":
                 case "leftjust":
@@ -155,6 +161,7 @@ namespace EBookCrawler.Texting
                 case "recipient":
                 case "act":
                 case "bündig":
+                case "allname":
                 case "el":
                 case "mid":
                 case "de":
@@ -166,6 +173,7 @@ namespace EBookCrawler.Texting
                 case "p23":
                 case "p24":
                 case "p25":
+                case "true":
                     break;
 
                 case "not":
@@ -193,6 +201,10 @@ namespace EBookCrawler.Texting
                     break;
                 case "speaker":
                     this.Style = new Style() { IsBold = true };
+                    break;
+
+                case "wide":
+                    this.Style = new Style() { IsWide = true };
                     break;
 
                 case "smallcaps":

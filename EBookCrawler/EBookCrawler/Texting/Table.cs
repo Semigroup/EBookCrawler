@@ -63,6 +63,17 @@ namespace EBookCrawler.Texting
                         throw new NotImplementedException();
             }
         }
+        public class Caption : ContainerElement
+        {
+            public Caption()
+            {
+
+            }
+            public Caption(string summary)
+            {
+                this.Add(new Word() { Value = summary });
+            }
+        }
 
         public enum BorderStyle
         {
@@ -72,11 +83,12 @@ namespace EBookCrawler.Texting
             All
         }
 
+        public Caption MyCaption { get; set; }
         public List<RowContainer> Segments { get; set; } = new List<RowContainer>();
         public double Padding { get; set; }
         public double Spacing { get; set; }
         public double Border { get; set; }
-        public string Caption { get; set; }
+        //public string Caption { get; set; }
         public int Alignment { get; set; }
         public bool IsPoem { get; set; }
         public bool IsBox { get; set; }
@@ -90,6 +102,13 @@ namespace EBookCrawler.Texting
                     this.Segments.Add(new RowContainer(row));
                 else if (item is RowContainer container)
                     this.Segments.Add(container);
+                else if (item is Caption caption)
+                {
+                    if (this.MyCaption == null)
+                        this.MyCaption = caption;
+                    else
+                        throw new NotImplementedException();
+                }
                 else
                     throw new NotImplementedException();
         }

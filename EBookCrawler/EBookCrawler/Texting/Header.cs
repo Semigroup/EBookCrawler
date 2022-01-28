@@ -39,6 +39,7 @@ namespace EBookCrawler.Texting
                 case "authot":
                 case "authro":
                 case "authpr":
+                case "name":
                     this.MyInfo = Info.Author;
                     break;
                 case "pseudo":
@@ -69,6 +70,7 @@ namespace EBookCrawler.Texting
                     this.MyInfo = Info.SubTitle;
                     break;
                 case "chapter":
+                case "drama":
                     this.MyInfo = Info.Chapter;
                     break;
                 case "date":

@@ -21,6 +21,7 @@ namespace EBookCrawler.Texting
                     this.StartsWithIndentation = false;
                     break;
                 case "rzeile":
+                case "indent":
                     break;
                 default:
                     base.SetClass(classValue);
