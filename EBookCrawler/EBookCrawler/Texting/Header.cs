@@ -31,9 +31,10 @@ namespace EBookCrawler.Texting
         public void SetInfo(string value) {
             switch (value.ToLower())
             {
+                case "author":
+                case "authoer":
                 case "autor":
                 case "autho":
-                case "author":
                 case "author-western":
                 case "authot":
                 case "authro":
@@ -43,10 +44,12 @@ namespace EBookCrawler.Texting
                 case "pseudo":
                 case "pseunym":
                 case "pseudonym":
+                case "psudonym":
                 case "preudonym":
                     this.MyInfo = Info.Pseudonym;
                     break;
                 case "title":
+                case "tiel":
                 case "titlte":
                 case "tititle":
                 case "titlöe":
@@ -57,6 +60,7 @@ namespace EBookCrawler.Texting
                 case "tilte":
                     this.MyInfo = Info.Title;
                     break;
+                case "sub":
                 case "subtitle":
                 case "sutitle":
                 case "subtitl":
@@ -98,6 +102,9 @@ namespace EBookCrawler.Texting
                     break;
                 case "dedication":
                     this.MyInfo = Info.Dedication;
+                    break;
+                case "right":
+                    this.Alignment = 2;
                     break;
                 default:
                     throw new NotImplementedException();

@@ -35,8 +35,10 @@ namespace EBookCrawler.Texting
                 case "intial":
                 case "intital":
                 case "initial":
+                case "inital":
                 case "initital":
                 case "intitial":
+                case "first":
                     this.StartsWithCapital = true;
                     break;
                 case "fntext":
@@ -53,6 +55,7 @@ namespace EBookCrawler.Texting
                 case "figcaption":
                 case "figcaptio":
                 case "figcation":
+                case "caption":
                 case "date":
                 case "address":
                 case "epigraph":
@@ -75,6 +78,7 @@ namespace EBookCrawler.Texting
                 case "rightmarg":
                 case "versmarg":
                 case "lat":
+                case "indented":
                     this.Indentation = new Measure("2em");
                     break;
                 case "drama2":
@@ -97,11 +101,17 @@ namespace EBookCrawler.Texting
                 case "‹h3":
                 case "tb":
                 case "box":
+                case "einr":
+                case "einr1":
+                case "calibre13":
+                case "volume":
                 case "part":
                 case "glossar":
                 case "chupter":
                 case "section":
+                case "preface":
                 case "center":
+                case "centr":
                 case "center\"\"":
                 case "cent":
                 case "cebter":
@@ -109,6 +119,8 @@ namespace EBookCrawler.Texting
                 case "enter":
                 case "denter":
                 case "fall":
+                case "repliccont":
+                case "blockquote":
                 case "stars":
                 case "chapter":
                 case "motto":
@@ -123,6 +135,7 @@ namespace EBookCrawler.Texting
                 case "riight":
                 case "riht":
                 case "signature":
+                case "sinature":
                 case "signatur":
                 case "font110":
                 case "dedication":
@@ -137,14 +150,17 @@ namespace EBookCrawler.Texting
                 case "v":
                 case "d":
                 case "weihe":
+                case "long":
                 case "titel_3":
                 case "recipient":
                 case "act":
+                case "bündig":
                 case "el":
                 case "mid":
                 case "de":
                 case "bigtable":
                 case "paul simmel":
+                case "rolle":
                 case "p5":
                 case "p20":
                 case "p23":
@@ -160,6 +176,7 @@ namespace EBookCrawler.Texting
                 case "centersml":
                 case "anmerk":
                 case "anm":
+                case "footnote":
                     this.Size = -1;
                     break;
 

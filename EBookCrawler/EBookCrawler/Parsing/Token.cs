@@ -214,6 +214,7 @@ namespace EBookCrawler.Parsing
                     this.MyKind = Kind.Raw;
                     break;
                 case "p":
+                case "center":
                     this.MyKind = Kind.Paragraph;
                     break;
                 case "br":

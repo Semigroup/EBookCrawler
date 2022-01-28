@@ -194,6 +194,7 @@ namespace EBookCrawler.Texting
                         switch (att.Value.ToLower())
                         {
                             case "initial":
+                            case "fbu":
                             case "half":
                                 img.IsCapital = true;
                                 break;
@@ -294,6 +295,7 @@ namespace EBookCrawler.Texting
                     case "width":
                         hr.Length = attribute.ValueAsLength();
                         break;
+                    case "id":
                     case "size":
                         break;
                     case "align":
@@ -401,6 +403,8 @@ namespace EBookCrawler.Texting
             else
             {
                 var para = new Paragraph();
+                if (token.Tag == "center")
+                    para.Alignment = 1;
                 foreach (var attribute in token.Attributes)
                     switch (attribute.Name.ToLower())
                     {
@@ -413,6 +417,7 @@ namespace EBookCrawler.Texting
                         case "lang"://Language
                         case "summary":
                         case "name":
+                        case "title":
                             break;
                         default:
                             throw new NotImplementedException();
@@ -429,12 +434,19 @@ namespace EBookCrawler.Texting
                             //Add Latex command here?
                             para.StartsWithIndentation = true;
                             break;
+                        case "text-align":
+                            para.Alignment = GetAlignment(prop.Value);
+                            break;
                         case "font-variant":
                         case "font-style":
                             para.Style = GetFontStyle(prop.Value);
                             break;
+                        case "font-size":
+                            para.Size = GetSize(prop.Value);
+                            break;
                         case "margin-top":
                         case "margin-bottom":
+                        case "page-break-before":
                         case "page-break-after":
                             //ToDo
                             break;
@@ -531,10 +543,12 @@ namespace EBookCrawler.Texting
             switch (clazz.ToLower())
             {
                 case "speaker":
+                case "rspeaker":
                     container.Style = new Style() { IsBold = true };
                     break;
                 case "action":
                 case "regie":
+                case "direction":
                     container.Style = new Style() { IsItalic = true };
                     break;
 
@@ -566,10 +580,11 @@ namespace EBookCrawler.Texting
                     container.Style = new Style() { IsUpper = true };
                     break;
 
+                case "footnote":
                 case "fotnote":
                 case "foonote":
                 case "footnnote":
-                case "footnote":
+                case "footntote":
                     container = new Footnote();
                     break;
                 case "tooltip":
@@ -579,7 +594,6 @@ namespace EBookCrawler.Texting
                     container = new Footnote() { IsSideNote = true };
                     break;
 
-                case "initial":
                 case "big":
                 case "big1":
                 case "big2":
@@ -588,26 +602,42 @@ namespace EBookCrawler.Texting
                 case "f130":
                     container.Size += 1;
                     break;
+                case "initial":
                 case "riesig":
                 case "big140":
+                case "big155":
                 case "f140":
                 case "f150":
                 case "size150":
+                case "headline":
+                case "firstline":
                     container.Size += 2;
                     break;
                 case "ls":
                 case "zweizeilig":
                     container.Size += 3;
                     break;
+                case "big250":
+                case "bigbracket":
+                    container.Size += 5;
+                    break;
+                case "big580":
+                    container.Size += 10;
+                    break;
                 case "anmerk":
                 case "note":
                 case "smaller":
+                case "xsmall":
+                case "stage":
                 case "f100":
                 case "f090":
                     container.Size -= 1;
                     break;
                 case "font110":
+                case "big110":
+                case "big105":
                 case "f110":
+                case "f105":
                 case "fntext":
                 case "src":
                     break;
@@ -620,12 +650,20 @@ namespace EBookCrawler.Texting
                 case "red":
                     container.Color = new Color("ff0000");
                     break;
+                case "diff":
+                case "green":
+                    container.Color = new Color("00ff00");
+                    break;
                 case "c1781":
+                case "je":
                     container.Color = new Color("0000ff");
                     break;
 
                 case "kurz":
                 case "unicode":
+                case "titlecolor":
+                case "authorh":
+                case "title":
                     break;
 
                 case "block":
@@ -976,7 +1014,10 @@ namespace EBookCrawler.Texting
                     case "rules":
                         table.SetBorderStyle(attribute.Value);
                         break;
+                    case "height":
+                    case "dir":
                     case "cols":
+                    case "background":
                         break;
                     default:
                         throw new NotImplementedException();
@@ -1121,6 +1162,20 @@ namespace EBookCrawler.Texting
             switch (value.ToLower())
             {
                 case "":
+                case "rolle":
+                case "bündig":
+                case "long":
+                case "einr":
+                case "einr1":
+                case "calibre13":
+                case "volume":
+                case "first":
+                case "repliccont":
+                case "footnote":
+                case "blockquote":
+                case "preface":
+                case "noindent":
+                case "indented":
                 case "lat":
                 case "paul simmel":
                 case "hanging":
@@ -1164,6 +1219,7 @@ namespace EBookCrawler.Texting
                 case "intial":
                 case "intital":
                 case "initial":
+                case "inital":
                 case "initital":
                 case "intitial":
                 case "stage":
@@ -1205,6 +1261,7 @@ namespace EBookCrawler.Texting
                 case "top":
                     return 0;
 
+                case "caption":
                 case "dblmargr":
                 case "dblmarg":
                 case "dllmarg":
@@ -1219,6 +1276,7 @@ namespace EBookCrawler.Texting
                 case "motto50":
                 case "note":
                 case "center":
+                case "centr":
                 case "center\"\"":
                 case "cent":
                 case "cente":
@@ -1251,6 +1309,7 @@ namespace EBookCrawler.Texting
                 case "riht":
                 case "rightmarg":
                 case "signature":
+                case "sinature":
                 case "signatur":
                 case "date":
                 case "dedication":
@@ -1310,6 +1369,21 @@ namespace EBookCrawler.Texting
                     return new Style() { IsFraktur = true };
                 case "tt":
                     return new Style() { IsMonoSpace = true };
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+        public static int GetSize(string value)
+        {
+            switch (value.ToLower())
+            {
+                case "80%":
+                case "small":
+                    return -1;
+                case "normal":
+                    return 0;
+                case "big":
+                    return 1;
                 default:
                     throw new NotImplementedException();
             }

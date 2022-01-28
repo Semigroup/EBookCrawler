@@ -17,6 +17,7 @@ namespace EBookCrawler.Texting
                 case "iniline":
                 case "hanging":
                 case "lzeile":
+                case "noindent":
                     this.StartsWithIndentation = false;
                     break;
                 case "rzeile":
