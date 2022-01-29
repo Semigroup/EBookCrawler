@@ -8,5 +8,6 @@ namespace EBookCrawler.Texting
 {
     public class SuperIndex : ContainerElement
     {
+        public bool IsSub { get; set; }
     }
 }

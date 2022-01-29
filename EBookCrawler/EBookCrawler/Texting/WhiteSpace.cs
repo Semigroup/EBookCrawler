@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EBookCrawler.Texting
 {
-  public  class WhiteSpace : TextElement
+    public class WhiteSpace : TextElement
     {
         public double HSpace { get; set; }
         public double VSpace { get; set; }
@@ -15,7 +15,18 @@ namespace EBookCrawler.Texting
 
         public override void ToLatex(LatexWriter writer, LatexContext context)
         {
-
+            if (VSpace > 0)
+            {
+                for (int i = 0; i < VSpace - 1; i++)
+                    writer.Write(@"\\");
+                if (Indentation > 0)
+                    writer.WriteLine();
+                else
+                    writer.Write(@"\\");
+                writer.WriteLine();
+            }
+            for (int i = 0; i < HSpace; i++)
+                writer.WriteLine(@"\ ");
         }
     }
 }

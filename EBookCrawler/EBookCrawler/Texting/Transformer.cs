@@ -822,14 +822,13 @@ namespace EBookCrawler.Texting
         }
         private ContainerElement GetSuperSub(Token token)
         {
-            ContainerElement cont;
+            SuperIndex super = new SuperIndex();
             switch (token.MyKind)
             {
                 case Token.Kind.Super:
-                    cont = new SuperIndex();
                     break;
                 case Token.Kind.Sub:
-                    cont = new SubIndex();
+                    super.IsSub = true;
                     break;
                 default:
                     throw new NotImplementedException();
@@ -849,7 +848,7 @@ namespace EBookCrawler.Texting
                     default:
                         throw new NotImplementedException();
                 }
-            return cont;
+            return super;
         }
         private ContainerElement GetQuote(Token token)
         {

@@ -86,7 +86,6 @@
     <Compile Include="Texting\Poem.cs" />
     <Compile Include="Texting\Quote.cs" />
     <Compile Include="Texting\Style.cs" />
-    <Compile Include="Texting\SubIndex.cs" />
     <Compile Include="Texting\SuperIndex.cs" />
     <Compile Include="Texting\Table.cs" />
     <Compile Include="Texting\TextChapter.cs" />
