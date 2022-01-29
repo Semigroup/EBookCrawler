@@ -1,0 +1,10 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.177.0/containers/ubuntu
+{
+	"name": "texlive",
+	"image": "texlive/texlive:latest",
+	"extensions": ["james-yu.latex-workshop"],
+	"runArgs": ["--memory=1g"],
+	"postCreateCommand": "apt update && apt -y upgrade && apt -y autoremove && apt -y autoclean && apt install -y qpdf",
+	"postAttachCommand": "apt update && apt -y upgrade && apt -y autoremove && apt -y autoclean && git submodule update --remote --init --recursive"
+}
