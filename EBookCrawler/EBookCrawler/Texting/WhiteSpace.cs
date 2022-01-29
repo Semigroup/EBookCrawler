@@ -20,10 +20,10 @@ namespace EBookCrawler.Texting
                 for (int i = 0; i < VSpace - 1; i++)
                     writer.Write(@"\\");
                 if (Indentation > 0)
-                    writer.WriteLine();
+                    writer.WriteLineBreak();
                 else
                     writer.Write(@"\\");
-                writer.WriteLine();
+                writer.WriteLineBreak();
             }
             for (int i = 0; i < HSpace; i++)
                 writer.WriteLine(@"\ ");

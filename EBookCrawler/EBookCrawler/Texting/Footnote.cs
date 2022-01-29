@@ -22,5 +22,10 @@ namespace EBookCrawler.Texting
         /// Index: 1,*,...
         /// </summary>
         public string Title { get; set; }
+
+        public Footnote()
+        {
+            this.Size = -2;
+        }
     }
 }

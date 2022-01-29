@@ -441,7 +441,7 @@ namespace EBookCrawler.Texting
                     switch (prop.Name)
                     {
                         case "margin-left":
-                            para.Indentation = prop.ValueAsMeasure();
+                            para.LeftMargin = prop.ValueAsMeasure();
                             break;
                         case "text-indent":
                             //ToDo?
@@ -568,7 +568,7 @@ namespace EBookCrawler.Texting
                                 //ToDo?
                                 break;
                             case "margin-left":
-                                container.Indentation = prop.ValueAsMeasure();
+                                container.LeftMargin = prop.ValueAsMeasure();
                                 break;
                             default:
                                 throw new NotImplementedException();
@@ -957,7 +957,7 @@ namespace EBookCrawler.Texting
                         list.Style = GetFontStyle(prop.Value);
                         break;
                     case "margin-left":
-                        list.Indentation = prop.ValueAsMeasure();
+                        list.LeftMargin = prop.ValueAsMeasure();
                         break;
                     default:
                         throw new NotImplementedException();

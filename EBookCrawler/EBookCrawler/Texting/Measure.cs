@@ -13,5 +13,18 @@ namespace EBookCrawler.Texting
         {
             this.Length = Length;
         }
+
+        public bool IsZero()
+        {
+            if (Length == null)
+                return true;
+            for (int i = 0; i < Length.Length; i++)
+            {
+                char c = Length[i];
+                if ('1' <= c && c <= '9')
+                    return false;
+            }
+            return true;
+        }
     }
 }

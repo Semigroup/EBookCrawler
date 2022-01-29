@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EBookCrawler.Texting
 {
-   public class ContainerElement : TextElement
+    public class ContainerElement : TextElement
     {
         public List<TextElement> TextElements { get; set; } = new List<TextElement>();
 
@@ -17,7 +17,7 @@ namespace EBookCrawler.Texting
         /// </summary>
         public int Alignment { get; set; }
         public int Size { get; set; }
-        public Measure Indentation { get; set; }
+        public Measure LeftMargin { get; set; }
         public Color Color { get; set; }
         public Style Style { get; set; }
         public bool StartsWithCapital { get; set; }
@@ -43,7 +43,7 @@ namespace EBookCrawler.Texting
                     this.StartsWithCapital = true;
                     break;
                 case "fntext":
-                    this.Indentation = new Measure("2em");
+                    this.LeftMargin = new Measure("2em");
                     this.Size = -2;
                     break;
                 case "abstract":
@@ -80,7 +80,7 @@ namespace EBookCrawler.Texting
                 case "versmarg":
                 case "lat":
                 case "indented":
-                    this.Indentation = new Measure("2em");
+                    this.LeftMargin = new Measure("2em");
                     break;
                 case "drama2":
                 case "cdrama2":
@@ -92,11 +92,11 @@ namespace EBookCrawler.Texting
                 case "dllmarg":
                 case "dblmargr":
                 case "dlmargr":
-                    this.Indentation = new Measure("4em");
+                    this.LeftMargin = new Measure("4em");
                     break;
                 case "stage":
                     this.Style = new Style() { IsItalic = true };
-                    this.Indentation = new Measure("2em");
+                    this.LeftMargin = new Measure("2em");
                     break;
 
                 case "":
@@ -213,6 +213,33 @@ namespace EBookCrawler.Texting
                 default:
                     throw new NotImplementedException();
             }
+        }
+        public override void ToLatex(LatexWriter writer)
+        {
+            writer.WriteLine(@"{");
+            if (!LeftMargin.IsZero())
+                writer.WriteLine(@"\begin{adjustwidth}{" + LeftMargin.Length + "}{}");
+            writer.WriteAlignment(Alignment);
+            writer.WriteSize(Size);
+            if (!Color.IsBlack())
+                writer.WriteColor(Color);
+            if (StartsWithCapital)
+                writer.StartWithCapital = true;
+
+            writer.PushStyle(Style);
+            writer.WriteStyle();
+
+            foreach (var element in TextElements)
+            {
+                element.ToLatex(writer);
+                writer.WriteLine();
+            }
+
+            writer.PopStyle();
+
+            if (!LeftMargin.IsZero())
+                writer.WriteLine(@"\end{adjustwidth}");
+            writer.WriteLine(@"}");
         }
     }
 }

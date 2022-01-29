@@ -17,40 +17,10 @@ namespace EBookCrawler.Texting
                 yield return new Word() { Value = lines[i] };
         }
 
-        public override void ToLatex(LatexWriter writer, LatexContext context)
+        public override void ToLatex(LatexWriter writer)
         {
-            foreach (var c in Value)
-                writer.Write(ReplaceCharacter(c));
+            writer.WriteText(Value);
         }
-        public static string ReplaceCharacter(char c)
-        {
-            switch (c)
-            {
-                case '&':
-                    return @"\&{}";
-                case '%':
-                    return @"\%{}";
-                case '$':
-                    return @"\${}";
-                case '#':
-                    return @"\#{}";
-                case '_':
-                    return @"\_{}";
-                case '{':
-                    return @"\{{}";
-                case '}':
-                    return @"\}{}";
-                case '~':
-                    return @"\}textasciitilde{}";
-                case '^':
-                    return @"\}textasciicircum{}";
-                case '\\':
-                    return @"\textbackslash{}";
-                case '\u00a0': //Non breaking Space
-                    return "~";
-                default:
-                    return c.ToString();
-            }
-        }
+
     }
 }

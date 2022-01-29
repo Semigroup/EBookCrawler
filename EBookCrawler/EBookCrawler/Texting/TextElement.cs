@@ -9,6 +9,6 @@ namespace EBookCrawler.Texting
     public abstract class TextElement
     {
         //public string Class { get; set; }
-        public abstract void ToLatex(LatexWriter writer, LatexContext context);
+        public abstract void ToLatex(LatexWriter writer);
     }
 }
