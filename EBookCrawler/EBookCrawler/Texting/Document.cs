@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace EBookCrawler.Texting
 {
-   public class Document
+   public class Document : TextElement
     {
+        public BookReference Book { get; set; }
+        public TextPart[] Parts { get; set; }
     }
 }

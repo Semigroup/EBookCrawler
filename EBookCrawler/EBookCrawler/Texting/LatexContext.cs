@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace EBookCrawler.Texting
 {
-    public abstract class TextElement
+   public class LatexContext
     {
-        //public string Class { get; set; }
-        public abstract void ToLatex(LatexWriter writer, LatexContext context);
+        public int Depth { get; set; }
     }
 }

@@ -25,19 +25,13 @@ namespace EBookCrawler
             this.Identifier = Name + " | " + SubTitle + " | " + Parts.Length + " @" + hash;
         }
 
-        public void WriteBook(string root)
+        public void WriteLatex(string outputDirectory)
         {
-            foreach (var partRef in Parts)
+            var doc = new Texting.Document()
             {
-                var chapters = partRef.Part.Chapters;
-                if (chapters != null)
-                    foreach (var ch in chapters)
-                    {
-                        ch.LoadText(root);
-                        if (!ch.TextNotFound)
-                            ch.ParseText();
-                    }
-            }
+                Book = this,
+                Parts = Parts.Select(p => p.Part.ParseText()).ToArray()
+            };
         }
 
         public override string ToString()

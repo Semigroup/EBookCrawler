@@ -76,34 +76,27 @@ namespace EBookCrawler
             source = HTMLHelper.RemoveHTMLComments(source);
             this.Text = ExtractParagraphs(source);
         }
-        public void ParseText()
+        public Texting.TextChapter ParseChapter()
         {
             File.WriteAllText("text.xml", Text);
             Console.WriteLine(this.URL);
+
             var tokenizer = new Parsing.Tokenizer();
             tokenizer.Tokenize(Text);
-            if (tokenizer.FoundError)
-            {
-                Console.WriteLine(tokenizer.GetState());
-                Console.ReadKey();
-            }
 
             var rep = new Parsing.Repairer();
             rep.Repair(Text, tokenizer.Tokens);
-            //if (rep.FoundError)
-            //    Console.ReadKey();
+
             var parser = new Parsing.Parser();
             parser.Parse(rep.Output);
 
             var trafo = new Texting.Transformer();
-            trafo.Transform(Text, parser.Root);
+            var ch = trafo.Transform(Text, parser.Root);
+            ch.Chapter = this;
 
             this.Text = null;
-            //var parser = new Parsing.Parser();
-            //var doc = parser.ParseDocument(tokenizer.Tokens, Text);
-            //Console.WriteLine("Parsed " + this.RelativePath);
 
-            //Console.ReadKey();
+            return ch;
         }
         public string ExtractParagraphs(string source)
         {

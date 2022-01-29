@@ -10,6 +10,7 @@ namespace EBookCrawler
     class Program
     {
         static readonly string libRoot = "E:\\GutenbergLibrary\\";
+        static readonly string latexOutput = "E:\\LatexBooks\\";
 
         static void Main(string[] args)
         {
@@ -55,7 +56,7 @@ namespace EBookCrawler
                 Console.WriteLine(i + " of " + authors.Length);
                 Console.WriteLine(authors[i].ToString());
                 foreach (var book in authors[i].Books.Values)
-                    book.WriteBook(libRoot);
+                    book.WriteLatex(latexOutput);
             }
         }
     }

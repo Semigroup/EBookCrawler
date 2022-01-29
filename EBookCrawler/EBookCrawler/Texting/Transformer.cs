@@ -11,11 +11,11 @@ namespace EBookCrawler.Texting
     {
         private string Text;
 
-        public TextElement Transform(string Text, Parser.Node node)
+        public TextChapter Transform(string Text, Parser.Node node)
         {
             this.Text = Text;
             ComputeStyle(node);
-            return Transform(node);
+            return Transform(node) as TextChapter;
         }
         private void ComputeStyle(Parser.Node node)
         {
@@ -29,9 +29,9 @@ namespace EBookCrawler.Texting
         {
             if (node.IsRoot)
             {
-                var container = new ContainerElement();
-                container.Add(TransformChildren(node.Children, true));
-                return container;
+                var chapter = new TextChapter();
+                chapter.Add(TransformChildren(node.Children, true));
+                return chapter;
             }
 
             switch (node.Token.MyKind)

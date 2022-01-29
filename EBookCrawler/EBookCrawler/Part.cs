@@ -73,6 +73,15 @@ namespace EBookCrawler
             foreach (var ch in Chapters)
                 ch.DownloadText(root, forceDownload);
         }
+        public Texting.TextPart ParseText()
+        {
+            var part = new Texting.TextPart()
+            {
+                Part = this,
+                Chapters = this.Chapters.Select(ch => ch.ParseChapter()).ToArray()
+            };
+            return part;
+        }
 
         private IEnumerable<(string link, string name)> GetToc(string source)
         {
