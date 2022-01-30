@@ -23,10 +23,18 @@ namespace EBookCrawler.Texting
                 case "rzeile":
                 case "indent":
                     break;
-                default:
+              
+  default:
                     base.SetClass(classValue);
                     break;
             }
+        }
+
+        public override void ToLatex(LatexWriter writer)
+        {
+            if (StartsWithIndentation)
+                writer.WriteLineBreak(2);
+            base.ToLatex(writer);
         }
     }
 }

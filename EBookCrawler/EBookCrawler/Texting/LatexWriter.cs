@@ -22,6 +22,9 @@ namespace EBookCrawler.Texting
 
         public void WritePreamble()
         {
+            WriteLine(@"\usepackage[ngerman]{babel}");
+            WriteLine(@"\usepackage[T1]{fontenc}");
+            WriteLine(@"\usepackage[utf8]{inputenc}");
             WriteLine(@"\usepackage{lettrine}");
             WriteLine(@"\usepackage[document]{ragged2e}");
             WriteLine(@"\usepackage{xcolor}");
@@ -30,6 +33,10 @@ namespace EBookCrawler.Texting
             WriteLine(@"\usepackage{changepage}");
             WriteLine(@"\usepackage{amsmath}");
             WriteLine(@"\usepackage{amssymb}");
+            WriteLine(@"\usepackage{amsthm}");
+            WriteLine(@"\usepackage{amsfonts}");
+            WriteLine(@"\usepackage{mathtools}");
+            WriteLine(@"\usepackage{wasysym}");
         }
         public override void WriteLine()
         {

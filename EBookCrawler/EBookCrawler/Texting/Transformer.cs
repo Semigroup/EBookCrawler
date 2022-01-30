@@ -644,10 +644,10 @@ namespace EBookCrawler.Texting
                     container = new Footnote();
                     break;
                 case "tooltip":
-                    container = new Footnote() { IsToolTip = true };
+                    container = new Footnote() { MyType = Footnote.Type.ToolTip};
                     break;
                 case "sidenote":
-                    container = new Footnote() { IsSideNote = true };
+                    container = new Footnote() { MyType = Footnote.Type.SideNote };
                     break;
 
                 case "big":
@@ -751,7 +751,7 @@ namespace EBookCrawler.Texting
                     case "title":
                         if (container is Footnote fn)
                         {
-                            if (fn.IsToolTip)
+                            if (fn.MyType == Footnote.Type.ToolTip)
                                 fn.Add(SplitRaw(attribute.Value));
                             else
                                 fn.Title = attribute.Value;
@@ -1045,7 +1045,7 @@ namespace EBookCrawler.Texting
                                 break;
                             case "box":
                             case "centerbox":
-                                table.IsBox = true;
+                                table.Style = Table.BorderStyle.All;
                                 break;
                             case "truetop":
                                 //ToDo?
@@ -1066,7 +1066,7 @@ namespace EBookCrawler.Texting
                         {
                             case "box":
                             case "border":
-                                table.IsBox = true;
+                                table.Style = Table.BorderStyle.All;
                                 break;
                             case "void":
                                 break;
