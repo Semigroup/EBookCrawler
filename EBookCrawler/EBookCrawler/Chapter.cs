@@ -63,7 +63,7 @@ namespace EBookCrawler
             else
                 Console.WriteLine("File already exists: " + path);
         }
-        public void LoadText(string root)
+        protected void LoadText(string root)
         {
             var fp = Path.Combine(root, RelativePath);
             if (!File.Exists(fp))
@@ -76,8 +76,10 @@ namespace EBookCrawler
             source = HTMLHelper.RemoveHTMLComments(source);
             this.Text = ExtractParagraphs(source);
         }
-        public Texting.TextChapter ParseChapter()
+        public Texting.TextChapter ParseChapter(string root)
         {
+            LoadText(root);
+
             File.WriteAllText("text.xml", Text);
             Console.WriteLine(this.URL);
 
@@ -91,7 +93,7 @@ namespace EBookCrawler
             parser.Parse(rep.Output);
 
             var trafo = new Texting.Transformer();
-            var ch = trafo.Transform(Text, parser.Root);
+            var ch = trafo.Transform(URL, Text, parser.Root);
             ch.Chapter = this;
 
             this.Text = null;

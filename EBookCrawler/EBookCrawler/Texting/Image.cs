@@ -106,15 +106,16 @@ namespace EBookCrawler.Texting
         }
         public string DownloadImage(string directory)
         {
-            string targetFile = Path.Combine(directory, RelativePath);
-            string targetDirectory = Path.GetDirectoryName(targetFile);
+            string targetFile = RelativePath.Replace('/', '\\');
+            string absolutePath = Path.Combine(directory, targetFile);
+            string targetDirectory = Path.GetDirectoryName(absolutePath);
             if (!Directory.Exists(targetDirectory))
                 Directory.CreateDirectory(targetDirectory);
-            if (File.Exists(targetFile))
+            if (File.Exists(absolutePath))
                 return targetFile;
 
             WebClient wClient = new WebClient();
-            wClient.DownloadFile(Uri, targetFile);
+            wClient.DownloadFile(Uri, absolutePath);
             return targetFile;
         }
     }

@@ -19,6 +19,12 @@ namespace EBookCrawler
     {
         public string IndexSiteURL { get; set; } = "https://www.projekt-gutenberg.org/info/texte/allworka.html";
         public Library Library { get; set; }
+        public string Root { get; set; }
+
+        public Organizer(string Root)
+        {
+            this.Root = Root;
+        }
 
         public void DownloadLibrary()
         {
@@ -41,19 +47,22 @@ namespace EBookCrawler
                         part.LoadPart();
         }
 
-        public void SaveLibrary(string root)
+        public void SaveLibrary()
         {
             var formatter = new BinaryFormatter();
-            using (var fs = new FileStream(Path.Combine(root, "library.file"), FileMode.Create))
+            using (var fs = new FileStream(Path.Combine(Root, "library.file"), FileMode.Create))
                 formatter.Serialize(fs, Library);
-            Library.WriteOverviewMarkdown(Path.Combine(root, "overview.md"));
-            Library.DownloadChapters(root, false);
+            Library.WriteOverviewMarkdown(Path.Combine(Root, "overview.md"));
         }
-        public void LoadLibrary(string root)
+        public void LoadLibrary()
         {
             var formatter = new BinaryFormatter();
-            using (var fs = new FileStream(Path.Combine(root, "library.file"), FileMode.Open))
+            using (var fs = new FileStream(Path.Combine(Root, "library.file"), FileMode.Open))
                 Library = formatter.Deserialize(fs) as Library;
+        }
+        public void DownloadWebPage(bool forceDownload)
+        {
+            Library.DownloadChapters(Root, forceDownload);
         }
 
         private static void SaveDLContent(string htmlCode, string path)

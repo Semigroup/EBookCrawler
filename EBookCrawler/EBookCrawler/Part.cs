@@ -73,12 +73,12 @@ namespace EBookCrawler
             foreach (var ch in Chapters)
                 ch.DownloadText(root, forceDownload);
         }
-        public Texting.TextPart ParseText()
+        public Texting.TextPart ParseText(string root)
         {
             var part = new Texting.TextPart()
             {
                 Part = this,
-                Chapters = this.Chapters.Select(ch => ch.ParseChapter()).ToArray()
+                Chapters = this.Chapters.Select(ch => ch.ParseChapter(root)).ToArray()
             };
             return part;
         }

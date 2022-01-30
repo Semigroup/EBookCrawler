@@ -28,5 +28,34 @@ namespace EBookCrawler
             foreach (var a in elements)
                 yield return mapping(a);
         }
+
+        public static string ToFileName(this string name)
+        {
+            name = name.Replace("\\", "");
+            name = name.Replace("//", "");
+            name = name.Replace("?", "");
+            name = name.Replace(".", "");
+            name = name.Replace(":", "");
+            name = name.Replace("!", "");
+            name = name.Replace(",", "");
+            name = name.Replace(";", "");
+            name = name.Replace("(", "");
+            name = name.Replace("[", "");
+            name = name.Replace("{", "");
+            name = name.Replace(")", "");
+            name = name.Replace("]", "");
+            name = name.Replace("}", "");
+            name = name.Replace("*", "");
+            name = name.Replace("+", "");
+            name = name.Replace("-", "");
+            name = name.Replace("<", "");
+            name = name.Replace(">", "");
+            name = name.Replace("|", "");
+
+            name = name.Replace(" ", "_");
+            name = name.Replace("\n", "_");
+            name = name.Replace("\r", "");
+            return name;
+        }
     }
 }

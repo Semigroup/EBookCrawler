@@ -14,6 +14,7 @@ namespace EBookCrawler
         public string Link { get; set; }
         public List<string> Genres { get; set; } = new List<string>();
         public Part Part { get; set; }
+        public int Number { get; set; }
 
         public string GetIdentifier() => GetIdentifier(this.Name, this.SubTitle, this.Link);
         public static string GetIdentifier(string Name, string SubTitle, string Link)

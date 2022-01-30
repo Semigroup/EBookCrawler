@@ -127,5 +127,20 @@ namespace EBookCrawler.Texting
             }
         }
 
+        public override void ToLatex(LatexWriter writer)
+        {
+            //ToDo
+
+            writer.WriteLineBreak(2);
+            writer.WriteLine(@"{");
+            writer.WriteLine(@"\noindent");
+            writer.WriteLine(@"\bfseries");
+            writer.WriteLine(@"\Large");
+            writer.WriteLine(@"\vspace{0.2em}\\");
+
+            base.ToLatex(writer);
+
+            writer.WriteLine(@"}");
+        }
     }
 }

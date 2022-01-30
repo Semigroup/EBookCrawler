@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace EBookCrawler
 {
@@ -25,13 +26,27 @@ namespace EBookCrawler
             this.Identifier = Name + " | " + SubTitle + " | " + Parts.Length + " @" + hash;
         }
 
-        public void WriteLatex(string outputDirectory)
+        public void WriteLatex(string root, string outputDirectory)
         {
             var doc = new Texting.Document()
             {
                 Book = this,
-                Parts = Parts.Select(p => p.Part.ParseText()).ToArray()
+                Parts = Parts.Select(p => p.Part.ParseText(root)).ToArray()
             };
+            string path = Parts[0].Link;
+            path = path.Substring("https://www.projekt-gutenberg.org/".Length);
+            path = path.Replace('/', '\\');
+            path = Path.Combine(outputDirectory, path);
+            var dir = Path.GetDirectoryName(path);
+            path = Path.Combine(dir, Name.ToFileName() + ".tex");
+
+            Console.WriteLine("Writing " + path);
+
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+
+            using (var writer = new Texting.LatexWriter(outputDirectory, path))
+                doc.ToLatex(writer);
         }
 
         public override string ToString()

@@ -10,13 +10,13 @@ namespace EBookCrawler
     class Program
     {
         static readonly string libRoot = "E:\\GutenbergLibrary\\";
-        static readonly string latexOutput = "E:\\LatexBooks\\";
+        static readonly string latexOutput = @"D:\Github\EBookCrawler\build\";
 
         static void Main(string[] args)
         {
             //LoadWebLibrary();
 
-            TranscriptBooks("fabeln");
+            TranscriptBooks("galgenlieder");
 
             //Test();
         }
@@ -34,30 +34,30 @@ namespace EBookCrawler
 
         static void LoadWebLibrary()
         {
-            Organizer orga = new Organizer();
+            Organizer orga = new Organizer(libRoot);
             orga.DownloadLibrary();
-            orga.SaveLibrary(libRoot);
+            orga.SaveLibrary();
         }
         static void TranscriptBooks(params string[] books)
         {
-            Organizer orga = new Organizer();
-            orga.LoadLibrary(libRoot);
+            Organizer orga = new Organizer(libRoot);
+            orga.LoadLibrary();
 
-            //foreach (var name in books)
-            //{
-            //    var found = orga.Library.FindBook(name).ToArray();
-            //    for (int i = 0; i < found.Length; i++)
-            //        found[i].WriteBook(libRoot);
-            //}
-
-            var authors = orga.Library.Authors.Values.ToArray();
-            for (int i = 0; i < authors.Length; i++)
+            foreach (var name in books)
             {
-                Console.WriteLine(i + " of " + authors.Length);
-                Console.WriteLine(authors[i].ToString());
-                foreach (var book in authors[i].Books.Values)
-                    book.WriteLatex(latexOutput);
+                var found = orga.Library.FindBook(name).ToArray();
+                for (int i = 0; i < found.Length; i++)
+                    found[i].WriteLatex(libRoot, latexOutput);
             }
+
+            //var authors = orga.Library.Authors.Values.ToArray();
+            //for (int i = 0; i < authors.Length; i++)
+            //{
+            //    Console.WriteLine(i + " of " + authors.Length);
+            //    Console.WriteLine(authors[i].ToString());
+            //    foreach (var book in authors[i].Books.Values)
+            //        book.WriteLatex(libRoot, latexOutput);
+            //}
         }
     }
 }

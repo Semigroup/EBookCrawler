@@ -33,6 +33,8 @@ namespace EBookCrawler.Merging
             foreach (var title in Titles)
                 title.IndexEnumeratingWord = enumIndex;
             this.Titles.Sort();
+            for (int i = 0; i < Titles.Count; i++)
+                Titles[i].Part.Number = i;
         }
 
         private bool IsHelpingWord(string word)

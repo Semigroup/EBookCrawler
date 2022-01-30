@@ -15,16 +15,19 @@ namespace EBookCrawler.Texting
         public Style CurrentStyle { get; set; }
         public string BuildDirectory { get; set; }
 
-        public LatexWriter(string path) : base(path)
+        public LatexWriter(string BuildDirectory, string path) : base(path)
         {
-            this.BuildDirectory = Path.GetDirectoryName(path);
+            this.BuildDirectory = BuildDirectory;
         }
 
         public void WritePreamble()
         {
+            WriteLine(@"\documentclass[12pt,a4paper,oneside]{book}");
+
             WriteLine(@"\usepackage[ngerman]{babel}");
             WriteLine(@"\usepackage[T1]{fontenc}");
             WriteLine(@"\usepackage[utf8]{inputenc}");
+
             WriteLine(@"\usepackage{lettrine}");
             WriteLine(@"\usepackage[document]{ragged2e}");
             WriteLine(@"\usepackage{xcolor}");
