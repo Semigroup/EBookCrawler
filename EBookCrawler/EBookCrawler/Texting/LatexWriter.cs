@@ -13,9 +13,11 @@ namespace EBookCrawler.Texting
         public bool StartWithCapital { get; set; }
         public Stack<Style> Styles { get; set; } = new Stack<Style>();
         public Style CurrentStyle { get; set; }
+        public string BuildDirectory { get; set; }
 
         public LatexWriter(string path) : base(path)
         {
+            this.BuildDirectory = Path.GetDirectoryName(path);
         }
 
         public void WritePreamble()

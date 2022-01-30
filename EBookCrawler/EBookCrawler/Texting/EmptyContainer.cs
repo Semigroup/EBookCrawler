@@ -17,7 +17,7 @@ namespace EBookCrawler.Texting
         public override void SetClass(string classValue)
         {
         }
-        public override void ToLatex(LatexWriter writer, LatexContext context)
+        public override void ToLatex(LatexWriter writer)
         {
         }
     }

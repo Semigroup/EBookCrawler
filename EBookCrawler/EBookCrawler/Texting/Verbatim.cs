@@ -10,7 +10,7 @@ namespace EBookCrawler.Texting
     {
         public string Text { get; set; }
 
-        public override void ToLatex(LatexWriter writer, LatexContext context)
+        public override void ToLatex(LatexWriter writer)
         {
             // Text may not contain "\end{verbatim}"
             if (Text.Contains(@"\end{verbatim}"))

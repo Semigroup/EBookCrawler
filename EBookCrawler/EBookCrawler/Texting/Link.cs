@@ -13,5 +13,11 @@ namespace EBookCrawler.Texting
         public string ID { get; set; }
         public string Title { get; set; }
         public bool IsPageRef { get; set; }
+
+        public override void ToLatex(LatexWriter writer)
+        {
+            //ToDo
+            base.ToLatex(writer);
+        }
     }
 }

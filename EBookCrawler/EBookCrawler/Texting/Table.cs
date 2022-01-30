@@ -8,6 +8,21 @@ namespace EBookCrawler.Texting
 {
     public class Table : TextElement
     {
+        public class Datum : ContainerElement
+        {
+            //ToDo
+            public int VAlignment { get; set; }
+            public int ColSpan { get; set; } = 1;
+            public int RowSpan { get; set; } = 1;
+            public Length Width { get; set; } = new Length() { Value = 1, IsProportional = true };
+            public Length Height { get; set; } = new Length() { Value = 0, IsProportional = true };
+
+            public override void ToLatex(LatexWriter writer)
+            {
+                //ToDo
+                base.ToLatex(writer);
+            }
+        }
         public class Row : TextElement
         {
             public List<Datum> Data { get; set; } = new List<Datum>();
@@ -22,16 +37,22 @@ namespace EBookCrawler.Texting
                     else
                         throw new NotImplementedException();
             }
+
+            public override void ToLatex(LatexWriter writer)
+            {
+                bool first = true;
+                foreach (var item in Data)
+                {
+                    if (first)
+                        first = false;
+                    else
+                        writer.Write(" & ");
+                    item.ToLatex(writer);
+                }
+                writer.WriteLine(@"\\");
+            }
         }
-        public class Datum : ContainerElement
-        {
-            public int VAlignment { get; set; }
-            //Ignore?
-            public int ColSpan { get; set; } = 1;
-            public int RowSpan { get; set; } = 1;
-            public Length Width { get; set; } = new Length() { Value = 1, IsProportional = true };
-            public Length Height { get; set; } = new Length() { Value = 0, IsProportional = true };
-        }
+
         public class RowContainer : TextElement
         {
             public enum Kind
@@ -62,6 +83,18 @@ namespace EBookCrawler.Texting
                     else
                         throw new NotImplementedException();
             }
+            public override void ToLatex(LatexWriter writer)
+            {
+                throw new NotImplementedException();
+            }
+            public void ToLatex(LatexWriter writer, bool rowLines)
+            {
+                foreach (var row in Rows)
+                {
+                    row.ToLatex(writer);
+                    writer.WriteLine(@"\hline");
+                }
+            }
         }
         public class Caption : ContainerElement
         {
@@ -73,27 +106,31 @@ namespace EBookCrawler.Texting
             {
                 this.Add(new Word() { Value = summary });
             }
+            public override void ToLatex(LatexWriter writer)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public enum BorderStyle
         {
-            Columns,
-            Rows,
-            None,
-            All
+            None = 0,
+            Columns = 1,
+            Rows = 2,
+            All = 3
         }
 
         public Caption MyCaption { get; set; }
         public List<RowContainer> Segments { get; set; } = new List<RowContainer>();
+        public int Alignment { get; set; }
+        public BorderStyle Style { get; set; } = Table.BorderStyle.All;
+
+        //ToDo
+        public Length Width { get; set; } = new Length() { Value = 1, IsProportional = true };
         public double Padding { get; set; }
         public double Spacing { get; set; }
         public double Border { get; set; }
-        //public string Caption { get; set; }
-        public int Alignment { get; set; }
         public bool IsPoem { get; set; }
-        public bool IsBox { get; set; }
-        public Length Width { get; set; } = new Length() { Value = 1, IsProportional = true };
-        public BorderStyle Style { get; set; } = Table.BorderStyle.All;
 
         public void Add(IEnumerable<TextElement> rows)
         {
@@ -132,6 +169,68 @@ namespace EBookCrawler.Texting
                 default:
                     throw new NotImplementedException();
             }
+        }
+
+        protected void WriteColAlignment(LatexWriter writer)
+        {
+            List<int> alignments = new List<int>();
+            foreach (var cont in Segments)
+                foreach (var row in cont.Rows)
+                    for (int i = 0; i < row.Data.Count; i++)
+                        if (alignments.Count <= i)
+                            alignments.Add(row.Data[i].Alignment);
+            string sep = ((Style & BorderStyle.Columns) != 0) ? "|" : "";
+
+            writer.Write(@"{" + sep);
+            foreach (var al in alignments)
+            {
+                switch (al)
+                {
+                    case 0:
+                        writer.Write("l");
+                        break;
+                    case 1:
+                        writer.Write("c");
+                        break;
+                    case 2:
+                        writer.Write("r");
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+                writer.Write(sep);
+            }
+            writer.WriteLine("}");
+        }
+        protected void WriteTabular(LatexWriter writer)
+        {
+            bool rowBorder = (Style & BorderStyle.Rows) != 0;
+
+            writer.Write(@"\begin{tabular}");
+            WriteColAlignment(writer);
+            if (rowBorder)
+                writer.WriteLine(@"\hline");
+            foreach (var cont in Segments)
+                cont.ToLatex(writer, rowBorder);
+
+            writer.WriteLine(@"\end{tabular}");
+        }
+        protected void WriteCaption(LatexWriter writer)
+        {
+            if (MyCaption != null)
+            {
+                writer.WriteLine(@"\caption{");
+                MyCaption.ToLatex(writer);
+                writer.Write(@"}");
+            }
+        }
+        public override void ToLatex(LatexWriter writer)
+        {
+            writer.WriteLine(@"\begin{table}[]");
+            writer.WriteAlignment(Alignment);
+            WriteTabular(writer);
+            WriteCaption(writer);
+            writer.WriteLine(@"\end{table}[]");
         }
     }
 }

@@ -10,9 +10,13 @@ namespace EBookCrawler.Texting
     public class Transformer
     {
         private string Text;
+        private string Uri;
+        private string UriDirectory;
 
-        public TextChapter Transform(string Text, Parser.Node node)
+        public TextChapter Transform(string Uri,string Text, Parser.Node node)
         {
+            this.Uri = Uri;
+            this.UriDirectory = Uri.Substring(0, Uri.LastIndexOf('/') + 1);
             this.Text = Text;
             ComputeStyle(node);
             return Transform(node) as TextChapter;
@@ -189,7 +193,8 @@ namespace EBookCrawler.Texting
                         img.HSpace = att.ValueAsDouble();
                         break;
                     case "src":
-                        img.RelativePath = att.Value;
+                        img.Uri = UriDirectory+ att.Value;
+                        img.RelativePath = img.Uri.Substring("https://www.projekt-gutenberg.org/".Length);
                         break;
                     case "class":
                         switch (att.Value.ToLower())
@@ -198,12 +203,12 @@ namespace EBookCrawler.Texting
                             case "intial":
                             case "fbu":
                             case "half":
-                                img.IsCapital = true;
+                                img.MyKind = Image.Kind.Lettrine;
                                 break;
                             case "right":
                             case "center":
                             case "left":
-                                img.WrapFigure = true;
+                                img.MyKind = Image.Kind.WrapFigure;
                                 img.Alignment = GetAlignment(att.Value);
                                 break;
                             case "figure":
@@ -222,7 +227,7 @@ namespace EBookCrawler.Texting
                             case "bottom":
                             case "middle":
                             case "top":
-                                img.InLine = true;
+                                img.MyKind = Image.Kind.InLine;
                                 break;
                             default:
                                 break;

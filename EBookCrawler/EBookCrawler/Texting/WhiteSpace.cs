@@ -13,7 +13,7 @@ namespace EBookCrawler.Texting
         public bool NonBreakingSpace { get; set; }
         public double Indentation { get; set; }
 
-        public override void ToLatex(LatexWriter writer, LatexContext context)
+        public override void ToLatex(LatexWriter writer)
         {
             if (VSpace > 0)
             {

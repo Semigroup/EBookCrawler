@@ -8,6 +8,18 @@ namespace EBookCrawler.Texting
 {
     public class Header : ContainerElement
     {
+        public enum Level
+        {
+            TitlePage,
+            Part,
+            Chapter,
+            Section,
+            SubSection,
+            SubSubSection,
+            Paragraph,
+            SubParagraph,
+            Unspecified
+        }
         public enum Info
         {
             None,
@@ -25,7 +37,9 @@ namespace EBookCrawler.Texting
             Scene,
             Dedication
         }
+
         public Info MyInfo { get; set; } = Info.None;
+        public Level MyLevel { get; set; } = Level.Unspecified;
         public int Hierarchy { get; set; }
 
         public void SetInfo(string value) {
