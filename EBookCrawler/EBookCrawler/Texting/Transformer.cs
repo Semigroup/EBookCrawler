@@ -887,7 +887,10 @@ namespace EBookCrawler.Texting
         }
         private ContainerElement GetListItem(Token token)
         {
-            var li = new ListItem();
+            var li = new ListItem()
+            {
+                IsTerm = token.MyKind == Token.Kind.ListTerm
+            };
             foreach (var attribute in token.Attributes)
                 switch (attribute.Name.ToLower())
                 {

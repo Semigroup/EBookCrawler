@@ -26,6 +26,8 @@ namespace EBookCrawler.Texting
             WriteLine(@"\usepackage{yfonts}");
             WriteLine(@"\usepackage{ulem}");
             WriteLine(@"\usepackage{changepage}");
+            WriteLine(@"\usepackage{amsmath}");
+            WriteLine(@"\usepackage{amssymb}");
         }
         public override void WriteLine()
         {

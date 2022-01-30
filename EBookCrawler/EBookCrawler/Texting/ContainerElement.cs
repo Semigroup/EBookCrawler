@@ -216,6 +216,16 @@ namespace EBookCrawler.Texting
         }
         public override void ToLatex(LatexWriter writer)
         {
+            WriteBegin(writer);
+            foreach (var element in TextElements)
+            {
+                element.ToLatex(writer);
+                writer.WriteLine();
+            }
+            WriteEnd(writer);
+        }
+        protected virtual void WriteBegin(LatexWriter writer)
+        {
             writer.WriteLine(@"{");
             if (!LeftMargin.IsZero())
                 writer.WriteLine(@"\begin{adjustwidth}{" + LeftMargin.Length + "}{}");
@@ -228,13 +238,9 @@ namespace EBookCrawler.Texting
 
             writer.PushStyle(Style);
             writer.WriteStyle();
-
-            foreach (var element in TextElements)
-            {
-                element.ToLatex(writer);
-                writer.WriteLine();
-            }
-
+        }
+        protected virtual void WriteEnd(LatexWriter writer)
+        {
             writer.PopStyle();
 
             if (!LeftMargin.IsZero())
