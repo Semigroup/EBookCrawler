@@ -13,7 +13,7 @@ namespace EBookCrawler.Texting
         private string Uri;
         private string UriDirectory;
 
-        public TextChapter Transform(string Uri,string Text, Parser.Node node)
+        public TextChapter Transform(string Uri, string Text, Parser.Node node)
         {
             this.Uri = Uri;
             this.UriDirectory = Uri.Substring(0, Uri.LastIndexOf('/') + 1);
@@ -69,9 +69,10 @@ namespace EBookCrawler.Texting
                 case Token.Kind.Verbatim:
                     return TransformVerbatim(node);
                 case Token.Kind.Raw:
-                    var wordContainer = new ContainerElement();
-                    wordContainer.Add(SplitRaw(node.Token.Text));
-                    return wordContainer;
+                    //var wordContainer = new ContainerElement();
+                    //wordContainer.Add(SplitRaw(node.Token.Text));
+                    //return wordContainer;
+                    return new Word(node.Token.Text);
 
                 default:
                     var container = GetContainer(node.Token);
@@ -162,7 +163,7 @@ namespace EBookCrawler.Texting
             var token = node.Token;
             int end = token.EndPosition;
             int start = token.Position + token.Length;
-            return new Verbatim() { Text = Text.Substring(start, end - start) };
+            return new Verbatim(Text.Substring(start, end - start));
         }
         private Image TransformImage(Parser.Node node)
         {
@@ -209,7 +210,7 @@ namespace EBookCrawler.Texting
                             case "center":
                             case "left":
                                 img.MyKind = Image.Kind.WrapFigure;
-                                img.Alignment = GetAlignment(att.Value);
+                                img.MyAlignment = GetAlignment(att.Value);
                                 break;
                             case "figure":
                             case "full":
@@ -221,7 +222,7 @@ namespace EBookCrawler.Texting
                         }
                         break;
                     case "align":
-                        img.Alignment = GetAlignment(att.Value);
+                        img.MyAlignment = GetAlignment(att.Value);
                         switch (att.Value.ToLower())
                         {
                             case "bottom":
@@ -269,7 +270,7 @@ namespace EBookCrawler.Texting
         }
         private WhiteSpace TransformLinebreak(Parser.Node node)
         {
-            return new WhiteSpace() { VSpace = 1, Indentation = 1 };
+            return new WhiteSpace() { VSpace = 1, Indentation = 0 };
         }
         private HorizontalRule TransformRule(Parser.Node node)
         {
@@ -307,7 +308,7 @@ namespace EBookCrawler.Texting
                     case "size":
                         break;
                     case "align":
-                        hr.Alignment = GetAlignment(attribute.Value.ToLower());
+                        hr.MyAlignment = GetAlignment(attribute.Value.ToLower());
                         break;
                     default:
                         throw new NotImplementedException();
@@ -389,7 +390,7 @@ namespace EBookCrawler.Texting
                         case "id":
                             break;
                         case "align":
-                            poem.Alignment = GetAlignment(attribute.Value);
+                            poem.MyAlignment = GetAlignment(attribute.Value);
                             break;
                         default:
                             throw new NotImplementedException();
@@ -423,7 +424,7 @@ namespace EBookCrawler.Texting
             {
                 var para = new Paragraph();
                 if (token.Tag == "center")
-                    para.Alignment = 1;
+                    para.MyAlignment = TextElement.Alignment.Right;
                 foreach (var attribute in token.Attributes)
                     switch (attribute.Name.ToLower())
                     {
@@ -454,7 +455,7 @@ namespace EBookCrawler.Texting
                             para.StartsWithIndentation = true;
                             break;
                         case "text-align":
-                            para.Alignment = GetAlignment(prop.Value);
+                            para.MyAlignment = GetAlignment(prop.Value);
                             break;
                         case "font-variant":
                         case "font-weight":
@@ -491,7 +492,7 @@ namespace EBookCrawler.Texting
                             div.SetKind(attribute.Value.ToLower());
                             break;
                         case "align":
-                            div.Alignment = GetAlignment(attribute.Value.ToLower());
+                            div.MyAlignment = GetAlignment(attribute.Value.ToLower());
                             break;
                         case "lang":
                         case "id":
@@ -703,7 +704,7 @@ namespace EBookCrawler.Texting
                     break;
 
                 case "center":
-                    container.Alignment = 1;
+                    container.MyAlignment = TextElement.Alignment.Center;
                     break;
                 case "word":
                 case "wort":
@@ -1017,7 +1018,7 @@ namespace EBookCrawler.Texting
                 switch (attribute.Name.ToLower())
                 {
                     case "align":
-                        table.Alignment = GetAlignment(attribute.Value);
+                        table.MyAlignment = GetAlignment(attribute.Value);
                         break;
                     case "valign":
                         //ToDo?
@@ -1051,7 +1052,7 @@ namespace EBookCrawler.Texting
                                 //ToDo?
                                 break;
                             default:
-                                table.Alignment = GetAlignment(attribute.Value);
+                                table.MyAlignment = GetAlignment(attribute.Value);
                                 break;
                         }
                         break;
@@ -1114,7 +1115,7 @@ namespace EBookCrawler.Texting
                 switch (attribute.Name.ToLower())
                 {
                     case "align":
-                        table.Alignment = GetAlignment(attribute.Value.ToLower());
+                        table.MyAlignment = GetAlignment(attribute.Value.ToLower());
                         break;
                     case "valign":
                         table.VAlignment = GetVAlignment(attribute.Value.ToLower());
@@ -1238,25 +1239,50 @@ namespace EBookCrawler.Texting
             var words = rawText.Split(new char[] { ' ', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var word in words)
             {
-                yield return new Word() { Value = word };
+                yield return new Word(word) ;
                 yield return new WhiteSpace() { HSpace = 1 };
             }
         }
 
-        public static int GetAlignment(string value)
+        public static TextElement.Alignment GetAlignment(string value)
         {
             switch (value.ToLower())
             {
                 case "":
-                case "poem":
                 case "allname":
-                case "rolle":
                 case "wide":
+                case "calibre13":
+                case "lat":
+                case "paul simmel":
+                case "hanging":
+                case "c1781":
+                case "‹h3":
+                case "small":
+                case "smallcaps":
+                case "not":
+                case "font110":
+                case "toc":
+                case "western":
+                case "v":
+                case "d":
+                case "weihe":
+                case "recipient":
+                case "lektorat":
+                case "p5":
+                case "p20":
+                case "p23":
+                case "p24":
+                case "p25":
+                case "truetop":
+                case "top":
+                    return TextElement.Alignment.Unspecified;
+
+                case "poem":
+                case "rolle":
                 case "bündig":
                 case "long":
                 case "einr":
                 case "einr1":
-                case "calibre13":
                 case "volume":
                 case "first":
                 case "repliccont":
@@ -1266,26 +1292,17 @@ namespace EBookCrawler.Texting
                 case "noindent":
                 case "indented":
                 case "indent":
-                case "lat":
-                case "paul simmel":
-                case "hanging":
-                case "c1781":
-                case "‹h3":
-                case "glossar":
                 case "part":
+                case "glossar":
                 case "tb":
                 case "fall":
-                case "small":
                 case "regie":
-                case "smallcaps":
-                case "not":
                 case "fntext":
                 case "chupter":
                 case "section":
                 case "real":
                 case "anm":
                 case "anmerk":
-                case "font110":
                 case "prosa":
                 case "left":
                 case "left0":
@@ -1317,7 +1334,6 @@ namespace EBookCrawler.Texting
                 case "intitial":
                 case "stage":
                 case "scene":
-                case "toc":
                 case "chor":
                 case "chormarg":
                 case "titlepage":
@@ -1330,29 +1346,14 @@ namespace EBookCrawler.Texting
                 case "justify":
                 case "def":
                 case "reg":
-                case "western":
-                case "v":
-                case "d":
-                case "weihe":
-                case "recipient":
                 case "sender":
                 case "speaker":
                 case "act":
-                case "lektorat":
-                case "p5":
-                case "p20":
-                case "p23":
-                case "p24":
-                case "p25":
                 case "el":
                 case "mid":
                 case "de":
-
                 case "versmarg":
-
-                case "truetop":
-                case "top":
-                    return 0;
+                    return TextElement.Alignment.Left;
 
                 case "caption":
                 case "dblmargr":
@@ -1397,7 +1398,7 @@ namespace EBookCrawler.Texting
 
                 case "absmiddle":
                 case "middle":
-                    return 1;
+                    return TextElement.Alignment.Center;
 
                 case "right":
                 case "riight":
@@ -1414,25 +1415,25 @@ namespace EBookCrawler.Texting
                 case "absbottom":
                 case "bottom":
                 case "baseline":
-                    return 2;
+                    return TextElement.Alignment.Right;
 
                 default:
                     throw new NotImplementedException();
             }
         }
-        public static int GetVAlignment(string value)
+        public static TextElement.Alignment GetVAlignment(string value)
         {
             switch (value.ToLower())
             {
                 case "top":
-                    return 0;
+                    return TextElement.Alignment.Left;
 
                 case "center":
                 case "middle":
-                    return 1;
+                    return TextElement.Alignment.Center;
 
                 case "bottom":
-                    return 2;
+                    return TextElement.Alignment.Right;
 
                 default:
                     throw new NotImplementedException();

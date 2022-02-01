@@ -8,7 +8,12 @@ namespace EBookCrawler.Texting
 {
     public class Verbatim : TextElement
     {
-        public string Text { get; set; }
+        public string Text { get; private set; }
+
+        public Verbatim(string Text)
+        {
+            this.WordCount = CountWords(Text);
+        }
 
         public override void ToLatex(LatexWriter writer)
         {

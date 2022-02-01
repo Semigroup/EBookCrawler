@@ -120,7 +120,7 @@ namespace EBookCrawler.Texting
                     this.MyInfo = Info.Dedication;
                     break;
                 case "right":
-                    this.Alignment = 2;
+                    this.MyAlignment = TextElement.Alignment.Right;
                     break;
                 default:
                     throw new NotImplementedException();
@@ -132,14 +132,14 @@ namespace EBookCrawler.Texting
             //ToDo
 
             writer.WriteLineBreak(2);
-            writer.WriteLine(@"{");
-            writer.WriteLine(@"\noindent");
-            writer.WriteLine(@"\bfseries");
+            writer.Write(@"{");
+            writer.Write(@"\noindent");
+            writer.Write(@"\bfseries");
             writer.WriteLine(@"\Large");
             writer.WriteLine(@"\vspace{0.2em}\\");
 
             base.ToLatex(writer);
-
+            //writer.WriteLine(@"\vspace{0.5em}\\");
             writer.WriteLine(@"}");
         }
     }

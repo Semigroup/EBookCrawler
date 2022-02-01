@@ -11,7 +11,7 @@ namespace EBookCrawler.Texting
         public class Datum : ContainerElement
         {
             //ToDo
-            public int VAlignment { get; set; }
+            public Alignment VAlignment { get; set; } = Alignment.Unspecified;
             public int ColSpan { get; set; } = 1;
             public int RowSpan { get; set; } = 1;
             public Length Width { get; set; } = new Length() { Value = 1, IsProportional = true };
@@ -26,14 +26,17 @@ namespace EBookCrawler.Texting
         public class Row : TextElement
         {
             public List<Datum> Data { get; set; } = new List<Datum>();
-            public int Alignment { get; set; }
-            public int VAlignment { get; set; }
+            public Alignment MyAlignment { get; set; } = Alignment.Unspecified;
+            public Alignment VAlignment { get; set; } = Alignment.Unspecified;
 
             public void Add(IEnumerable<TextElement> data)
             {
                 foreach (var item in data)
                     if (item is Datum datum)
+                    {
                         this.Data.Add(datum);
+                        this.WordCount += datum.WordCount;
+                    }
                     else
                         throw new NotImplementedException();
             }
@@ -79,7 +82,10 @@ namespace EBookCrawler.Texting
             {
                 foreach (var item in rows)
                     if (item is Row row)
+                    {
                         this.Rows.Add(row);
+                        this.WordCount += row.WordCount;
+                    }
                     else
                         throw new NotImplementedException();
             }
@@ -92,6 +98,7 @@ namespace EBookCrawler.Texting
                 foreach (var row in Rows)
                 {
                     row.ToLatex(writer);
+                    if (rowLines)
                     writer.WriteLine(@"\hline");
                 }
             }
@@ -104,7 +111,7 @@ namespace EBookCrawler.Texting
             }
             public Caption(string summary)
             {
-                this.Add(new Word() { Value = summary });
+                this.Add(new Word(summary));
             }
             public override void ToLatex(LatexWriter writer)
             {
@@ -122,8 +129,8 @@ namespace EBookCrawler.Texting
 
         public Caption MyCaption { get; set; }
         public List<RowContainer> Segments { get; set; } = new List<RowContainer>();
-        public int Alignment { get; set; }
-        public BorderStyle Style { get; set; } = Table.BorderStyle.All;
+        public Alignment MyAlignment { get; set; } = Alignment.Unspecified;
+        public BorderStyle Style { get; set; } = Table.BorderStyle.None;
 
         //ToDo
         public Length Width { get; set; } = new Length() { Value = 1, IsProportional = true };
@@ -135,6 +142,7 @@ namespace EBookCrawler.Texting
         public void Add(IEnumerable<TextElement> rows)
         {
             foreach (var item in rows)
+            {
                 if (item is Row row)
                     this.Segments.Add(new RowContainer(row));
                 else if (item is RowContainer container)
@@ -148,6 +156,8 @@ namespace EBookCrawler.Texting
                 }
                 else
                     throw new NotImplementedException();
+                this.WordCount += item.WordCount;
+            }
         }
         public void SetBorderStyle(string value)
         {
@@ -173,47 +183,65 @@ namespace EBookCrawler.Texting
 
         protected void WriteColAlignment(LatexWriter writer)
         {
-            List<int> alignments = new List<int>();
+            //Alignment add(Alignment a, Alignment b)
+            //{
+            //    if (a == Alignment.Unspecified)
+            //        return b;
+            //    else
+            //        return a;
+            //}
+            int n = 0;
             foreach (var cont in Segments)
                 foreach (var row in cont.Rows)
-                    for (int i = 0; i < row.Data.Count; i++)
-                        if (alignments.Count <= i)
-                            alignments.Add(row.Data[i].Alignment);
+                    n = Math.Max(n, row.Data.Count);
+
+            //var alignments = new Alignment[n];
+            //for (int i = 0; i < n; i++)
+            //    alignments[i] = Alignment.Unspecified;
+            //foreach (var cont in Segments)
+            //    foreach (var row in cont.Rows)
+            //        for (int i = 0; i < row.Data.Count; i++)
+            //            alignments[i] = add(alignments[i], row.Data[i].MyAlignment);
+
             string sep = ((Style & BorderStyle.Columns) != 0) ? "|" : "";
 
             writer.Write(@"{" + sep);
-            foreach (var al in alignments)
-            {
-                switch (al)
-                {
-                    case 0:
-                        writer.Write("l");
-                        break;
-                    case 1:
-                        writer.Write("c");
-                        break;
-                    case 2:
-                        writer.Write("r");
-                        break;
-                    default:
-                        throw new NotImplementedException();
-                }
-                writer.Write(sep);
-            }
+            for (int i = 0; i < n; i++)
+                writer.Write(@"X" + sep);
+            //foreach (var al in alignments)
+            //{
+            //    switch (al)
+            //    {
+            //        case Alignment.Unspecified:
+            //        case Alignment.Left:
+            //            writer.Write("l");
+            //            break;
+            //        case Alignment.Center:
+            //            writer.Write("c");
+            //            break;
+            //        case Alignment.Right:
+            //            writer.Write("r");
+            //            break;
+            //        default:
+            //            throw new NotImplementedException();
+            //    }
+            //    writer.Write(sep);
+            //}
             writer.WriteLine("}");
         }
         protected void WriteTabular(LatexWriter writer)
         {
             bool rowBorder = (Style & BorderStyle.Rows) != 0;
 
-            writer.Write(@"\begin{tabular}");
+            writer.Write(@"\begin{tabularx}");
+            writer.Write(@"{\textwidth}");
             WriteColAlignment(writer);
             if (rowBorder)
                 writer.WriteLine(@"\hline");
             foreach (var cont in Segments)
                 cont.ToLatex(writer, rowBorder);
 
-            writer.WriteLine(@"\end{tabular}");
+            writer.WriteLine(@"\end{tabularx}");
         }
         protected void WriteCaption(LatexWriter writer)
         {
@@ -226,11 +254,15 @@ namespace EBookCrawler.Texting
         }
         public override void ToLatex(LatexWriter writer)
         {
-            writer.WriteLine(@"\begin{table}[]");
-            writer.WriteAlignment(Alignment);
+            writer.WriteLine(@"\begin{table}");
+            writer.TabularDepth++;
+
+            writer.WriteAlignment(MyAlignment);
             WriteTabular(writer);
             WriteCaption(writer);
-            writer.WriteLine(@"\end{table}[]");
+
+            writer.TabularDepth--;
+            writer.WriteLine(@"\end{table}");
         }
     }
 }

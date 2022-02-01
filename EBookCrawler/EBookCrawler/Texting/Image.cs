@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Net;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace EBookCrawler.Texting
 {
@@ -24,8 +26,8 @@ namespace EBookCrawler.Texting
         public string Uri { get; set; }
 
         public string Caption { get; set; }
-        public Length Width { get; set; }
-        public int Alignment { get; set; }
+        public Length Width { get; set; } = new Length() { Value = 1, IsProportional = true };
+        public Alignment MyAlignment { get; set; } = Alignment.Unspecified;
 
         public Kind MyKind { get; set; } = Kind.InLine;
 
@@ -48,9 +50,14 @@ namespace EBookCrawler.Texting
         protected void WriteInLineGraphic(LatexWriter writer, string path)
         {
             writer.WriteLine(@"{");
-            writer.WriteLine(@"\setlength{\fboxsep}{0pt}");
-            writer.WriteLine(@"\setlength{\fboxrule}{1pt}");
-            writer.WriteLine(@"\fbox{\includegraphics[width=" + Width + "]{" + path + "}}");
+            if (Border > 0)
+            {
+                writer.WriteLine(@"\setlength{\fboxsep}{0pt}");
+                writer.WriteLine(@"\setlength{\fboxrule}{1pt}");
+                writer.WriteLine(@"\fbox{\includegraphics[width=" + Width + "]{" + path + "}}");
+            }
+            else
+                writer.WriteLine(@"\includegraphics[width=" + Width + "]{" + path + "}");
             WriteCaption(writer);
             writer.WriteLine(@"}");
         }
@@ -67,20 +74,20 @@ namespace EBookCrawler.Texting
         protected void WriteWrapFigue(LatexWriter writer, string path)
         {
             writer.Write(@"\begin{wrapfigure}{");
-            if (Alignment == 2)
+            if (MyAlignment == Alignment.Right)
                 writer.Write("R");
             else
                 writer.Write("L");
             writer.Write("}{" + Width + "}");
 
-            writer.WriteAlignment(1);
+            writer.WriteAlignment(Alignment.Center);
             WriteInLineGraphic(writer, path);
 
             writer.WriteLine(@"\end{wrapfigure}");
         }
         public override void ToLatex(LatexWriter writer)
         {
-            string path = DownloadImage(writer.BuildDirectory);
+            string path = DownloadImage(writer.BuildRoot, writer.BuildDirectory);
 
             switch (MyKind)
             {
@@ -89,7 +96,7 @@ namespace EBookCrawler.Texting
                     break;
                 case Kind.Figure:
                     writer.WriteLine(@"\begin{figure}");
-                    writer.WriteAlignment(Alignment);
+                    writer.WriteAlignment(MyAlignment);
                     WriteInLineGraphic(writer, path);
                     writer.WriteLine(@"\end{figure}");
                     break;
@@ -104,18 +111,26 @@ namespace EBookCrawler.Texting
             }
 
         }
-        public string DownloadImage(string directory)
+        public string DownloadImage(string buildRoot, string buildDirectory)
         {
             string targetFile = RelativePath.Replace('/', '\\');
-            string absolutePath = Path.Combine(directory, targetFile);
+            string absolutePath = Path.Combine(buildRoot, targetFile);
             string targetDirectory = Path.GetDirectoryName(absolutePath);
+            targetFile = absolutePath.Substring(buildDirectory.Length);
+            targetFile = targetFile.Replace('\\', '/');
             if (!Directory.Exists(targetDirectory))
                 Directory.CreateDirectory(targetDirectory);
-            if (File.Exists(absolutePath))
+
+            var pngAbsPath = absolutePath.Substring(0, absolutePath.Length - 3) + "png";
+            targetFile = targetFile.Substring(0, targetFile.Length - 3) + "png";
+            if (File.Exists(pngAbsPath))
                 return targetFile;
 
-            WebClient wClient = new WebClient();
-            wClient.DownloadFile(Uri, absolutePath);
+            using (WebClient wClient = new WebClient())
+                wClient.DownloadFile(Uri, absolutePath);
+            using (Bitmap bmp = new Bitmap(absolutePath))
+                bmp.Save(pngAbsPath, ImageFormat.Png);
+
             return targetFile;
         }
     }

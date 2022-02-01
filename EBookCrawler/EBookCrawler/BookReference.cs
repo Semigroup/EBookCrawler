@@ -28,11 +28,7 @@ namespace EBookCrawler
 
         public void WriteLatex(string root, string outputDirectory)
         {
-            var doc = new Texting.Document()
-            {
-                Book = this,
-                Parts = Parts.Select(p => p.Part.ParseText(root)).ToArray()
-            };
+            var doc = new Texting.Document(this, Parts.Select(p => p.Part.ParseText(root)));
             string path = Parts[0].Link;
             path = path.Substring("https://www.projekt-gutenberg.org/".Length);
             path = path.Replace('/', '\\');

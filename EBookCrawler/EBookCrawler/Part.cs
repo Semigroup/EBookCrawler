@@ -75,11 +75,7 @@ namespace EBookCrawler
         }
         public Texting.TextPart ParseText(string root)
         {
-            var part = new Texting.TextPart()
-            {
-                Part = this,
-                Chapters = this.Chapters.Select(ch => ch.ParseChapter(root)).ToArray()
-            };
+            var part = new Texting.TextPart(this, Chapters.Select(ch => ch.ParseChapter(root)));
             return part;
         }
 

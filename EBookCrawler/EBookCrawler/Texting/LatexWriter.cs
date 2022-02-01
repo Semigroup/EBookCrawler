@@ -9,15 +9,18 @@ namespace EBookCrawler.Texting
 {
     public class LatexWriter : StreamWriter
     {
-        public int Depth => Styles.Count;
         public bool StartWithCapital { get; set; }
         public Stack<Style> Styles { get; set; } = new Stack<Style>();
         public Style CurrentStyle { get; set; }
+        public string BuildRoot { get; set; }
         public string BuildDirectory { get; set; }
+        private bool LineIsEmpty = true;
+        public int TabularDepth { get; set; } = 0;
 
-        public LatexWriter(string BuildDirectory, string path) : base(path)
+        public LatexWriter(string BuildRoot, string path) : base(path)
         {
-            this.BuildDirectory = BuildDirectory;
+            this.BuildRoot = BuildRoot;
+            this.BuildDirectory = Path.GetDirectoryName(path) + "\\";
         }
 
         public void WritePreamble()
@@ -40,14 +43,24 @@ namespace EBookCrawler.Texting
             WriteLine(@"\usepackage{amsfonts}");
             WriteLine(@"\usepackage{mathtools}");
             WriteLine(@"\usepackage{wasysym}");
+            WriteLine(@"\usepackage{tabularx}");
+        }
+        public override void Write(string value)
+        {
+            base.Write(value);
+            LineIsEmpty &= value.Length == 0;
         }
         public override void WriteLine()
         {
-            base.WriteLine("%");
+            if (!LineIsEmpty)
+            {
+                base.WriteLine("%");
+                LineIsEmpty = true;
+            }
         }
         public override void WriteLine(string line)
         {
-            base.Write(line);
+            this.Write(line);
             this.WriteLine();
         }
         public void WriteLineBreak(int n)
@@ -58,75 +71,123 @@ namespace EBookCrawler.Texting
         public void WriteLineBreak()
         {
             base.WriteLine();
+            LineIsEmpty = true;
         }
-        public void WriteAlignment(int alignment)
+        public void WriteAlignment(TextElement.Alignment alignment)
         {
             switch (alignment)
             {
-                case 0:
-                    WriteLine(@"\justifying");
+                case TextElement.Alignment.Unspecified:
                     break;
-                case 1:
-                    WriteLine(@"\Centering");
+                case TextElement.Alignment.Left:
+                    Write(@"\RaggedLeft");
                     break;
-                case 2:
-                    WriteLine(@"\RaggedRight");
+                case TextElement.Alignment.Center:
+                    Write(@"\Centering");
+                    break;
+                case TextElement.Alignment.Right:
+                    Write(@"\RaggedRight");
                     break;
                 default:
                     throw new NotImplementedException();
             }
         }
-        public void WriteSize(int size)
+        public void WriteBeginAlignment(TextElement.Alignment alignment)
         {
+            switch (alignment)
+            {
+                case TextElement.Alignment.Unspecified:
+                    Write("{");
+                    break;
+                case TextElement.Alignment.Left:
+                    Write(@"\begin{flushleft}");
+                    break;
+                case TextElement.Alignment.Center:
+                    Write(@"\begin{center}");
+                    break;
+                case TextElement.Alignment.Right:
+                    Write(@"\begin{flushright}");
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+        public void WriteEndAlignment(TextElement.Alignment alignment)
+        {
+            switch (alignment)
+            {
+                case TextElement.Alignment.Unspecified:
+                    Write("}");
+                    break;
+                case TextElement.Alignment.Left:
+                    Write(@"\end{flushleft}");
+                    break;
+                case TextElement.Alignment.Center:
+                    Write(@"\end{center}");
+                    break;
+                case TextElement.Alignment.Right:
+                    Write(@"\end{flushright}");
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+        public void WriteSize(int? size)
+        {
+            if (!size.HasValue)
+                return;
             switch (size)
             {
                 case -4:
-                    WriteLine(@"\tiny");
+                    Write(@"\tiny");
                     break;
                 case -3:
-                    WriteLine(@"\scriptsize");
+                    Write(@"\scriptsize");
                     break;
                 case -2:
-                    WriteLine(@"\footnotesize");
+                    Write(@"\footnotesize");
                     break;
                 case -1:
-                    WriteLine(@"\small");
+                    Write(@"\small");
                     break;
                 case 0:
-                    WriteLine(@"\normalsize");
+                    Write(@"\normalsize");
                     break;
                 case 1:
-                    WriteLine(@"\large");
+                    Write(@"\large");
                     break;
                 case 2:
-                    WriteLine(@"\Large");
+                    Write(@"\Large");
                     break;
                 case 3:
-                    WriteLine(@"\LARGE");
+                    Write(@"\LARGE");
                     break;
                 case 4:
-                    WriteLine(@"\huge");
+                    Write(@"\huge");
                     break;
                 case 5:
-                    WriteLine(@"\Huge");
+                    Write(@"\Huge");
                     break;
                 default:
                     if (size > 0)
-                        WriteLine(@"\Huge");
+                        Write(@"\Huge");
                     else
-                        WriteLine(@"\tiny");
+                        Write(@"\tiny");
                     break;
             }
         }
-        public void WriteColor(Color color)
+        public void WriteColor(Color? color)
         {
+            if (!color.HasValue)
+                return;
+
             Write(@"\color[rgb]{");
-            Write(color.Red / 255.0);
+            Write(color.Value.Red / 255.0);
             Write(", ");
-            Write(color.Green / 255.0);
+            Write(color.Value.Green / 255.0);
             Write(", ");
-            Write(color.Blue / 255.0);
-            WriteLine("}");
+            Write(color.Value.Blue / 255.0);
+            Write("}");
         }
         public void PushStyle(Style style)
         {
@@ -143,18 +204,18 @@ namespace EBookCrawler.Texting
         public void WriteStyle()
         {
             if (CurrentStyle.IsBold)
-                WriteLine(@"\bfseries");
+                Write(@"\bfseries");
             if (CurrentStyle.IsEmphasis)
-                WriteLine(@"\em");
-                //WriteLine(@"\slshape");
+                Write(@"\em");
+            //WriteLine(@"\slshape");
             if (CurrentStyle.IsFraktur)
-                WriteLine(@"\frakfamily");
+                Write(@"\frakfamily");
             if (CurrentStyle.IsItalic)
-                WriteLine(@"\itshape");
+                Write(@"\itshape");
             if (CurrentStyle.IsMonoSpace)
-                WriteLine(@"\ttfamily");
+                Write(@"\ttfamily");
             if (CurrentStyle.IsSmallCaps)
-                WriteLine(@"\scshape");
+                Write(@"\scshape");
         }
         public void WriteText(string text)
         {
@@ -183,38 +244,45 @@ namespace EBookCrawler.Texting
                 if (CurrentStyle.IsUnderlined)
                     Write(@"}");
             }
+            void writeLettrine(string word)
+            {
+                Write(@"\lettrine{");
+                writeWord(word[0].ToString());
+                Write(@"}{");
+                writeWord(word.Substring(1));
+                Write(@"}");
+            }
 
             if (CurrentStyle.IsUpper)
                 text = text.ToUpper();
             else if (CurrentStyle.IsLower)
                 text = text.ToLower();
 
+            if (IsWhitespace(text[0]))
+                Write(" ");
             var words = ProcessWords(text);
-            var iter = words.GetEnumerator();
-            if (StartWithCapital)
-            {
-                while (iter.MoveNext())
+            bool initial = true;
+            foreach (var word in words)
+                if (initial)
                 {
-                    if (!iter.Current.isWhitespace)
+                    initial = false;
+                    if (StartWithCapital)
                     {
                         StartWithCapital = false;
-                        Write(@"\lettrine{");
-                        writeWord(iter.Current.word[0].ToString());
-                        Write(@"}{");
-                        writeWord(iter.Current.word.Substring(1));
-                        Write(@"}");
-                        break;
+                        writeLettrine(word);
                     }
-                    Write(iter.Current.word);
+                    else
+                        writeWord(word);
                 }
-            }
-            while (iter.MoveNext())
-                if (iter.Current.isWhitespace)
-                    Write(iter.Current.word);
                 else
-                    writeWord(iter.Current.word);
+                {
+                    Write(" ");
+                    writeWord(word);
+                }
+            if (IsWhitespace(text[text.Length - 1]))
+                Write(" ");
         }
-        private static IEnumerable<(string word, bool isWhitespace)> ProcessWords(string text)
+        private static IEnumerable<string> ProcessWords(string text)
         {
             StringBuilder sb = new StringBuilder();
             foreach (var c in text)
@@ -222,23 +290,18 @@ namespace EBookCrawler.Texting
                 {
                     if (sb.Length > 0)
                     {
-                        yield return (sb.ToString(), false);
+                        yield return sb.ToString();
                         sb.Clear();
                     }
-                    yield return (ReplaceCharacter(c), true);
-
                 }
                 else
                     sb.Append(ReplaceCharacter(c));
             if (sb.Length > 0)
-            {
-                yield return (sb.ToString(), false);
-                sb.Clear();
-            }
+                yield return sb.ToString();
         }
         public static bool IsWhitespace(char c)
         {
-            return c == ' ' || c == '\n' || c == '\t' || c == '\r' || c == '\u00a0';
+            return c == ' ' || c == '\n' || c == '\t' || c == '\r';// || c == '\u00a0';
         }
         public static string ReplaceCharacter(char c)
         {

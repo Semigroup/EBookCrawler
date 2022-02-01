@@ -10,26 +10,29 @@ namespace EBookCrawler.Texting
     {
         public List<TextElement> TextElements { get; set; } = new List<TextElement>();
 
-        /// <summary>
-        /// 0 : Left
-        /// 1 : Center
-        /// 2 : Right
-        /// </summary>
-        public int Alignment { get; set; }
-        public int Size { get; set; }
+        public Alignment MyAlignment { get; set; } = Alignment.Unspecified;
+        public int? Size { get; set; }
         public Measure LeftMargin { get; set; }
-        public Color Color { get; set; }
+        public Color? Color { get; set; }
         public Style Style { get; set; }
         public bool StartsWithCapital { get; set; }
 
-        public virtual void Add(TextElement textElement) => TextElements.Add(textElement);
-        public virtual void Add(IEnumerable<TextElement> textElements) => TextElements.AddRange(textElements);
+        public virtual void Add(TextElement textElement)
+        {
+            TextElements.Add(textElement);
+            WordCount += textElement.WordCount;
+        }
+        public virtual void Add(IEnumerable<TextElement> TextElements)
+        {
+            foreach (var item in TextElements)
+                Add(item);
+        }
 
         public virtual void SetClass(string classValue)
         {
             if (classValue == null)
                 return;
-            this.Alignment = Transformer.GetAlignment(classValue);
+            this.MyAlignment = Transformer.GetAlignment(classValue);
             switch (classValue)
             {
                 case "vinit":
@@ -216,6 +219,8 @@ namespace EBookCrawler.Texting
         }
         public override void ToLatex(LatexWriter writer)
         {
+            if (TextElements.Count == 0)
+                return;
             WriteBegin(writer);
             foreach (var element in TextElements)
             {
@@ -226,26 +231,26 @@ namespace EBookCrawler.Texting
         }
         protected virtual void WriteBegin(LatexWriter writer)
         {
-            writer.WriteLine(@"{");
+            writer.WriteLine();
             if (!LeftMargin.IsZero())
-                writer.WriteLine(@"\begin{adjustwidth}{" + LeftMargin.Length + "}{}");
-            writer.WriteAlignment(Alignment);
+                writer.Write(@"\begin{adjustwidth}{" + LeftMargin.Length + "}{}");
+            writer.WriteBeginAlignment(MyAlignment);
             writer.WriteSize(Size);
-            if (!Color.IsBlack())
-                writer.WriteColor(Color);
+            writer.WriteColor(Color);
             if (StartsWithCapital)
                 writer.StartWithCapital = true;
 
             writer.PushStyle(Style);
             writer.WriteStyle();
+            writer.WriteLine();
         }
         protected virtual void WriteEnd(LatexWriter writer)
         {
             writer.PopStyle();
-
+          
+            writer.WriteEndAlignment(MyAlignment);
             if (!LeftMargin.IsZero())
                 writer.WriteLine(@"\end{adjustwidth}");
-            writer.WriteLine(@"}");
         }
     }
 }

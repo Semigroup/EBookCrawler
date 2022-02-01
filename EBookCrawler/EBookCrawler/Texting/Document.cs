@@ -8,8 +8,15 @@ namespace EBookCrawler.Texting
 {
     public class Document : TextElement
     {
-        public BookReference Book { get; set; }
-        public TextPart[] Parts { get; set; }
+        public BookReference Book { get; private set; }
+        public TextPart[] Parts { get; private set; }
+
+        public Document(BookReference Book, IEnumerable<TextPart> Parts)
+        {
+            this.Book = Book;
+            this.Parts = Parts.ToArray();
+            this.WordCount = Parts.Select(p => p.WordCount).Sum();
+        }
 
         public override void ToLatex(LatexWriter writer)
         {

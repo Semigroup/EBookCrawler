@@ -9,12 +9,12 @@ namespace EBookCrawler.Texting
     public class HorizontalRule : TextElement
     {
         public Length Length = new Length() { Value = 1, IsProportional = true };
-        public int Alignment { get; set; }
+        public Alignment MyAlignment { get; set; } = Alignment.Unspecified;
 
         public override void ToLatex(LatexWriter writer)
         {
-            string left = Length.GetLeftSpace(Alignment);
-            string right = Length.GetRightSpace(Alignment);
+            string left = Length.GetLeftSpace(MyAlignment);
+            string right = Length.GetRightSpace(MyAlignment);
 
             writer.WriteLine(@"\\");
             writer.WriteLine(@"{");

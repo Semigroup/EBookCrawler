@@ -11,34 +11,55 @@ namespace EBookCrawler.Texting
         public double Value;
         public bool IsProportional;
 
+        private static string ToString(double value)
+            => value.ToString().Replace(',', '.');
         public override string ToString()
         {
             if (IsProportional)
-                return Value + @"\textwidth{}";
+                return ToString(Value) + @"\textwidth{}";
             else
-                return Value + "pt{}";
+                return ToString(Value) + "pt{}";
         }
-        public string GetLeftSpace(int alignment)
+        public string GetLeftSpace(TextElement.Alignment alignment)
         {
             switch (alignment)
             {
-                case 0:
+                case TextElement.Alignment.Unspecified:
+                case TextElement.Alignment.Left:
                     return "0pt{}";
-                case 1:
+                case TextElement.Alignment.Center:
                     if (IsProportional)
-                        return ((1 - Value)/2) + @"\textwidth{}";
+                        return ToString((1 - Value)/2) + @"\textwidth{}";
                     else
-                        return @"0.5\textwidth{} minus " + (Value / 2) + "pt{}";
-                case 2:
+                        return @"0.5\textwidth{} minus " + ToString(Value / 2) + "pt{}";
+                case TextElement.Alignment.Right:
                     if (IsProportional)
-                        return (1 - Value) + @"\textwidth{}";
+                        return ToString(1 - Value) + @"\textwidth{}";
                     else
-                        return @"\textwidth{} minus " + Value + "pt{}";
+                        return @"\textwidth{} minus " + ToString(Value) + "pt{}";
                 default:
                     throw new NotImplementedException();
             }
         }
-        public string GetRightSpace(int alignment)
-            => GetLeftSpace(2 - alignment);
+        public string GetRightSpace(TextElement.Alignment alignment)
+        {
+            TextElement.Alignment inv;
+            switch (alignment)
+            {
+                case TextElement.Alignment.Unspecified:
+                case TextElement.Alignment.Left:
+                    inv = TextElement.Alignment.Right;
+                    break;
+                case TextElement.Alignment.Center:
+                    inv = TextElement.Alignment.Center;
+                    break;
+                case TextElement.Alignment.Right:
+                    inv = TextElement.Alignment.Left;
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+            return GetLeftSpace(inv);
+        }
     }
 }

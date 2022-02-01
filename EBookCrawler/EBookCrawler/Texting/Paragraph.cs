@@ -35,6 +35,7 @@ namespace EBookCrawler.Texting
             if (StartsWithIndentation)
                 writer.WriteLineBreak(2);
             base.ToLatex(writer);
+            //writer.WriteLine(@"\vspace{0.5cm}");
         }
     }
 }
