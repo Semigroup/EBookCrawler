@@ -42,6 +42,9 @@ namespace EBookCrawler.Texting
         public Level MyLevel { get; set; } = Level.Unspecified;
         public int Hierarchy { get; set; }
 
+        public override bool HasExteriorEnvironment()
+            => true;
+
         public void SetInfo(string value) {
             switch (value.ToLower())
             {
@@ -131,16 +134,17 @@ namespace EBookCrawler.Texting
         {
             //ToDo
 
-            writer.WriteLineBreak(2);
+            writer.WriteLineBreak(1);
             writer.Write(@"{");
             writer.Write(@"\noindent");
             writer.Write(@"\bfseries");
-            writer.WriteLine(@"\Large");
-            writer.WriteLine(@"\vspace{0.2em}\\");
+            writer.Write(@"\Large");
+            writer.Write(@"\vspace{0.2em}\\");
 
             base.ToLatex(writer);
             //writer.WriteLine(@"\vspace{0.5em}\\");
             writer.WriteLine(@"}");
+            writer.WriteLineBreak(1);
         }
     }
 }

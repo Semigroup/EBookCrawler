@@ -8,6 +8,9 @@ namespace EBookCrawler.Texting
 {
     public class Poem : ContainerElement
     {
+        public override bool HasExteriorEnvironment()
+            => true;
+
         public override void ToLatex(LatexWriter writer)
         {
             writer.WriteLine(@"\begin{quote}");

@@ -10,6 +10,9 @@ namespace EBookCrawler.Texting
     {
         public bool IsSub { get; set; }
 
+        public override bool HasExteriorEnvironment()
+            => true;
+
         public override void ToLatex(LatexWriter writer)
         {
             char c = IsSub ? '_' : '^';

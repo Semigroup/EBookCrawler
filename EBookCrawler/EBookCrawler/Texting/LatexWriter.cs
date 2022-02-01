@@ -44,6 +44,7 @@ namespace EBookCrawler.Texting
             WriteLine(@"\usepackage{mathtools}");
             WriteLine(@"\usepackage{wasysym}");
             WriteLine(@"\usepackage{tabularx}");
+            WriteLine(@"\usepackage{lmodern}");
         }
         public override void Write(string value)
         {
@@ -97,7 +98,6 @@ namespace EBookCrawler.Texting
             switch (alignment)
             {
                 case TextElement.Alignment.Unspecified:
-                    Write("{");
                     break;
                 case TextElement.Alignment.Left:
                     Write(@"\begin{flushleft}");
@@ -117,7 +117,6 @@ namespace EBookCrawler.Texting
             switch (alignment)
             {
                 case TextElement.Alignment.Unspecified:
-                    Write("}");
                     break;
                 case TextElement.Alignment.Left:
                     Write(@"\end{flushleft}");

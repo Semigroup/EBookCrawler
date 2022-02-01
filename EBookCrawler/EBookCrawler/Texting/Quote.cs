@@ -10,6 +10,9 @@ namespace EBookCrawler.Texting
     {
         public bool IsBlock { get; set; }
 
+        public override bool HasExteriorEnvironment()
+            => IsBlock;
+
         public override void ToLatex(LatexWriter writer)
         {
             if (IsBlock)

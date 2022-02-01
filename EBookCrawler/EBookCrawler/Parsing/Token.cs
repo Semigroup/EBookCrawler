@@ -85,7 +85,7 @@ namespace EBookCrawler.Parsing
                     double l = double.Parse(Value);
                     return new Texting.Length()
                     {
-                        Value = 0.7 * l,
+                        Value = 0.65 * l,
                         IsProportional = 0 <= l && l <= 1
                     };
                 }

@@ -1025,6 +1025,8 @@ namespace EBookCrawler.Texting
                         break;
                     case "border":
                         table.Border = attribute.ValueAsDouble();
+                        if (table.Border > 0 && table.Style == Table.BorderStyle.None)
+                            table.Style = Table.BorderStyle.All;
                         break;
                     case "bordercolor":
                         //ToDo

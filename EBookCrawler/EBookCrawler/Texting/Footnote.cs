@@ -38,6 +38,9 @@ namespace EBookCrawler.Texting
             this.Size = -2;
         }
 
+        public override bool HasExteriorEnvironment()
+             => true;
+
         public override void ToLatex(LatexWriter writer)
         {
             switch (MyType)

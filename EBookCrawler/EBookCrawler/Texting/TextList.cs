@@ -29,6 +29,9 @@ namespace EBookCrawler.Texting
         public NumberingType Numbering { get; set; } = NumberingType.Unspecified;
         public string StartNumber { get; set; }
 
+        public override bool HasExteriorEnvironment()
+            => true;
+
         public override void Add(TextElement textElement)
         {
             if (textElement is Word word)

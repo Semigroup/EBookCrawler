@@ -20,10 +20,6 @@ namespace EBookCrawler.Texting
 
         public override void ToLatex(LatexWriter writer)
         {
-            //ToDo
-
-            writer.WriteLine(@"\part{Band " + Part.Reference.Number + "}");
-            writer.WriteLineBreak();
             foreach (var ch in Chapters)
             {
                 ch.ToLatex(writer);

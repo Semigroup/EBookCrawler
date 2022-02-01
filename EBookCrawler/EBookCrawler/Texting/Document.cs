@@ -28,6 +28,11 @@ namespace EBookCrawler.Texting
             foreach (var part in Parts)
             {
                 writer.WriteLineBreak(2);
+                if (Parts.Length > 1)
+                {
+                    writer.WriteLine(@"\part{ " + part.Part.Reference.Name + "}");
+                    writer.WriteLineBreak();
+                }
                 part.ToLatex(writer);
             }
 

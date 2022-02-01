@@ -16,6 +16,7 @@ namespace EBookCrawler.Texting
         public Color? Color { get; set; }
         public Style Style { get; set; }
         public bool StartsWithCapital { get; set; }
+        protected virtual bool SingleLine => WordCount <= 5 && !HasExteriorEnvironment();
 
         public virtual void Add(TextElement textElement)
         {
@@ -27,7 +28,6 @@ namespace EBookCrawler.Texting
             foreach (var item in TextElements)
                 Add(item);
         }
-
         public virtual void SetClass(string classValue)
         {
             if (classValue == null)
@@ -217,6 +217,14 @@ namespace EBookCrawler.Texting
                     throw new NotImplementedException();
             }
         }
+
+        public virtual bool HasExteriorEnvironment()
+        {
+            if (!LeftMargin.IsZero())
+                return true;
+            return MyAlignment != Alignment.Unspecified;
+        }
+
         public override void ToLatex(LatexWriter writer)
         {
             if (TextElements.Count == 0)
@@ -225,16 +233,26 @@ namespace EBookCrawler.Texting
             foreach (var element in TextElements)
             {
                 element.ToLatex(writer);
-                writer.WriteLine();
+                //if (!SingleLine)
+                //    writer.WriteLine();
             }
             WriteEnd(writer);
         }
         protected virtual void WriteBegin(LatexWriter writer)
         {
-            writer.WriteLine();
-            if (!LeftMargin.IsZero())
-                writer.Write(@"\begin{adjustwidth}{" + LeftMargin.Length + "}{}");
-            writer.WriteBeginAlignment(MyAlignment);
+            if (!SingleLine)
+                writer.WriteLine();
+            if (HasExteriorEnvironment())
+            {
+                if (!LeftMargin.IsZero())
+                    writer.Write(@"\begin{adjustwidth}{" + LeftMargin.Length + "}{}");
+                writer.WriteBeginAlignment(MyAlignment);
+            }
+            else
+                writer.Write("{");
+            if (!SingleLine)
+                writer.WriteLine();
+
             writer.WriteSize(Size);
             writer.WriteColor(Color);
             if (StartsWithCapital)
@@ -242,15 +260,27 @@ namespace EBookCrawler.Texting
 
             writer.PushStyle(Style);
             writer.WriteStyle();
-            writer.WriteLine();
+            if (!SingleLine)
+                writer.WriteLine();
+            else
+                writer.Write(" ");
         }
         protected virtual void WriteEnd(LatexWriter writer)
         {
             writer.PopStyle();
-          
-            writer.WriteEndAlignment(MyAlignment);
-            if (!LeftMargin.IsZero())
-                writer.WriteLine(@"\end{adjustwidth}");
+
+            if (!SingleLine)
+                writer.WriteLine();
+            if (!HasExteriorEnvironment())
+                writer.Write("}");
+            else
+            {
+                writer.WriteEndAlignment(MyAlignment);
+                if (!LeftMargin.IsZero())
+                    writer.Write(@"\end{adjustwidth}");
+            }
+            if (!SingleLine)
+                writer.WriteLine();
         }
     }
 }
