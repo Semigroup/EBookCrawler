@@ -10,15 +10,15 @@ namespace EBookCrawler.Texting
     {
         public enum Level
         {
-            TitlePage,
-            Part,
-            Chapter,
-            Section,
-            SubSection,
-            SubSubSection,
-            Paragraph,
-            SubParagraph,
-            Unspecified
+            TitlePage = 1,
+            Part = 2,
+            Chapter = 3,
+            Section = 4,
+            SubSection = 5,
+            SubSubSection = 6,
+            Paragraph = 7,
+            SubParagraph = 8,
+            Unspecified = 12
         }
         public enum Info
         {
@@ -132,19 +132,104 @@ namespace EBookCrawler.Texting
 
         public override void ToLatex(LatexWriter writer)
         {
-            //ToDo
-
+            if (!IsVisible)
+                return;
             writer.WriteLineBreak(1);
-            writer.Write(@"{");
-            writer.Write(@"\noindent");
-            writer.Write(@"\bfseries");
-            writer.Write(@"\Large");
-            writer.Write(@"\vspace{0.2em}\\");
+            switch (MyLevel)
+            {
+                case Level.Part:
+                case Level.Chapter:
+                case Level.Section:
+                case Level.SubSection:
+                case Level.SubSubSection:
+                case Level.Paragraph:
+                case Level.SubParagraph:
+                    writer.Write(@"\");
+                    writer.Write(GetCommand(MyLevel));
+                    writer.Write(@"{");
+                    base.ToLatex(writer);
+                    writer.WriteLine(@"}");
+                    break;
 
-            base.ToLatex(writer);
-            //writer.WriteLine(@"\vspace{0.5em}\\");
-            writer.WriteLine(@"}");
+                case Level.TitlePage:
+                    writer.WriteBeginAlignment(Alignment.Center);
+                    switch (MyInfo)
+                    {
+                        case Info.Pseudonym:
+                        case Info.Author:
+                        case Info.Translator:
+                            writer.Write(@"\bfseries");
+                            writer.Write(@"\Large");
+                            writer.WriteColor(new Texting.Color(160, 160, 160));
+                            break;
+                        case Info.Title:
+                            writer.Write(@"\bfseries");
+                            writer.Write(@"\Huge");
+                            break;
+                        case Info.SubTitle:
+                            writer.Write(@"\bfseries");
+                            writer.Write(@"\large");
+                            break;
+                        case Info.Date:
+                            writer.Write(@"\bfseries");
+                            writer.Write(@"\large");
+                            break;
+                        case Info.Publisher:
+                            writer.Write(@"\bfseries");
+                            writer.Write(@"\large");
+                            break;
+                        case Info.Dedication:
+                            writer.Write(@"\bfseries");
+                            writer.Write(@"\large");
+                            break;
+                        default:
+                            writer.Write(@"\bfseries");
+                            writer.Write(@"\Large");
+                            break;
+                    }
+                    base.ToLatex(writer);
+                    writer.WriteEndAlignment(Alignment.Center);
+                    writer.WriteLineBreak();
+                    break;
+                case Level.Unspecified:
+                    writer.Write(@"{");
+                    writer.Write(@"\noindent");
+                    writer.Write(@"\bfseries");
+                    writer.Write(@"\Large");
+                    writer.Write(@"\vspace{0.2em}\\");
+
+                    base.ToLatex(writer);
+                    //writer.WriteLine(@"\vspace{0.5em}\\");
+                    writer.WriteLine(@"}");
+                    break;
+
+                default:
+                    throw new NotImplementedException();
+            }
             writer.WriteLineBreak(1);
+        }
+        public static string GetCommand(Level level)
+        {
+            switch (level)
+            {
+                case Level.Part:
+                    return "part";
+                case Level.Chapter:
+                    return "chapter";
+                case Level.Section:
+                    return "section";
+                case Level.SubSection:
+                    return "subsection";
+                case Level.SubSubSection:
+                    return "subsubsection";
+                case Level.Paragraph:
+                    return "paragraph";
+                case Level.SubParagraph:
+                    return "subparagraph";
+                case Level.Unspecified:
+                default:
+                    throw new NotImplementedException();
+            }
         }
     }
 }

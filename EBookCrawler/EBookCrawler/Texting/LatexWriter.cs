@@ -30,7 +30,8 @@ namespace EBookCrawler.Texting
             WriteLine(@"\usepackage[ngerman]{babel}");
             WriteLine(@"\usepackage[T1]{fontenc}");
             WriteLine(@"\usepackage[utf8]{inputenc}");
-
+            WriteLine(@"\usepackage{lmodern}");
+            WriteLineBreak();
             WriteLine(@"\usepackage{lettrine}");
             WriteLine(@"\usepackage[document]{ragged2e}");
             WriteLine(@"\usepackage{xcolor}");
@@ -44,7 +45,12 @@ namespace EBookCrawler.Texting
             WriteLine(@"\usepackage{mathtools}");
             WriteLine(@"\usepackage{wasysym}");
             WriteLine(@"\usepackage{tabularx}");
-            WriteLine(@"\usepackage{lmodern}");
+            WriteLineBreak();
+            WriteLine(@"\renewcommand\thesection{}{}");
+            WriteLine(@"\renewcommand\thesubsection{}{}");
+            WriteLine(@"\renewcommand\thesubsubsection{}{}");
+            WriteLineBreak();
+            WriteLine(@"\setlength\RaggedRightParindent{2em}");
         }
         public override void Write(string value)
         {
@@ -174,6 +180,10 @@ namespace EBookCrawler.Texting
                         Write(@"\tiny");
                     break;
             }
+        }
+        public override void Write(double value)
+        {
+            Write(value.ToString().Replace(',', '.'));
         }
         public void WriteColor(Color? color)
         {
