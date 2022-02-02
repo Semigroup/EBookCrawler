@@ -12,6 +12,28 @@ namespace EBookCrawler
     [Serializable]
     public class Chapter
     {
+        public struct Meta
+        {
+            public string Author;
+            public string Translator;
+
+            public string Title;
+            public string Subtitle;
+
+            public string Year;
+            public string FirstPublished;
+
+            public string Type;
+
+            public string Series;
+            public string Volume;
+            public string Edition;
+            public string Editor;
+            public string Illustrator;
+            public string Publisher;
+        }
+
+        public Meta MyMeta { get; set; }
         public Part Part { get; set; }
         public string Name { get; set; }
         public string URL { get; set; }
@@ -29,6 +51,12 @@ namespace EBookCrawler
             "<hr size=\"1\" color=\"#808080\">"
             + ".*"
             + "</hr>");
+        public static readonly Regex MetaRegex = new Regex(
+            "<meta " +
+            "name=\"(?<name>[^\"]*)\"" +
+            "\\s+" +
+            "content=\"(?<content>[^\"]*)\"" +
+            "/>");
 
         public Chapter(Part Part, string Name, string URL, int Number)
         {
@@ -75,10 +103,13 @@ namespace EBookCrawler
             string source = File.ReadAllText(fp);
             source = HTMLHelper.RemoveHTMLComments(source);
             this.Text = ExtractParagraphs(source);
+            this.MyMeta = ExtractMeta(source);
         }
         public Texting.TextChapter ParseChapter(string root)
         {
             LoadText(root);
+            if (Text == null)
+                return null;
 
             File.WriteAllText("text.xml", Text);
             Console.WriteLine(this.URL);
@@ -125,6 +156,101 @@ namespace EBookCrawler
             var text = HTMLHelper.CleanHTML(source.Substring(start, end - start));
 
             return text;
+        }
+        public Meta ExtractMeta(string source)
+        {
+            Meta meta = new Meta();
+            MatchCollection matches = MetaRegex.Matches(source);
+            foreach (Match match in matches)
+            {
+                var groups = match.Groups;
+                var name = groups["name"].Value.Trim().ToLower();
+                var content = groups["content"].Value.Trim();
+                switch (name)
+                {
+                    case "type":
+                        meta.Type = content;
+                        break;
+                    case "booktitle":
+                    case "title":
+                        meta.Title = content;
+                        break;
+                    case "subtitle":
+                        meta.Subtitle = content;
+                        break;
+                    case "author":
+                        meta.Author = content;
+                        break;
+                    case "rtanslator":
+                    case "tranlator":
+                    case "translator":
+                        meta.Translator = content;
+                        break;
+                    case "year":
+                        meta.Year = content;
+                        break;
+                    case "publisher":
+                        meta.Publisher = content;
+                        break;
+                    case "firstpub":
+                        meta.FirstPublished = content;
+                        break;
+                    case "series":
+                        meta.Series = content;
+                        break;
+                    case "volume":
+                        meta.Volume = content;
+                        break;
+                    case "edition":
+                        meta.Edition = content;
+                        break;
+                    case "editor":
+                        meta.Editor = content;
+                        break;
+                    case "illustrator":
+                        meta.Illustrator = content;
+                        break;
+                    case "keyword":
+                    case "quelle":
+                    case "source":
+                    case "purl":
+                    case "submitted":
+                    case "generator":
+                    case "wgs":
+                    case "copyright":
+                    case "printrun":
+                    case "note":
+                    case "comment":
+                    case "pages":
+                    case "pfad":
+                    case "created":
+                    case "date":
+                    case "modified":
+                    case "midified":
+                    case "modifieded":
+                    case "modyfied":
+                    case "modifieed":
+                    case "modif´ied":
+                    case "modifier":
+                    case "projectid":
+                    case "corrector":
+                    case "corrected":
+                    case "secondcorrector":
+                    case "2corrected":
+                    case "2corrector":
+                    case "secondcorrection":
+                    case "thirdcorrector":
+                    case "address":
+                    case "isbn":
+                    case "sender":
+                    case "secondsender":
+                    case "status":
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+            return meta;
         }
     }
 }

@@ -23,7 +23,27 @@ namespace EBookCrawler.Texting
             //ToDo: Title, Toc
 
             writer.WritePreamble();
+            SetTitlePage(writer);
             writer.WriteLine(@"\begin{document}");
+            writer.WriteLine(@"\maketitle");
+
+            writer.Write("Extrahiert und kompiliert vom Gutenberg-Projekt am " + DateTime.Now + ".");
+            writer.WriteLineBreak(2);
+            foreach (var part in Parts)
+            {
+                var refe = part.Part.Reference;
+                writer.Write(@"\href{");
+                writer.Write(refe.Link);
+                writer.Write(@"}{");
+                writer.Write(refe.Name);
+                if (refe.SubTitle != null && refe.SubTitle.Length > 0)
+                {
+                    writer.Write(", ");
+                    writer.Write(refe.SubTitle);
+                }
+                writer.Write(@"{");
+                writer.WriteLineBreak(1);
+            }
 
             foreach (var part in Parts)
             {
@@ -37,6 +57,24 @@ namespace EBookCrawler.Texting
             }
 
             writer.WriteLine(@"\end{document}");
+        }
+        protected void SetTitlePage(LatexWriter writer)
+        {
+            var meta = Parts[0].Chapters[0].Chapter.MyMeta;
+
+            writer.Write(@"\author{");
+            writer.Write(meta.Author);
+            if (meta.Translator != null && meta.Translator.Length > 0)
+                writer.Write(@"\\{\normalsize Übersetzt von " + meta.Translator + @"}");
+            writer.WriteLine("}");
+
+            writer.Write(@"\title{");
+            writer.Write(Book.Name);
+            if (Book.SubTitle != null && Book.SubTitle.Length > 0 && !Book.PartsHaveDifferentSubTitles)
+                writer.Write(@"\\{\large " + Book.SubTitle + @"}");
+            writer.WriteLine("}");
+
+            writer.Write(@"\date{" + meta.Year + "}");
         }
     }
 }

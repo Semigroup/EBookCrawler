@@ -45,6 +45,7 @@ namespace EBookCrawler.Texting
             WriteLine(@"\usepackage{mathtools}");
             WriteLine(@"\usepackage{wasysym}");
             WriteLine(@"\usepackage{tabularx}");
+            WriteLine(@"\usepackage{hyperref}");
             WriteLineBreak();
             WriteLine(@"\renewcommand\thesection{}{}");
             WriteLine(@"\renewcommand\thesubsection{}{}");

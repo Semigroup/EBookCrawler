@@ -17,6 +17,7 @@ namespace EBookCrawler
             //LoadWebLibrary();
 
             TranscriptBooks("galgenlieder");
+            TranscriptBooks("pitaval");
 
             //Test();
         }
@@ -56,8 +57,18 @@ namespace EBookCrawler
             //    Console.WriteLine(i + " of " + authors.Length);
             //    Console.WriteLine(authors[i].ToString());
             //    foreach (var book in authors[i].Books.Values)
-            //        book.WriteLatex(libRoot, latexOutput);
+            //        foreach (var part in book.Parts)
+            //            if (part.Part.Chapters != null)
+            //                foreach (var ch in part.Part.Chapters)
+            //                    ch.ParseChapter(libRoot);
+            //    {
+
+            //    }
+            //{
+
             //}
+            //book.WriteLatex(libRoot, latexOutput);
+        //}
         }
     }
 }
