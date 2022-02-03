@@ -58,7 +58,6 @@ namespace EBookCrawler.Texting
             }
             else
                 writer.WriteLine(@"\includegraphics[width=" + Width + "]{" + path + "}");
-            WriteCaption(writer);
             writer.WriteLine(@"}");
         }
         protected void WriteCaption(LatexWriter writer)
@@ -67,7 +66,7 @@ namespace EBookCrawler.Texting
             if (capt != null)
             {
                 writer.Write(@"\caption{");
-                writer.WriteText(Caption);
+                writer.WriteText(capt);
                 writer.WriteLine(@"}");
             }
         }
@@ -82,12 +81,16 @@ namespace EBookCrawler.Texting
 
             writer.WriteAlignment(Alignment.Center);
             WriteInLineGraphic(writer, path);
+            WriteCaption(writer);
 
             writer.WriteLine(@"\end{wrapfigure}");
         }
         public override void ToLatex(LatexWriter writer)
         {
-            string path = DownloadImage(writer.BuildRoot, writer.BuildDirectory);
+            string path = DownloadImage(
+                writer.BuildRoot,
+                writer.BuildDirectory,
+                writer.CurrentChapter.Chapter);
 
             switch (MyKind)
             {
@@ -98,6 +101,7 @@ namespace EBookCrawler.Texting
                     writer.WriteLine(@"\begin{figure}");
                     writer.WriteAlignment(MyAlignment);
                     WriteInLineGraphic(writer, path);
+                    WriteCaption(writer);
                     writer.WriteLine(@"\end{figure}");
                     break;
                 case Kind.WrapFigure:
@@ -111,27 +115,44 @@ namespace EBookCrawler.Texting
             }
 
         }
-        public string DownloadImage(string buildRoot, string buildDirectory)
+        public string DownloadImage(string buildRoot, string buildDirectory, Chapter chapter)
         {
-            string targetFile = RelativePath.Replace('/', '\\');
-            string absolutePath = Path.Combine(buildRoot, targetFile);
-            string targetDirectory = Path.GetDirectoryName(absolutePath);
-            targetFile = absolutePath.Substring(buildDirectory.Length);
-            targetFile = targetFile.Replace('\\', '/');
+            string targetDirectory = Path.Combine(buildDirectory, "bilder\\");
             if (!Directory.Exists(targetDirectory))
                 Directory.CreateDirectory(targetDirectory);
+            int part = chapter.Part.Reference.Number + 1;
+            string imageName = Path.GetFileNameWithoutExtension(RelativePath);
+            string absolutePath = Path.Combine(targetDirectory, imageName + ".part" + part + ".png");
+            string relativePath = absolutePath.Substring(buildDirectory.Length).Replace('\\', '/');
+            if (File.Exists(absolutePath))
+                return relativePath;
 
-            var pngAbsPath = absolutePath.Substring(0, absolutePath.Length - 3) + "png";
-            targetFile = targetFile.Substring(0, targetFile.Length - 3) + "png";
-            if (File.Exists(pngAbsPath))
-                return targetFile;
-
+            string absoluteGifPath = Path.Combine(targetDirectory, Path.GetFileName(RelativePath));
             using (WebClient wClient = new WebClient())
-                wClient.DownloadFile(Uri, absolutePath);
-            using (Bitmap bmp = new Bitmap(absolutePath))
-                bmp.Save(pngAbsPath, ImageFormat.Png);
+                wClient.DownloadFile(Uri, absoluteGifPath);
+            using (Bitmap bmp = new Bitmap(absoluteGifPath))
+                bmp.Save(absolutePath, ImageFormat.Png);
+            return relativePath;
 
-            return targetFile;
+            //string targetFile = RelativePath.Replace('/', '\\');
+            //string absolutePath = Path.Combine(buildRoot, targetFile);
+            //string targetDirectory = Path.GetDirectoryName(absolutePath);
+            //targetFile = absolutePath.Substring(buildDirectory.Length);
+            //targetFile = targetFile.Replace('\\', '/');
+            //if (!Directory.Exists(targetDirectory))
+            //    Directory.CreateDirectory(targetDirectory);
+
+            //var pngAbsPath = absolutePath.Substring(0, absolutePath.Length - 3) + "png";
+            //targetFile = targetFile.Substring(0, targetFile.Length - 3) + "png";
+            //if (File.Exists(pngAbsPath))
+            //    return targetFile;
+
+            //using (WebClient wClient = new WebClient())
+            //    wClient.DownloadFile(Uri, absolutePath);
+            //using (Bitmap bmp = new Bitmap(absolutePath))
+            //    bmp.Save(pngAbsPath, ImageFormat.Png);
+
+            //return targetFile;
         }
     }
 }

@@ -16,7 +16,7 @@ namespace EBookCrawler.Texting
         public override void ToLatex(LatexWriter writer)
         {
             char c = IsSub ? '_' : '^';
-            writer.WriteLine(@"{}" + c + @"{\text{");
+            writer.WriteLine(@"${}" + c + @"{\text{");
             base.ToLatex(writer);
             writer.WriteLine(@"}}$");
         }

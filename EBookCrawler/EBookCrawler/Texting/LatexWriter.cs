@@ -16,6 +16,7 @@ namespace EBookCrawler.Texting
         public string BuildDirectory { get; set; }
         private bool LineIsEmpty = true;
         public int TabularDepth { get; set; } = 0;
+        public TextChapter CurrentChapter { get; set; }
 
         public LatexWriter(string BuildRoot, string path) : base(path)
         {
@@ -45,13 +46,16 @@ namespace EBookCrawler.Texting
             WriteLine(@"\usepackage{mathtools}");
             WriteLine(@"\usepackage{wasysym}");
             WriteLine(@"\usepackage{tabularx}");
+            WriteLine(@"\usepackage[toc]{multitoc}");
             WriteLine(@"\usepackage{hyperref}");
             WriteLineBreak();
             WriteLine(@"\renewcommand\thesection{}{}");
             WriteLine(@"\renewcommand\thesubsection{}{}");
             WriteLine(@"\renewcommand\thesubsubsection{}{}");
+            WriteLine(@"\renewcommand*{\multicolumntoc}{2}");
             WriteLineBreak();
             WriteLine(@"\setlength\RaggedRightParindent{2em}");
+            WriteLine(@"\setlength{\columnseprule}{0pt}");
         }
         public override void Write(string value)
         {
@@ -263,6 +267,9 @@ namespace EBookCrawler.Texting
                 Write(@"}");
             }
 
+            if (text.Length == 0)
+                return;
+
             if (CurrentStyle.IsUpper)
                 text = text.ToUpper();
             else if (CurrentStyle.IsLower)
@@ -337,6 +344,16 @@ namespace EBookCrawler.Texting
                     return @"\}textasciicircum{}";
                 case '\\':
                     return @"\textbackslash{}";
+                case '"':
+                    return @"\textquotedbl{}";
+                case '⅛':
+                    return @"1/8";
+                case '¼':
+                    return @"1/4";
+                case '⅔':
+                    return @"2/3";
+                case '⅞':
+                    return @"7/8";
                 case '\u00a0': //Non breaking Space
                     return "~";
                 default:

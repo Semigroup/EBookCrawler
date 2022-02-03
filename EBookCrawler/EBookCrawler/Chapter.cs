@@ -52,11 +52,11 @@ namespace EBookCrawler
             + ".*"
             + "</hr>");
         public static readonly Regex MetaRegex = new Regex(
-            "<meta " +
-            "name=\"(?<name>[^\"]*)\"" +
+            "<meta\\s+" +
+            "name\\s*=\\s*\"(?<name>[^\"]*)\"" +
             "\\s+" +
-            "content=\"(?<content>[^\"]*)\"" +
-            "/>");
+            "content\\s*=\\s*\"(?<content>[^\"]*)\"" +
+            "\\s*/>");
 
         public Chapter(Part Part, string Name, string URL, int Number)
         {
@@ -172,6 +172,7 @@ namespace EBookCrawler
                         meta.Type = content;
                         break;
                     case "booktitle":
+                    case "itle":
                     case "title":
                         meta.Title = content;
                         break;
@@ -179,6 +180,7 @@ namespace EBookCrawler
                         meta.Subtitle = content;
                         break;
                     case "author":
+                    case "auhthor":
                         meta.Author = content;
                         break;
                     case "rtanslator":
@@ -196,6 +198,7 @@ namespace EBookCrawler
                         meta.FirstPublished = content;
                         break;
                     case "series":
+                    case "iseries":
                         meta.Series = content;
                         break;
                     case "volume":
@@ -207,7 +210,12 @@ namespace EBookCrawler
                     case "editor":
                         meta.Editor = content;
                         break;
+                    case "illstrator":
                     case "illustrator":
+                    case "tillustrator":
+                    case "illustraor":
+                    case "illustator":
+                    case "ilustrator":
                         meta.Illustrator = content;
                         break;
                     case "keyword":
@@ -226,6 +234,10 @@ namespace EBookCrawler
                     case "created":
                     case "date":
                     case "modified":
+                    case "modifed":
+                    case "modfied":
+                    case "lastmodified":
+                    case "cmodified":
                     case "midified":
                     case "modifieded":
                     case "modyfied":
@@ -235,10 +247,12 @@ namespace EBookCrawler
                     case "projectid":
                     case "corrector":
                     case "corrected":
-                    case "secondcorrector":
                     case "2corrected":
                     case "2corrector":
+                    case "secondcorrector":
+                    case "second corrector":
                     case "secondcorrection":
+                    case "secondcorrected":
                     case "thirdcorrector":
                     case "address":
                     case "isbn":

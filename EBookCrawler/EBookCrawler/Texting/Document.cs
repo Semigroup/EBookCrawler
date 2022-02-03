@@ -27,11 +27,12 @@ namespace EBookCrawler.Texting
             writer.WriteLine(@"\begin{document}");
             writer.WriteLine(@"\maketitle");
 
-            writer.Write("Extrahiert und kompiliert vom Gutenberg-Projekt am " + DateTime.Now + ".");
-            writer.WriteLineBreak(2);
+            writer.WriteLine("Extrahiert und kompiliert vom Gutenberg-Projekt am " + DateTime.Now + @".");
+            writer.WriteLine(@"\begin{itemize}");
             foreach (var part in Parts)
             {
                 var refe = part.Part.Reference;
+                writer.Write(@"\item ");
                 writer.Write(@"\href{");
                 writer.Write(refe.Link);
                 writer.Write(@"}{");
@@ -41,9 +42,12 @@ namespace EBookCrawler.Texting
                     writer.Write(", ");
                     writer.Write(refe.SubTitle);
                 }
-                writer.Write(@"{");
+                writer.Write(@"}");
                 writer.WriteLineBreak(1);
             }
+            writer.WriteLine(@"\end{itemize}");
+            writer.WriteLineBreak(2);
+            writer.WriteLine(@"\tableofcontents");
 
             foreach (var part in Parts)
             {

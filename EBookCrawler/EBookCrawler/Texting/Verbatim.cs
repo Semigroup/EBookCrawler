@@ -12,6 +12,7 @@ namespace EBookCrawler.Texting
 
         public Verbatim(string Text)
         {
+            this.Text = Text;
             this.WordCount = CountWords(Text);
         }
 

@@ -194,7 +194,7 @@ namespace EBookCrawler.Texting
                         img.HSpace = att.ValueAsDouble();
                         break;
                     case "src":
-                        img.Uri = UriDirectory+ att.Value;
+                        img.Uri = UriDirectory + att.Value;
                         img.RelativePath = img.Uri.Substring("https://www.projekt-gutenberg.org/".Length);
                         break;
                     case "class":
@@ -645,7 +645,7 @@ namespace EBookCrawler.Texting
                     container = new Footnote();
                     break;
                 case "tooltip":
-                    container = new Footnote() { MyType = Footnote.Type.ToolTip};
+                    container = new Footnote() { MyType = Footnote.Type.ToolTip };
                     break;
                 case "sidenote":
                     container = new Footnote() { MyType = Footnote.Type.SideNote };
@@ -751,12 +751,7 @@ namespace EBookCrawler.Texting
                         break;
                     case "title":
                         if (container is Footnote fn)
-                        {
-                            if (fn.MyType == Footnote.Type.ToolTip)
-                                fn.Add(SplitRaw(attribute.Value));
-                            else
-                                fn.Title = attribute.Value;
-                        }
+                            fn.Title = attribute.Value;
                         else
                             throw new NotImplementedException();
                         break;
@@ -1059,7 +1054,7 @@ namespace EBookCrawler.Texting
                         }
                         break;
                     case "summary":
-                        table.MyCaption = new Table.Caption(attribute.Value);
+                        //table.MyCaption = new Table.Caption(attribute.Value);
                         break;
                     case "width":
                         table.Width = attribute.ValueAsLength();
@@ -1241,7 +1236,7 @@ namespace EBookCrawler.Texting
             var words = rawText.Split(new char[] { ' ', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var word in words)
             {
-                yield return new Word(word) ;
+                yield return new Word(word);
                 yield return new WhiteSpace() { HSpace = 1 };
             }
         }

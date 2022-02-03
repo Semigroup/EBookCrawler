@@ -22,7 +22,9 @@ namespace EBookCrawler.Texting
         {
             foreach (var ch in Chapters)
             {
+                writer.CurrentChapter = ch;
                 ch.ToLatex(writer);
+                writer.CurrentChapter = null;
                 writer.WriteLineBreak();
             }
         }

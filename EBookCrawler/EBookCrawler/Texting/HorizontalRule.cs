@@ -21,7 +21,7 @@ namespace EBookCrawler.Texting
 
             writer.Write(@"\rule{0.0\textwidth}{0.4pt}");
             writer.Write(@"\hspace{" + left + "}");
-            writer.Write(@"\rule{" + Length+ "}{4pt}");
+            writer.Write(@"\rule{" + Length+ "}{0.4pt}");
             writer.WriteLine(@"\hspace{" + right + "}");
 
             writer.WriteLine(@"}");
