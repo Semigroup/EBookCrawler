@@ -21,9 +21,11 @@ namespace EBookCrawler.Texting
             // Text may not contain "\end{verbatim}"
             if (Text.Contains(@"\end{verbatim}"))
                 throw new NotImplementedException();
-            writer.WriteLine(@"\begin{verbatim}");
+            writer.BeginEnvironment("verbatim");
+            writer.WriteLine();
             writer.WriteLine(Text);
-            writer.WriteLine(@"\end{verbatim}");
+            writer.EndEnvironment("verbatim");
+            writer.WriteLine();
         }
     }
 }

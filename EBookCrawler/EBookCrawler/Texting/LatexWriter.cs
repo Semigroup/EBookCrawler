@@ -14,9 +14,10 @@ namespace EBookCrawler.Texting
         public Style CurrentStyle { get; set; }
         public string BuildRoot { get; set; }
         public string BuildDirectory { get; set; }
-        private bool LineIsEmpty = true;
+        public bool LineIsEmpty { get; private set; } = true;
         public int TabularDepth { get; set; } = 0;
         public TextChapter CurrentChapter { get; set; }
+        public bool NoLineToEnd { get; private set; } = true;
 
         public LatexWriter(string BuildRoot, string path) : base(path)
         {
@@ -32,7 +33,7 @@ namespace EBookCrawler.Texting
             WriteLine(@"\usepackage[T1]{fontenc}");
             WriteLine(@"\usepackage[utf8]{inputenc}");
             WriteLine(@"\usepackage{lmodern}");
-            WriteLineBreak();
+            ForceWriteLine();
             WriteLine(@"\usepackage{lettrine}");
             WriteLine(@"\usepackage[document]{ragged2e}");
             WriteLine(@"\usepackage{xcolor}");
@@ -48,19 +49,22 @@ namespace EBookCrawler.Texting
             WriteLine(@"\usepackage{tabularx}");
             WriteLine(@"\usepackage[toc]{multitoc}");
             WriteLine(@"\usepackage{hyperref}");
-            WriteLineBreak();
+            ForceWriteLine();
             WriteLine(@"\renewcommand\thesection{}{}");
             WriteLine(@"\renewcommand\thesubsection{}{}");
             WriteLine(@"\renewcommand\thesubsubsection{}{}");
             WriteLine(@"\renewcommand*{\multicolumntoc}{2}");
-            WriteLineBreak();
+            ForceWriteLine();
             WriteLine(@"\setlength\RaggedRightParindent{2em}");
             WriteLine(@"\setlength{\columnseprule}{0pt}");
         }
         public override void Write(string value)
         {
+            if (value.Length == 0)
+                return;
             base.Write(value);
-            LineIsEmpty &= value.Length == 0;
+            LineIsEmpty = false;
+            NoLineToEnd = false;
         }
         public override void WriteLine()
         {
@@ -75,15 +79,31 @@ namespace EBookCrawler.Texting
             this.Write(line);
             this.WriteLine();
         }
-        public void WriteLineBreak(int n)
+        public void ForceWriteLine(int n)
         {
             for (int i = 0; i < n; i++)
-                WriteLineBreak();
+                ForceWriteLine();
         }
-        public void WriteLineBreak()
+        public void ForceWriteLine()
         {
             base.WriteLine();
             LineIsEmpty = true;
+        }
+        public void EndLine(int additionalDistance = 0)
+        {
+            if (NoLineToEnd)
+                return;
+            if (TabularDepth > 0)
+            {
+                base.WriteLine(@"\newline");
+                return;
+            }
+            string lineBreak = @"\\";
+            if (additionalDistance > 0)
+                lineBreak += "[" + additionalDistance + @"\baselineskip]";
+            base.WriteLine(lineBreak);
+
+            NoLineToEnd = LineIsEmpty = true;
         }
         public void WriteAlignment(TextElement.Alignment alignment)
         {
@@ -111,13 +131,13 @@ namespace EBookCrawler.Texting
                 case TextElement.Alignment.Unspecified:
                     break;
                 case TextElement.Alignment.Left:
-                    Write(@"\begin{flushleft}");
+                    BeginEnvironment("flushleft");
                     break;
                 case TextElement.Alignment.Center:
-                    Write(@"\begin{center}");
+                    BeginEnvironment("center");
                     break;
                 case TextElement.Alignment.Right:
-                    Write(@"\begin{flushright}");
+                    BeginEnvironment("flushright");
                     break;
                 default:
                     throw new NotImplementedException();
@@ -130,17 +150,34 @@ namespace EBookCrawler.Texting
                 case TextElement.Alignment.Unspecified:
                     break;
                 case TextElement.Alignment.Left:
-                    Write(@"\end{flushleft}");
+                    EndEnvironment("flushleft");
                     break;
                 case TextElement.Alignment.Center:
-                    Write(@"\end{center}");
+                    EndEnvironment("center");
                     break;
                 case TextElement.Alignment.Right:
-                    Write(@"\end{flushright}");
+                    EndEnvironment("flushright");
                     break;
                 default:
                     throw new NotImplementedException();
             }
+        }
+        public void BeginEnvironment(string environment, string argument1, string argument2)
+        {
+            Write(@"\begin{" + environment + "}{" + argument1 + "}{" + argument2 + "}");
+        }
+        public void BeginEnvironment(string environment, string argument)
+        {
+            Write(@"\begin{" + environment + "}{"+ argument + "}");
+        }
+        public void BeginEnvironment(string environment)
+        {
+            Write(@"\begin{" + environment + "}");
+        }
+        public void EndEnvironment(string environment)
+        {
+            Write(@"\end{" + environment + "}");
+            NoLineToEnd = true;
         }
         public void WriteSize(int? size)
         {

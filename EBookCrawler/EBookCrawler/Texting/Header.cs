@@ -134,7 +134,7 @@ namespace EBookCrawler.Texting
         {
             if (!IsVisible)
                 return;
-            writer.WriteLineBreak(1);
+            writer.ForceWriteLine(1);
             switch (MyLevel)
             {
                 case Level.Part:
@@ -189,7 +189,7 @@ namespace EBookCrawler.Texting
                     }
                     base.ToLatex(writer);
                     writer.WriteEndAlignment(Alignment.Center);
-                    writer.WriteLineBreak();
+                    writer.ForceWriteLine();
                     break;
                 case Level.Unspecified:
                     writer.Write(@"{");
@@ -206,7 +206,7 @@ namespace EBookCrawler.Texting
                 default:
                     throw new NotImplementedException();
             }
-            writer.WriteLineBreak(1);
+            writer.ForceWriteLine(1);
         }
         public static string GetCommand(Level level)
         {

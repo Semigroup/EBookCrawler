@@ -25,7 +25,7 @@ namespace EBookCrawler.Texting
                 writer.CurrentChapter = ch;
                 ch.ToLatex(writer);
                 writer.CurrentChapter = null;
-                writer.WriteLineBreak();
+                writer.ForceWriteLine();
             }
         }
     }

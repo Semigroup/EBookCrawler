@@ -72,18 +72,13 @@ namespace EBookCrawler.Texting
         }
         protected void WriteWrapFigue(LatexWriter writer, string path)
         {
-            writer.Write(@"\begin{wrapfigure}{");
-            if (MyAlignment == Alignment.Right)
-                writer.Write("R");
-            else
-                writer.Write("L");
-            writer.Write("}{" + Width + "}");
-
+            writer.BeginEnvironment("wrapfigure", MyAlignment == Alignment.Right ? "R" : "L", Width.ToString());   
             writer.WriteAlignment(Alignment.Center);
             WriteInLineGraphic(writer, path);
             WriteCaption(writer);
 
-            writer.WriteLine(@"\end{wrapfigure}");
+            writer.EndEnvironment("wrapfigure");
+            writer.WriteLine();
         }
         public override void ToLatex(LatexWriter writer)
         {
@@ -98,11 +93,14 @@ namespace EBookCrawler.Texting
                     writer.WriteLine(@"\lettrine[lines=3,image=true]{" + path + "}{}");
                     break;
                 case Kind.Figure:
-                    writer.WriteLine(@"\begin{figure}");
+                    writer.BeginEnvironment("figure");
+                    writer.WriteLine();
                     writer.WriteAlignment(MyAlignment);
+                    writer.WriteLine();
                     WriteInLineGraphic(writer, path);
                     WriteCaption(writer);
-                    writer.WriteLine(@"\end{figure}");
+                    writer.EndEnvironment("figure");
+                    writer.WriteLine();
                     break;
                 case Kind.WrapFigure:
                     WriteWrapFigue(writer, path);

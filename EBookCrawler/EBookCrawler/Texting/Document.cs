@@ -43,19 +43,19 @@ namespace EBookCrawler.Texting
                     writer.Write(refe.SubTitle);
                 }
                 writer.Write(@"}");
-                writer.WriteLineBreak(1);
+                writer.ForceWriteLine(1);
             }
             writer.WriteLine(@"\end{itemize}");
-            writer.WriteLineBreak(2);
+            writer.ForceWriteLine(2);
             writer.WriteLine(@"\tableofcontents");
 
             foreach (var part in Parts)
             {
-                writer.WriteLineBreak(2);
+                writer.ForceWriteLine(2);
                 if (Parts.Length > 1)
                 {
                     writer.WriteLine(@"\part{ " + part.Part.Reference.Name + "}");
-                    writer.WriteLineBreak();
+                    writer.ForceWriteLine();
                 }
                 part.ToLatex(writer);
             }

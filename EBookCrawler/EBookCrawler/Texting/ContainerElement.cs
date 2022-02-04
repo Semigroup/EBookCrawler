@@ -245,7 +245,7 @@ namespace EBookCrawler.Texting
             if (HasExteriorEnvironment())
             {
                 if (!LeftMargin.IsZero())
-                    writer.Write(@"\begin{adjustwidth}{" + LeftMargin.Length + "}{}");
+                    writer.BeginEnvironment("adjustwidth", LeftMargin.Length, "");
                 writer.WriteBeginAlignment(MyAlignment);
             }
             else
@@ -277,7 +277,7 @@ namespace EBookCrawler.Texting
             {
                 writer.WriteEndAlignment(MyAlignment);
                 if (!LeftMargin.IsZero())
-                    writer.Write(@"\end{adjustwidth}");
+                    writer.EndEnvironment("adjustwidth");
             }
             if (!SingleLine)
                 writer.WriteLine();

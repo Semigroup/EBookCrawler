@@ -13,9 +13,10 @@ namespace EBookCrawler.Texting
 
         public override void ToLatex(LatexWriter writer)
         {
-            writer.WriteLine(@"\begin{quote}");
+            writer.BeginEnvironment("quote");
             base.ToLatex(writer);
-            writer.WriteLine(@"\end{quote}");
+            writer.EndEnvironment("quote");
+            writer.WriteLine();
         }
     }
 }

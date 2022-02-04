@@ -17,17 +17,19 @@ namespace EBookCrawler.Texting
         {
             if (IsBlock)
             {
-                writer.WriteLine(@"\begin{quote}");
-                writer.WriteLine(@"\glqq");
+                writer.BeginEnvironment("quote");
+                writer.Write(@"\glqq{}");
                 base.ToLatex(writer);
-                writer.WriteLine(@"\grqq");
-                writer.WriteLine(@"\end{quote}");
+                writer.Write(@"\grqq{}");
+                writer.WriteLine();
+                writer.EndEnvironment("quote");
+                writer.WriteLine();
             }
             else
             {
-                writer.WriteLine(@"\glqq");
+                writer.Write(@"\glqq{}");
                 base.ToLatex(writer);
-                writer.WriteLine(@"\grqq");
+                writer.Write(@"\grqq{}");
             }
         }
     }

@@ -233,15 +233,14 @@ namespace EBookCrawler.Texting
         {
             bool rowBorder = (Style & BorderStyle.Rows) != 0;
 
-            writer.Write(@"\begin{tabularx}");
-            writer.Write(@"{\textwidth}");
+            writer.BeginEnvironment("tabularx", @"\textwidth");
             WriteColAlignment(writer);
             if (rowBorder)
                 writer.WriteLine(@"\hline");
             foreach (var cont in Segments)
                 cont.ToLatex(writer, rowBorder);
 
-            writer.WriteLine(@"\end{tabularx}");
+            writer.EndEnvironment("tabularx");
         }
         protected void WriteCaption(LatexWriter writer)
         {
@@ -254,7 +253,8 @@ namespace EBookCrawler.Texting
         }
         public override void ToLatex(LatexWriter writer)
         {
-            writer.WriteLine(@"\begin{table}");
+            writer.BeginEnvironment(@"table");
+            writer.WriteLine();
             writer.TabularDepth++;
 
             writer.WriteAlignment(MyAlignment);
@@ -262,7 +262,8 @@ namespace EBookCrawler.Texting
             WriteCaption(writer);
 
             writer.TabularDepth--;
-            writer.WriteLine(@"\end{table}");
+            writer.EndEnvironment(@"table");
+            writer.WriteLine();
         }
     }
 }

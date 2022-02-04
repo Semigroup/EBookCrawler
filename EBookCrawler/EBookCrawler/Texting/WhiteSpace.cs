@@ -15,16 +15,23 @@ namespace EBookCrawler.Texting
 
         public override void ToLatex(LatexWriter writer)
         {
-            string lineBreak = writer.TabularDepth > 0 ? @"\newline" : @"\\";
             if (VSpace > 0)
             {
-                for (int i = 0; i < VSpace - 1; i++)
-                    writer.Write(lineBreak);
                 if (Indentation > 0)
-                    writer.WriteLineBreak();
+                {
+                    if (VSpace == 1)
+                        if (writer.LineIsEmpty)
+                            writer.ForceWriteLine();
+                        else
+                            writer.ForceWriteLine(2);
+                    else if (VSpace >= 2)
+                    {
+                        writer.EndLine((int)VSpace - 2);
+                        writer.ForceWriteLine();
+                    }
+                }
                 else
-                    writer.Write(lineBreak);
-                writer.WriteLineBreak();
+                    writer.EndLine((int)VSpace-1);
             }
             for (int i = 0; i < HSpace; i++)
                 writer.Write(@"\ ");

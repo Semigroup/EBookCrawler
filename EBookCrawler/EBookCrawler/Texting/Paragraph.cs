@@ -33,7 +33,7 @@ namespace EBookCrawler.Texting
         public override void ToLatex(LatexWriter writer)
         {
             if (StartsWithIndentation)
-                writer.WriteLineBreak(2);
+                writer.ForceWriteLine(2);
             base.ToLatex(writer);
             //writer.WriteLine(@"\vspace{0.5cm}");
         }

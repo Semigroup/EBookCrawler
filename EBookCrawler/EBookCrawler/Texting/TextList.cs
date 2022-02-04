@@ -110,11 +110,13 @@ namespace EBookCrawler.Texting
         protected override void WriteBegin(LatexWriter writer)
         {
             base.WriteBegin(writer);
-            writer.WriteLine(@"\begin{enumerate}");
+            writer.BeginEnvironment(@"enumerate");
+            writer.WriteLine();
         }
         protected override void WriteEnd(LatexWriter writer)
         {
-            writer.WriteLine(@"\end{enumerate}");
+            writer.EndEnvironment(@"enumerate");
+            writer.WriteLine();
             base.WriteEnd(writer);
         }
         protected virtual void WriteItem(LatexWriter writer, ListItem term, TextElement description, ref int number)

@@ -16,13 +16,13 @@ namespace EBookCrawler.Texting
             string left = Length.GetLeftSpace(MyAlignment);
             string right = Length.GetRightSpace(MyAlignment);
 
-            writer.WriteLine(@"\\");
-            writer.WriteLine(@"{");
+            writer.EndLine();
+            writer.Write(@"{");
 
             writer.Write(@"\rule{0.0\textwidth}{0.4pt}");
             writer.Write(@"\hspace{" + left + "}");
             writer.Write(@"\rule{" + Length+ "}{0.4pt}");
-            writer.WriteLine(@"\hspace{" + right + "}");
+            writer.Write(@"\hspace{" + right + "}");
 
             writer.WriteLine(@"}");
         }
