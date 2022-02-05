@@ -35,7 +35,6 @@ namespace EBookCrawler.Texting
 
         public Footnote()
         {
-            this.Size = -2;
         }
 
         public override bool HasExteriorEnvironment()
@@ -43,6 +42,9 @@ namespace EBookCrawler.Texting
 
         public override void ToLatex(LatexWriter writer)
         {
+            if (!IsVisible)
+                return;
+
             switch (MyType)
             {
                 case Type.FootNote:

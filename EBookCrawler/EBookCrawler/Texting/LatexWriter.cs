@@ -14,9 +14,9 @@ namespace EBookCrawler.Texting
         public Style CurrentStyle { get; set; }
         public string BuildRoot { get; set; }
         public string BuildDirectory { get; set; }
-        public bool LineIsEmpty { get; private set; } = true;
         public int TabularDepth { get; set; } = 0;
         public TextChapter CurrentChapter { get; set; }
+        public bool LineIsEmpty { get; private set; } = true;
         public bool NoLineToEnd { get; private set; } = true;
 
         public LatexWriter(string BuildRoot, string path) : base(path)
@@ -78,6 +78,12 @@ namespace EBookCrawler.Texting
         {
             this.Write(line);
             this.WriteLine();
+        }
+        public void WriteWhitespace()
+        {
+            if (NoLineToEnd)
+                return;
+            Write(" ");
         }
         public void ForceWriteLine(int n)
         {
@@ -168,7 +174,7 @@ namespace EBookCrawler.Texting
         }
         public void BeginEnvironment(string environment, string argument)
         {
-            Write(@"\begin{" + environment + "}{"+ argument + "}");
+            Write(@"\begin{" + environment + "}{" + argument + "}");
         }
         public void BeginEnvironment(string environment)
         {
@@ -313,7 +319,7 @@ namespace EBookCrawler.Texting
                 text = text.ToLower();
 
             if (IsWhitespace(text[0]))
-                Write(" ");
+                WriteWhitespace();
             var words = ProcessWords(text);
             bool initial = true;
             foreach (var word in words)
@@ -330,11 +336,11 @@ namespace EBookCrawler.Texting
                 }
                 else
                 {
-                    Write(" ");
+                    WriteWhitespace();
                     writeWord(word);
                 }
             if (IsWhitespace(text[text.Length - 1]))
-                Write(" ");
+                WriteWhitespace();
         }
         private static IEnumerable<string> ProcessWords(string text)
         {

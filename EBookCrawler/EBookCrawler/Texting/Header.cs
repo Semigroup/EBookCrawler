@@ -144,11 +144,21 @@ namespace EBookCrawler.Texting
                 case Level.SubSubSection:
                 case Level.Paragraph:
                 case Level.SubParagraph:
+                    var fns = ExtractFootnotes();
+                    foreach (var fn in fns)
+                        fn.IsVisible = false;
+
                     writer.Write(@"\");
                     writer.Write(GetCommand(MyLevel));
                     writer.Write(@"{");
                     base.ToLatex(writer);
                     writer.WriteLine(@"}");
+                    foreach (var fn in fns)
+                    {
+                        fn.IsVisible = true;
+                        fn.ToLatex(writer);
+                    }
+
                     break;
 
                 case Level.TitlePage:
@@ -230,6 +240,13 @@ namespace EBookCrawler.Texting
                 default:
                     throw new NotImplementedException();
             }
+        }
+
+        public IEnumerable<Footnote> ExtractFootnotes()
+        {
+            foreach (var item in TextElements)
+                if (item is Footnote fn)
+                    yield return fn;
         }
     }
 }
