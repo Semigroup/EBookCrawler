@@ -50,7 +50,11 @@ namespace EBookCrawler
         public void SaveLibrary()
         {
             var formatter = new BinaryFormatter();
-            using (var fs = new FileStream(Path.Combine(Root, "library.file"), FileMode.Create))
+            var path = Path.Combine(Root, "library.file");
+            var dir = Path.GetDirectoryName(path);
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+            using (var fs = new FileStream(path, FileMode.Create))
                 formatter.Serialize(fs, Library);
             Library.WriteOverviewMarkdown(Path.Combine(Root, "overview.md"));
         }

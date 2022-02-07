@@ -12,6 +12,7 @@ namespace EBookCrawler
     [Serializable]
     public class Chapter
     {
+        [Serializable]
         public struct Meta
         {
             public string Author;

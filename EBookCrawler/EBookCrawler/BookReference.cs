@@ -41,7 +41,9 @@ namespace EBookCrawler
             if (!Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
 
-            using (var writer = new Texting.LatexWriter(outputDirectory, path))
+            var meta = Parts[0].Part.Chapters[0].MyMeta;
+
+            using (var writer = new Texting.LatexWriter(outputDirectory, path, meta))
                 doc.ToLatex(writer);
         }
 

@@ -18,17 +18,20 @@ namespace EBookCrawler.Texting
         public TextChapter CurrentChapter { get; set; }
         public bool LineIsEmpty { get; private set; } = true;
         public bool NoLineToEnd { get; private set; } = true;
+        public Chapter.Meta Meta { get; set; }
 
-        public LatexWriter(string BuildRoot, string path) : base(path)
+        public LatexWriter(string BuildRoot, string path, Chapter.Meta Meta) : base(path)
         {
             this.BuildRoot = BuildRoot;
             this.BuildDirectory = Path.GetDirectoryName(path) + "\\";
+            this.Meta = Meta;
         }
 
         public void WritePreamble()
         {
-            WriteLine(@"\documentclass[12pt,a4paper,oneside]{book}");
-
+            WriteLine(@"\documentclass[14pt,oneside]{book}");
+            ForceWriteLine();
+            WriteLine(@"\usepackage[a5paper,left=10mm,right=10mm,top=15mm,bottom=15mm]{geometry}");
             WriteLine(@"\usepackage[ngerman]{babel}");
             WriteLine(@"\usepackage[T1]{fontenc}");
             WriteLine(@"\usepackage[utf8]{inputenc}");
@@ -49,6 +52,14 @@ namespace EBookCrawler.Texting
             WriteLine(@"\usepackage{tabularx}");
             WriteLine(@"\usepackage[toc]{multitoc}");
             WriteLine(@"\usepackage{hyperref}");
+            ForceWriteLine();
+
+            WriteLine(@"\hypersetup{");
+            WriteLine(@"pdftoolbar=false,");
+            WriteLine(@"pdfmenubar=false,");
+            WriteLine(@"pdftitle={" + Meta.Title + "},");
+            WriteLine(@"pdfauthor={" + Meta.Author + "},");
+            WriteLine(@"}");
             ForceWriteLine();
             WriteLine(@"\renewcommand\thesection{}{}");
             WriteLine(@"\renewcommand\thesubsection{}{}");

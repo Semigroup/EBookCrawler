@@ -32,7 +32,7 @@ namespace EBookCrawler
         public static string ToFileName(this string name)
         {
             name = name.Replace("\\", "");
-            name = name.Replace("//", "");
+            name = name.Replace("/", "");
             name = name.Replace("?", "");
             name = name.Replace(".", "");
             name = name.Replace(":", "");

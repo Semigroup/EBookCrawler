@@ -15,8 +15,8 @@ namespace EBookCrawler
         static void Main(string[] args)
         {
             //LoadWebLibrary();
-
-            TranscriptBooks("galgenlieder", "pitaval");
+            //DownloadWebsite();
+            TranscriptBooks("der heiße soldat");
         }
 
         static void Test()
@@ -35,6 +35,12 @@ namespace EBookCrawler
             Organizer orga = new Organizer(libRoot);
             orga.DownloadLibrary();
             orga.SaveLibrary();
+        }
+        static void DownloadWebsite()
+        {
+            Organizer orga = new Organizer(libRoot);
+            orga.LoadLibrary();
+            orga.DownloadWebPage(false);
         }
         static void TranscriptBooks(params string[] books)
         {
