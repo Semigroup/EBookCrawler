@@ -55,8 +55,8 @@ namespace EBookCrawler.Texting
             ForceWriteLine();
 
             WriteLine(@"\hypersetup{");
-            WriteLine(@"pdftoolbar=false,");
-            WriteLine(@"pdfmenubar=false,");
+            //WriteLine(@"pdftoolbar=false,");
+            //WriteLine(@"pdfmenubar=false,");
             WriteLine(@"pdftitle={" + Meta.Title + "},");
             WriteLine(@"pdfauthor={" + Meta.Author + "},");
             WriteLine(@"}");
