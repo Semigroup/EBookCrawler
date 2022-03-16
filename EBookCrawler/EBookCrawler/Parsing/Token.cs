@@ -49,7 +49,13 @@ namespace EBookCrawler.Parsing
             Strike,
             Aside,
             Cite,
-            Caption
+            Caption,
+            HTML,
+            Head,
+            Body,
+            Style,
+            Script,
+            Meta
         }
         public struct Attribute
         {
@@ -263,6 +269,7 @@ namespace EBookCrawler.Parsing
                     this.MyKind = Kind.Span;
                     break;
                 case "a":
+                case "link":
                     this.MyKind = Kind.Link;
                     break;
                 case "i":
@@ -325,6 +332,26 @@ namespace EBookCrawler.Parsing
                     break;
                 case "del":
                     this.MyKind = Kind.Deletion;
+                    break;
+
+                case "html":
+                    this.MyKind = Kind.HTML;
+                    break;
+                case "head":
+                    this.MyKind = Kind.Head;
+                    break;
+                case "body":
+                    this.MyKind = Kind.Body;
+                    break;
+
+                case "style":
+                    this.MyKind = Kind.Style;
+                    break;
+                case "script":
+                    this.MyKind = Kind.Script;
+                    break;
+                case "meta":
+                    this.MyKind = Kind.Meta;
                     break;
 
                 default:
