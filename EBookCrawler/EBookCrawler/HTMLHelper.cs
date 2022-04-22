@@ -38,6 +38,36 @@ namespace EBookCrawler
             return content;
         }
         public static string RemoveNewLine(string source) => source.Replace("\n", "").Replace("\r", "");
+
+        public static string RemoveDoctype(string source, out string doctype)
+        {
+            string extractType(int start)
+            {
+                if (source.Substring(start, 7).ToLower() != "doctype")
+                    return null;
+                start += 7;
+                int end = start;
+                while (end )
+                {
+
+                }
+
+            }
+
+            int i = 0;
+            while (i < source.Length - 10)
+            {
+                if (source[i] == '<' && source[i+1] == '!')
+                {
+                    i += 2;
+                    if (source.Substring(i, 7).ToLower() == "doctype")
+                    {
+                        
+                    }
+                }
+            }
+        }
+
         public static string RemoveHTMLComments(string source)
         {
             int pos = 0;
