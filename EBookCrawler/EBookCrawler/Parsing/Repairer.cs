@@ -73,7 +73,7 @@ namespace EBookCrawler.Parsing
                     }
                     else
                     {
-                        WriteError("Repairer: Unexpected closing tag " + CurrentToken);
+                        WriteWarning("Repairer: Unexpected closing tag " + CurrentToken);
                         ShuffleBack();
                     }
                 }
@@ -85,15 +85,19 @@ namespace EBookCrawler.Parsing
             while (this.OpenTokens.Count > 0)
             {
                 var open = OpenTokens.Pop();
-                WriteError("EoF reached, not closed tag: " + open);
+                WriteWarning("EoF reached, not closed tag: " + open);
                 open.EndPosition = Text.Length;
                 Output.Add(open.GetArtificialClosing(lastToken));
             }
         }
+        private void WriteWarning(string msg)
+        {
+            Logger.LogWarning(msg);
+        }
         private void WriteError(string msg)
         {
             this.FoundError = true;
-            Logger.LogLine(msg);
+            Logger.LogError(msg);
         }
         private void OutputNewOpenings()
         {
@@ -110,7 +114,7 @@ namespace EBookCrawler.Parsing
                 NewOpenings.Push(newOpen);
 
                 Temp.Push(open.GetArtificialClosing(CurrentToken));
-                WriteError("Repairer: Overlapping " + CurrentToken + " and " + open);
+                WriteWarning("Repairer: Overlapping " + CurrentToken + " and " + open);
             }
             while (Temp.Count > 0)
                 Output.Add(Temp.Pop());

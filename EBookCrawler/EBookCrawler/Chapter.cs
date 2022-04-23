@@ -83,11 +83,11 @@ namespace EBookCrawler
                 }
                 catch (WebException)
                 {
-                    Logger.LogLine("Couldnt download " + URL);
+                    Logger.LogError("Couldnt download " + URL);
                 }
                 catch (IOException)
                 {
-                    Logger.LogLine("Couldnt write to " + path);
+                    Logger.LogError("Couldnt write to " + path);
                 }
             else
                 Console.WriteLine("File already exists: " + path);
@@ -97,7 +97,7 @@ namespace EBookCrawler
             var fp = Path.Combine(root, RelativePath);
             if (!File.Exists(fp))
             {
-                Logger.LogLine("File doesnt exist: " + fp);
+                Logger.LogError("File doesnt exist: " + fp);
                 TextNotFound = true;
                 return;
             }

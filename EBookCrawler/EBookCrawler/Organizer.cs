@@ -102,11 +102,11 @@ namespace EBookCrawler
                                 library.Add(currentAuthor);
                             }
                             else
-                                Logger.LogLine("Found the same author twice: " + entry);
+                                Logger.LogError("Found the same author twice: " + entry);
                         }
                         break;
                     case Entry.Kind.IrregularAuthor:
-                        Logger.LogLine("Irregular Author: " + entry);
+                        Logger.LogError("Irregular Author: " + entry);
                         {
                             (string firstName, string lastName) = entry.GetAuthorName();
                             string identifier = Author.GetIdentifier(firstName, lastName);
@@ -127,16 +127,16 @@ namespace EBookCrawler
                         if (currentAuthor.Parts.TryGetValue(bookIdentifier, out PartReference foundBookRef))
                         {
                             foundBookRef.Merge(bookRef);
-                            Logger.LogLine("Found the same book twice: " + entry);
+                            Logger.LogError("Found the same book twice: " + entry);
                         }
                         else
                             currentAuthor.Parts.Add(bookIdentifier, bookRef);
                         break;
                     case Entry.Kind.Empty:
-                        Logger.LogLine("Empty Entry: " + entry);
+                        Logger.LogError("Empty Entry: " + entry);
                         break;
                     case Entry.Kind.BookWithBrokenLink:
-                        Logger.LogLine("Book broken Link: " + entry);
+                        Logger.LogError("Book broken Link: " + entry);
                         break;
                     default:
                         throw new NotImplementedException("Organizer.LoadLibrary(): New Kind " + entry.GetKind() + " !");

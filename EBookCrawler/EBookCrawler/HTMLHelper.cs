@@ -41,31 +41,29 @@ namespace EBookCrawler
 
         public static string RemoveDoctype(string source, out string doctype)
         {
-            string extractType(int start)
+            string extractType(int start, out int end)
             {
+                end = -1;
                 if (source.Substring(start, 7).ToLower() != "doctype")
                     return null;
                 start += 7;
-                int end = start;
-                while (end )
-                {
-
-                }
-
+                end = start;
+                while (end < source.Length)
+                    if (source[end++] == '>')
+                        return source.Substring(start, end - start - 1).Trim();
+                end = -1;
+                return null;
             }
 
-            int i = 0;
-            while (i < source.Length - 10)
-            {
-                if (source[i] == '<' && source[i+1] == '!')
+            for (int i = 0; i < source.Length - 10; i++)
+                if (source[i] == '<' && source[i + 1] == '!')
                 {
-                    i += 2;
-                    if (source.Substring(i, 7).ToLower() == "doctype")
-                    {
-                        
-                    }
+                    doctype = extractType(i + 2, out int end);
+                    if (doctype != null)
+                        return source.Remove(i, end - i);
                 }
-            }
+            doctype = null;
+            return source;
         }
 
         public static string RemoveHTMLComments(string source)
@@ -128,6 +126,6 @@ namespace EBookCrawler
             }
             yield break;
         }
-       
+
     }
 }

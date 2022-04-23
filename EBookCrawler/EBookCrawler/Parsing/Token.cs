@@ -10,6 +10,7 @@ namespace EBookCrawler.Parsing
     {
         public enum Kind
         {
+            JavaScript,
             Raw,
             Paragraph,
             Table,
@@ -19,6 +20,7 @@ namespace EBookCrawler.Parsing
             TableBody,
             TableFoot,
             Header,
+            HeaderArea,
             HorizontalRuling,
             Span,
             Link,
@@ -55,7 +57,12 @@ namespace EBookCrawler.Parsing
             Body,
             Style,
             Script,
-            Meta
+            Meta,
+            Title,
+            Form,
+            InputBox,
+            Navigation,
+            Label
         }
         public struct Attribute
         {
@@ -141,7 +148,7 @@ namespace EBookCrawler.Parsing
         public string Text { get; set; }
         public Kind MyKind { get; set; }
 
-        public bool IsRaw => Tag == "raw";
+        public bool IsRaw => Tag == "raw" || Tag =="javascript";
 
         public Token(Tokenizer tokenizer)
         {
@@ -192,6 +199,10 @@ namespace EBookCrawler.Parsing
         {
             switch (_Tag)
             {
+                case "javascript":
+                    this.MyKind = Kind.JavaScript;
+                    break;
+
                 case "caption":
                     this.MyKind = Kind.Caption;
                     break;
@@ -352,6 +363,24 @@ namespace EBookCrawler.Parsing
                     break;
                 case "meta":
                     this.MyKind = Kind.Meta;
+                    break;
+                case "title":
+                    this.MyKind = Kind.Title;
+                    break;
+                case "form":
+                    this.MyKind = Kind.Title;
+                    break;
+                case "input":
+                    this.MyKind = Kind.InputBox;
+                    break;
+                case "header":
+                    this.MyKind = Kind.HeaderArea;
+                    break;
+                case "nav":
+                    this.MyKind = Kind.Navigation;
+                    break;
+                case "label":
+                    this.MyKind = Kind.Label;
                     break;
 
                 default:

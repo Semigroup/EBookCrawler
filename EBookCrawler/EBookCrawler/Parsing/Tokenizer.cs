@@ -16,11 +16,16 @@ namespace EBookCrawler.Parsing
         public bool EoF = false;
         public bool FoundError = false;
         public string ErrorMessage;
+        public bool IsJavaScript = false;
 
         public List<Token> Tokens;
 
         private void Reset(string Text)
         {
+            this.IsJavaScript = false;
+            this.FoundError = false;
+            this.ErrorMessage = null;
+
             this.Tokens = new List<Token>();
             CurrentPosition = 0;
             LineNumber = 0;
@@ -49,8 +54,15 @@ namespace EBookCrawler.Parsing
                 CurrentSymbol = (char)0;
         }
         private bool CanContinue() => !EoF && !FoundError;
+        public void WriteWarning(string message)
+        {
+            Logger.LogWarning("At Line " + (LineNumber + 1) + " Position " + (PositionInLine + 1) + ":");
+            Logger.LogWarning("[Warning] " + message);
+        }
         public void WriteError(string message)
         {
+            Logger.LogError("At Line " + (LineNumber + 1) + " Position " + (PositionInLine + 1) + ":");
+            Logger.LogError("[Error] " + message);
             this.FoundError = true;
             this.ErrorMessage = message;
         }
@@ -77,7 +89,6 @@ namespace EBookCrawler.Parsing
         public void Tokenize(string text)
         {
             this.Reset(text);
-
             while (CanContinue())
                 ParseToken();
         }
@@ -95,34 +106,89 @@ namespace EBookCrawler.Parsing
         {
             if (CurrentSymbol == '<')
                 ParseHTMLToken();
+            else if (IsJavaScript)
+                ParseJavaScript();
             else
+                ParseRaw();
+        }
+        private void ParseRaw()
+        {
+            var raw = new Token(this)
             {
-                var raw = new Token(this)
+                Tag = "raw",
+                IsBeginning = true,
+                IsEnd = true
+            };
+            this.Tokens.Add(raw);
+            while (CanContinue())
+                if (CurrentSymbol == '<')
+                    break;
+                else if (CurrentSymbol == '>')
                 {
-                    Tag = "raw",
-                    IsBeginning = true,
-                    IsEnd = true
-                };
-                this.Tokens.Add(raw);
-                while (CanContinue())
-                    if (CurrentSymbol == '<')
-                        break;
-                    else if (CurrentSymbol == '>')
+                    WriteWarning("Unexpected >");
+                    //We tolerate those errors because they happen too often
+                    //    return;
+                    Next();
+                    raw.Length++;
+                }
+                else
+                {
+                    Next();
+                    raw.Length++;
+                }
+            raw.Text = Text.Substring(raw.Position, raw.Length);
+        }
+        private void ParseJavaScript()
+        {
+            if (CurrentSymbol == '<')
+                throw new NotImplementedException();
+
+            bool jsComment = false;
+
+            var js = new Token(this)
+            {
+                Tag = "javascript",
+                IsBeginning = true,
+                IsEnd = true
+            };
+
+            void consumeCurrent()
+            {
+                Next();
+                js.Length++;
+            }
+
+            this.Tokens.Add(js);
+            while (CanContinue())
+                if (jsComment)
+                {
+                    if (CurrentSymbol == '*')
                     {
-                        //We tolerate those errors because they happen too often
-                        //    WriteError("Unexpected >");
-                        //    return;
-                        Console.WriteLine("Error: Unexpected > at Line " + LineNumber + ", pos " + PositionInLine);
-                        Next();
-                        raw.Length++;
+                        consumeCurrent();
+                        if (CanContinue() && CurrentSymbol == '/')
+                        {
+                            consumeCurrent();
+                            jsComment = false;
+                        }
                     }
                     else
+                        consumeCurrent();
+                }
+                else if (CurrentSymbol == '/')
+                {
+                    consumeCurrent();
+                    if (CanContinue() && CurrentSymbol == '*')
                     {
-                        Next();
-                        raw.Length++;
+                        consumeCurrent();
+                        jsComment = true;
                     }
-                raw.Text = Text.Substring(raw.Position, raw.Length);
-            }
+                }
+                else if (CurrentSymbol == '<')
+                    break;
+                else
+                    consumeCurrent();
+
+            js.Text = Text.Substring(js.Position, js.Length);
         }
         private void ParseHTMLToken()
         {
@@ -186,6 +252,8 @@ namespace EBookCrawler.Parsing
             }
             Next();
             html.Length = CurrentPosition - html.Position;
+            if (html.MyKind == Token.Kind.Script)
+                IsJavaScript = !html.IsEnd;
         }
         private string RetrieveTagName()
         {
@@ -208,7 +276,7 @@ namespace EBookCrawler.Parsing
                 else
                 {
                     WriteError("Expected Literal, digit, >, / or Whitespace");
-                    return "";
+                    throw new NotImplementedException();
                 }
             }
             return Text.Substring(start, length);
@@ -236,15 +304,10 @@ namespace EBookCrawler.Parsing
             int length = 0;
             while (!EoF)
             {
-                if (IsLiteral() || IsDigit())
+                if (IsLiteral() || IsDigit() || IsLegalSymbol() || IsWhiteSpace())
                 {
                     Next();
                     length++;
-                }
-                else if (IsWhiteSpace())
-                {
-                    Next();
-                    break;
                 }
                 else if (CurrentSymbol == '=')
                     break;
@@ -254,7 +317,7 @@ namespace EBookCrawler.Parsing
                     return null;
                 }
             }
-            return Text.Substring(start, length);
+            return Text.Substring(start, length).Trim();
         }
         private string RetrieveValue()
         {
@@ -295,5 +358,12 @@ namespace EBookCrawler.Parsing
         private bool IsLargeLiteral(char c) => 'A' <= c && c <= 'Z';
         private bool IsDigit() => IsDigit(CurrentSymbol);
         private bool IsDigit(char c) => '0' <= c && c <= '9';
+        /// <summary>
+        /// Legal for composing words in attribute names
+        /// </summary>
+        /// <param name="c"></param>
+        /// <returns></returns>
+        private bool IsLegalSymbol(char c) => c == '-';
+        private bool IsLegalSymbol() => IsLegalSymbol(CurrentSymbol);
     }
 }

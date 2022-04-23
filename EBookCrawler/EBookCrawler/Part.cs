@@ -54,7 +54,7 @@ namespace EBookCrawler
             catch (Exception)
             {
                 this.NotFound = true;
-                Logger.LogLine("Indexdatei nicht gefunden: " + indexURL);
+                Logger.LogError("Indexdatei nicht gefunden: " + indexURL);
                 return;
             }
             File.WriteAllText("indexdatei.xml", source);
