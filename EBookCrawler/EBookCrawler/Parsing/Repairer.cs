@@ -139,5 +139,12 @@ namespace EBookCrawler.Parsing
             while (Overlapping.Count > 0)
                 OpenTokens.Push(Overlapping.Pop());
         }
+
+        public IEnumerable<Token> RemoveTag(string tag, IEnumerable<Token> tokens)
+        {
+            foreach (var token in tokens)
+                if (token.Tag != tag)
+                    yield return token;
+        }
     }
 }

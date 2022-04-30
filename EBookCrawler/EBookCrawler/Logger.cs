@@ -8,17 +8,26 @@ namespace EBookCrawler
 {
     public static class Logger
     {
+        public static bool ShowWarnings { get; set; } = false;
+        public static bool ShowErrors { get; set; } = true;
+
         public static void LogWarning(object obj)
         {
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
-            Console.Error.WriteLine(obj.ToString());
-            Console.ForegroundColor = ConsoleColor.Gray;
+            if (ShowWarnings)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.Error.WriteLine(obj.ToString());
+                Console.ForegroundColor = ConsoleColor.Gray;
+            }
         }
         public static void LogError(object obj)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.Error.WriteLine(obj.ToString());
-            Console.ForegroundColor = ConsoleColor.Gray;
+            if (ShowErrors)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Error.WriteLine(obj.ToString());
+                Console.ForegroundColor = ConsoleColor.Gray;
+            }
         }
     }
 }

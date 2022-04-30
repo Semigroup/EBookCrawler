@@ -51,6 +51,7 @@
     <Compile Include="HTMLHelper.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Merging\Group.cs" />
+    <Compile Include="Parsing\Generator.cs" />
     <Compile Include="Parsing\Parser.cs" />
     <Compile Include="Parsing\Token.cs" />
     <Compile Include="Merging\TokenConverter.cs" />
