@@ -8,7 +8,7 @@ namespace EBookCrawler
 {
     public static class Logger
     {
-        public static bool ShowWarnings { get; set; } = false;
+        public static bool ShowWarnings { get; set; } = true;
         public static bool ShowErrors { get; set; } = true;
 
         public static void LogWarning(object obj)
