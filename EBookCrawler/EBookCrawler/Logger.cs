@@ -10,6 +10,7 @@ namespace EBookCrawler
     {
         public static bool ShowWarnings { get; set; } = true;
         public static bool ShowErrors { get; set; } = true;
+        public static bool ShowInfo { get; set; } = true;
 
         public static void LogWarning(object obj)
         {
@@ -28,6 +29,29 @@ namespace EBookCrawler
                 Console.Error.WriteLine(obj.ToString());
                 Console.ForegroundColor = ConsoleColor.Gray;
             }
+        }
+
+        public static void LogInfo(object obj) 
+        {
+            if (ShowInfo)
+            {
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.Error.WriteLine(obj.ToString());
+                Console.ForegroundColor = ConsoleColor.Gray;
+            }
+        }  
+        public static void LogWarning(object sender, object obj)
+        {
+            LogWarning("[" + sender + "] " + obj.ToString());
+        }
+        public static void LogError(object sender, object obj)
+        {
+            LogError("[" + sender + "] " + obj.ToString());
+        }
+        public static void LogInfo(object sender, object obj)
+        {
+            LogInfo("[" + sender + "] " + obj.ToString());
+
         }
     }
 }
