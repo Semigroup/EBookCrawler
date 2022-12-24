@@ -16,7 +16,7 @@ namespace EBookCrawler
         {
             if (ShowWarnings)
             {
-                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.Error.WriteLine(obj.ToString());
                 Console.ForegroundColor = ConsoleColor.Gray;
             }
@@ -35,7 +35,7 @@ namespace EBookCrawler
         {
             if (ShowInfo)
             {
-                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.Error.WriteLine(obj.ToString());
                 Console.ForegroundColor = ConsoleColor.Gray;
             }
