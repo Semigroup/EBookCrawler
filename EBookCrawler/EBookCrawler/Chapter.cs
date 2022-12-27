@@ -79,7 +79,7 @@ namespace EBookCrawler
                 {
                     string source = HTMLHelper.GetSourceCode(URL);
                     File.WriteAllText(path, source);
-                    Console.WriteLine("Written " + path);
+                    Logger.LogInfo("Written " + path);
                 }
                 catch (WebException)
                 {
@@ -90,7 +90,7 @@ namespace EBookCrawler
                     Logger.LogError("Couldnt write to " + path);
                 }
             else
-                Console.WriteLine("File already exists: " + path);
+                Logger.LogInfo("File already exists: " + path);
         }
         protected void LoadText(string root)
         {
@@ -113,7 +113,7 @@ namespace EBookCrawler
                 return null;
 
             File.WriteAllText("text.xml", Text);
-            Console.WriteLine(this.URL);
+            Logger.LogInfo("Chapter", "parsing " + this.URL);
 
             var tokenizer = new Parsing.Tokenizer();
             tokenizer.Tokenize(Text);

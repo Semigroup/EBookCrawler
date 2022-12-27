@@ -5,6 +5,5 @@
 	"image": "texlive/texlive:latest",
 	"extensions": ["james-yu.latex-workshop"],
 	"runArgs": ["--memory=1g"],
-	"postCreateCommand": "apt update && apt -y upgrade && apt -y autoremove && apt -y autoclean && apt install -y qpdf",
-	"postAttachCommand": "apt update && apt -y upgrade && apt -y autoremove && apt -y autoclean && git submodule update --remote --init --recursive"
+	"postCreateCommand": "apt update && apt -y upgrade && apt -y autoremove && apt -y autoclean && apt install -y qpdf"
 }

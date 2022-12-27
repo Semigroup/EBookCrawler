@@ -14,9 +14,16 @@ namespace EBookCrawler
 
         static void Main(string[] args)
         {
-            //LoadWebLibrary();
-            //DownloadWebsite();
-            TranscriptBooks("der heiße soldat");
+            TranscriptBooks("der lachende koffer");
+        }
+
+        static void UpdateLibrary()
+        {
+            Logger.LogInfo("Creating Index of Website");
+            LoadWebLibrary();
+            Logger.LogInfo("Downloading Website");
+            DownloadWebsite();
+            Logger.LogInfo("Finished Updating/Creating Library");
         }
 
         static void Test()
