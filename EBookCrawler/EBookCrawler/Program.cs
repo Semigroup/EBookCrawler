@@ -112,7 +112,6 @@ namespace EBookCrawler
             Console.WriteLine("Transcripting texts whose author's name contains \"" + author + "\".");
             Console.WriteLine("Using library at " + libRoot + " and producing output to " + latexOutput + ".");
 
-
             Organizer orga = new Organizer(libRoot);
             orga.LoadLibrary();
 
