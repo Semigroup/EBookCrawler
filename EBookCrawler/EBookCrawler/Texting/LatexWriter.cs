@@ -19,6 +19,7 @@ namespace EBookCrawler.Texting
         public bool LineIsEmpty { get; private set; } = true;
         public bool NoLineToEnd { get; private set; } = true;
         public Chapter.Meta Meta { get; set; }
+        public Header.Level HeaderLevel { get; set; } = Header.Level.None;
 
         public LatexWriter(string BuildRoot, string path, Chapter.Meta Meta) : base(path)
         {
@@ -118,7 +119,13 @@ namespace EBookCrawler.Texting
             string lineBreak = @"\\";
             if (additionalDistance > 0)
                 lineBreak += "[" + additionalDistance + @"\baselineskip]";
-            base.WriteLine(lineBreak);
+            else
+                lineBreak += "\\relax";
+            if (HeaderLevel != Header.Level.Chapter
+                && HeaderLevel != Header.Level.Section
+                && HeaderLevel != Header.Level.SubSection
+                && HeaderLevel != Header.Level.SubSubSection)
+                base.WriteLine(lineBreak);
 
             NoLineToEnd = LineIsEmpty = true;
         }

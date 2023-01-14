@@ -13,7 +13,8 @@ namespace EBookCrawler.Texting
 
         public override void ToLatex(LatexWriter writer)
         {
-            throw new NotImplementedException();
+            //ToDo: add Box in Latex
+            base.ToLatex(writer);
         }
     }
 }

@@ -15,14 +15,22 @@ namespace EBookCrawler
 
         static void ShowHelp()
         {
+            Console.WriteLine();
+            Console.WriteLine();
             Console.WriteLine("EBookCrawler needs to be run with one of the following commands:");
+            Console.WriteLine();
             Console.WriteLine("EBookCrawler init <path>                     Creates a new Library at the specified path.");
-            Console.WriteLine("                                             This command will crawl all works at https://www.projekt-gutenberg.org/info/texte/allworka.html");
+            Console.WriteLine("                                             This command will scrape all works at https://www.projekt-gutenberg.org/info/texte/allworka.html");
             Console.WriteLine("                                             and save the html pages at <path>.");
+            Console.WriteLine("                                             Use this command if you want to update your current library.");
+            Console.WriteLine("                                             Note: Depending on your internet connection");
+            Console.WriteLine("                                             this command can take 30 mins up to several hours.");
+            Console.WriteLine();
             Console.WriteLine("EBookCrawler books <string> <path1> <path2>  Will transcript each work whose title contains the given string.");
             Console.WriteLine("                                             <path1> needs to be the path where the library was saved,");
             Console.WriteLine("                                             i.e., <path1> must be the same argument that was given in init.");
             Console.WriteLine("                                             <path2> specifies where the new .tex files shall be saved.");
+            Console.WriteLine();
             Console.WriteLine("EBookCrawler author <string> <path1> <path2> Will transcript each work whose author's name contains the given string.");
             Console.WriteLine("                                             <path1> needs to be the path where the library was saved,");
             Console.WriteLine("                                             i.e., <path1> must be the same argument that was given in init.");
@@ -41,7 +49,10 @@ namespace EBookCrawler
         static void Main(string[] args)
         {
             if (args.Length == 0)
+            {
                 ShowHelp();
+                return;
+            }
 
             switch (args[0])
             {
@@ -78,28 +89,40 @@ namespace EBookCrawler
             orga.LoadLibrary();
             orga.DownloadWebPage(false);
         }
-        static void TranscriptBooks(params string[] books)
+        static void TranscriptBooks(string book)
         {
+            Console.WriteLine("Transcripting texts with \"" + book + "\" in their title.");
+            Console.WriteLine("Using library at " + libRoot + " and producing output to " + latexOutput + ".");
+
             Organizer orga = new Organizer(libRoot);
             orga.LoadLibrary();
 
-            foreach (var name in books)
-            {
-                var found = orga.Library.FindBook(name).ToArray();
-                for (int i = 0; i < found.Length; i++)
-                    found[i].WriteLatex(libRoot, latexOutput);
-            }
+            var found = orga.Library.FindBook(book).ToArray();
+            Console.WriteLine("Found the following text titles:");
+            foreach (var title in found)
+                Console.WriteLine(title);
+
+            for (int i = 0; i < found.Length; i++)
+                found[i].WriteLatex(libRoot, latexOutput);
         }
         static void TranscriptBooksOfAuthor(string author)
         {
             author = author.ToLower();
+
+            Console.WriteLine("Transcripting texts whose author's name contains \"" + author + "\".");
+            Console.WriteLine("Using library at " + libRoot + " and producing output to " + latexOutput + ".");
+
+
             Organizer orga = new Organizer(libRoot);
             orga.LoadLibrary();
 
             foreach (var tuple in orga.Library.Authors)
                 if (tuple.Key.ToLower().Contains(author))
+                {
+                    Console.WriteLine("Found author: " + tuple.Key);
                     foreach (var book in tuple.Value.Books)
                         book.Value.WriteLatex(libRoot, latexOutput);
+                }
         }
     }
 }

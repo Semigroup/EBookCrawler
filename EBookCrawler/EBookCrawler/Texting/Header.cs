@@ -10,6 +10,7 @@ namespace EBookCrawler.Texting
     {
         public enum Level
         {
+            None = 0,
             TitlePage = 1,
             Part = 2,
             Chapter = 3,
@@ -135,6 +136,8 @@ namespace EBookCrawler.Texting
             if (!IsVisible)
                 return;
             writer.ForceWriteLine(1);
+            
+            writer.HeaderLevel = MyLevel;
             switch (MyLevel)
             {
                 case Level.Part:
@@ -153,6 +156,7 @@ namespace EBookCrawler.Texting
                     writer.Write(@"{");
                     base.ToLatex(writer);
                     writer.WriteLine(@"}");
+
                     foreach (var fn in fns)
                     {
                         fn.IsVisible = true;
@@ -216,6 +220,8 @@ namespace EBookCrawler.Texting
                 default:
                     throw new NotImplementedException();
             }
+            writer.HeaderLevel = Level.None;
+
             writer.ForceWriteLine(1);
         }
         public static string GetCommand(Level level)

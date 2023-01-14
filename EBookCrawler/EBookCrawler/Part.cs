@@ -40,10 +40,11 @@ namespace EBookCrawler
         {
             this.Reference = Reference;
 
-            Console.WriteLine();
-            Console.WriteLine(Reference.Link);
+            //Console.WriteLine();
+            //Console.WriteLine(Reference.Link);
 
             string indexURL = HTMLHelper.ExchangeLastDirectory(Reference.Link, "index.html");
+            Logger.LogInfo("Downloading " + indexURL);
             //Console.WriteLine(indexURL);
 
             string source;
@@ -54,7 +55,7 @@ namespace EBookCrawler
             catch (Exception)
             {
                 this.NotFound = true;
-                Logger.LogError("Indexdatei nicht gefunden: " + indexURL);
+                Logger.LogError("Index file not found: " + indexURL);
                 return;
             }
             File.WriteAllText("indexdatei.xml", source);

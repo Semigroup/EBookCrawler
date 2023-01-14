@@ -82,12 +82,15 @@ namespace EBookCrawler.Texting
                     if (headers[3].Count == 1)
                         this.Title = headers[3][0];
                     else
-                    {
                         this.Title = new Header() { Hierarchy = 3, MyLevel = Header.Level.Chapter };
-                    }
                     for (int i = 0; i < headers.Length; i++)
                         if (i < 3 && headers[i].Count > 0)
-                            throw new NotImplementedException();
+                        {
+                            if (i < this.Title.Hierarchy)
+                                this.Title = headers[i][0];
+                            else
+                                Logger.LogError("[TextChapter.AnalyseHeaders] Unrecognized header structure!");
+                        }
                         else if (i >= 3)
                             foreach (var item in headers[i])
                                 item.MyLevel = (Header.Level)i;
@@ -95,8 +98,14 @@ namespace EBookCrawler.Texting
                 case Kind.SingleText:
                     for (int i = 0; i < headers.Length; i++)
                         if (i <= 3 && headers[i].Count > 0)
-                            throw new NotImplementedException();
-                        else if (i >= 3)
+                            if (i < 3 && headers[i].Count > 0)
+                            {
+                                if (i < this.Title.Hierarchy)
+                                    this.Title = headers[i][0];
+                                else
+                                    Logger.LogError("[TextChapter.AnalyseHeaders] Unrecognized header structure!");
+                            }
+                            else if (i >= 3)
                             foreach (var item in headers[i])
                                 item.MyLevel = (Header.Level)i;
                     break;

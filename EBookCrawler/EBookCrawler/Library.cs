@@ -50,7 +50,7 @@ namespace EBookCrawler
                                 line += ", " + partref.SubTitle;
                             var part = bookref.Parts[i].Part;
                             if (part.NotFound)
-                                line += " **Index Datei nicht gefunden!**";
+                                line += " **Index File not found!**";
                             else
                                 line += ", " + part.Chapters.Length + " Kapitel";
                             line += " :: [" + partref.Link + "]";
