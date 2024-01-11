@@ -32,6 +32,11 @@ namespace EBookCrawler.Texting
         {
             if (classValue == null)
                 return;
+            if (classValue == "anzeige-chap")
+            {
+                this.IsVisible = false;
+                return;
+            }
             this.MyAlignment = Transformer.GetAlignment(classValue);
             switch (classValue)
             {
@@ -228,6 +233,8 @@ namespace EBookCrawler.Texting
         public override void ToLatex(LatexWriter writer)
         {
             if (TextElements.Count == 0)
+                return;
+            if(!IsVisible)
                 return;
             WriteBegin(writer);
             foreach (var element in TextElements)

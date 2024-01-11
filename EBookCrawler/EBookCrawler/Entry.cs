@@ -75,10 +75,16 @@ namespace EBookCrawler
 
         public (string firsName, string lastName) GetIrregularAuthorName()
         {
-            string raw = Data[1].Value;
-            if (raw.Length == 0)
-                raw = Data[2].Value;
-            if (raw.Length == 0)
+            //string raw = Data[1].Value;
+            //if (raw.Length == 0)
+            //    raw = Data[2].Value;
+            //if (raw.Length == 0)
+            //    throw new NotImplementedException();
+            string raw = null;
+            for (int i = 0; i < Data.Count; i++)
+                if (Data[i] != null && Data[i].Value.Length>0)
+                    raw = Data[i].Value;
+            if (raw == null)
                 throw new NotImplementedException();
 
             string[] split = raw.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
@@ -93,7 +99,8 @@ namespace EBookCrawler
         public (string firsName, string lastName) GetManyAuthorsName()
         {
             string[] authors = Data[1].Value.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-            (string firstName, string lastName)[] authorNames = authors.Map(authorName => sepNames(authorName)).ToArray();
+            (string firstName, string lastName)[] authorNames = 
+                authors.Map(authorName => sepNames(authorName)).ToArray();
             string fName = authorNames[0].firstName;
             string lName = authorNames[0].lastName;
             for (int i = 1; i < authorNames.Length; i++)
@@ -120,7 +127,7 @@ namespace EBookCrawler
                             return sepNames(realName);
                         }
                         else
-                            throw new NotImplementedException("Entry.GetAuthorName: " + authorName + " hat zu viele Kommata!");
+                            return (split[1].Trim(), split[0].Trim());
                 }
             }
         }
@@ -178,6 +185,8 @@ namespace EBookCrawler
                             return Kind.IrregularAuthor;
                         else
                             return Kind.BookWithBrokenLink;
+                    else if (Data.Count == 9 && Data[8] != null)
+                        return Kind.IrregularAuthor;
 
                     throw new NotImplementedException("Entry.GetKind: Encounted " + Data.Count + " Depths!");
             }

@@ -54,6 +54,7 @@ namespace EBookCrawler.Texting
                 case "letter":
                     MyKind = Kind.Letter;
                     break;
+                case "anzeige-chap":
                 case "figcaption":
                 case "figure":
                     MyKind = Kind.Figure;

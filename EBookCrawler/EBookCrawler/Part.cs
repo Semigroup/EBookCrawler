@@ -59,7 +59,7 @@ namespace EBookCrawler
                 return;
             }
             File.WriteAllText("indexdatei.xml", source);
-            source = HTMLHelper.ExtractPart(source, "<h3>Inhaltsverzeichnis</h3><br/>", "</p></body>");
+            source = HTMLHelper.ExtractPart(source, "<h3>Inhaltsverzeichnis</h3><br/>", "</body>");
 
             IEnumerable<(string link, string name)> toc = GetToc(source);
             int numbering = 0;

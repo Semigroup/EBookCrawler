@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Net;
+using System.Diagnostics.Eventing.Reader;
 
 namespace EBookCrawler
 {
@@ -142,7 +143,21 @@ namespace EBookCrawler
                 preLast = last;
                 last = match;
             }
-            if (last == null)
+            if(preLast == null)
+            {
+                string startTag = "</form>";
+                int index = source.LastIndexOf(startTag);
+                start = index;
+                while (source[index + 1] == '/')
+                {
+                    index++;
+                    while(source[index] != '<')
+                        index++;
+                }
+                start = index;
+                end = source.LastIndexOf("<div class=\"bottomnavi-gb\">");
+            }
+            else if (last == null)
             {
                 string startTag = "</TABLE> <BR CLEAR=\"all\"> </DIV>";
                 start = source.LastIndexOf(startTag) + startTag.Length;

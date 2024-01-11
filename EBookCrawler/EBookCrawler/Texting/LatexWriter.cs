@@ -417,6 +417,73 @@ namespace EBookCrawler.Texting
                     return @"7/8";
                 case '\u00a0': //Non breaking Space
                     return "~";
+
+                case 'α':
+                case 'ἀ':
+                case 'ά':
+                case 'ἄ':
+                    return @"$\alpha$";
+                case 'β':
+                    return @"$\beta$";
+                case 'γ':
+                    return @"$\gamma$";
+                case 'ϰ':
+                    return @"$\digamma$";
+                case 'δ':
+                    return @"$\delta$";
+                case 'ε':
+                    return @"$\varepsilon$";
+                case 'ϵ':
+                    return @"$\epsilon$";
+                case 'ζ':
+                    return @"$\zeta$";
+                case 'η':
+                    return @"$\eta$";
+                case 'θ':
+                    return @"$\theta$";
+                case 'ϑ':
+                    return @"$\vartheta$";
+                case 'ι':
+                case 'ί':
+                    return @"$\iota$";
+                case 'κ':
+                    return @"$\kappa$";
+                case 'λ':
+                    return @"$\lambda$";
+                case 'μ':
+                    return @"$\mu$";
+                case 'ν':
+                    return @"$\nu$";
+                case 'π':
+                    return @"$\pi$";
+                case 'ρ':
+                case 'ϱ':
+                    return @"$\rho$";
+                case 'σ':
+                    return @"$\sigma$";
+                case 'τ':
+                    return @"$\tau$";
+                case 'υ':
+                    return @"$\upsilon$";
+                case 'φ':
+                    return @"$\varphi$";
+                case 'ϕ':
+                    return @"$\phi$";
+                case 'χ':
+                    return @"$\xi$";
+                case 'ψ':
+                    return @"$\psi$";
+                case 'ω':
+                    return @"$\omega$";
+                case 'ϛ':
+                case 'ς':
+                    return @"$\sigma$";
+                case 'ὄ':
+                case 'ο':
+                case 'ό':
+                    return @"o";
+
+
                 default:
                     return c.ToString();
             }
